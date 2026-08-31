@@ -12,8 +12,11 @@
 // visível no código-fonte — isso é esperado e seguro apenas porque o acesso
 // escolhido é pessoal/aberto. Não coloque aqui a chave "service_role".
 
-export const SUPABASE_URL = 'COLE_AQUI_A_URL_DO_PROJETO';
-export const SUPABASE_ANON_KEY = 'COLE_AQUI_A_CHAVE_ANON';
+export const SUPABASE_URL = 'https://zzcxhtblbmiakuvdakic.supabase.co';
+
+// Chave pública ("publishable" / anon). Segura para uso no front-end.
+// Nunca use aqui a chave "service_role" nem a senha do banco de dados.
+export const SUPABASE_ANON_KEY = 'sb_publishable_l6pW6OQ8JgFXNH5hUG08gw_WwBfLMzh';
 
 export function isSupabaseConfigured() {
     return (
