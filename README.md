@@ -25,10 +25,29 @@ O **Gacha Management** é uma aplicação projetada para ajudar jogadores de **g
 
 ## 🔧 Tecnologias Utilizadas
 - HTML5, CSS3, JavaScript (ES6+)
-- Dexie.js (IndexedDB wrapper) v4.0.11
+- **Supabase** (Postgres na nuvem) — sincroniza os dados entre **navegador e celular**
 - Modern JavaScript Modules (ESM)
 - Jest v29.7.0 (testing)
 - Babel (transpilation)
+
+## ☁️ Configuração do Banco (Supabase)
+
+Os dados ficam em um banco na nuvem gratuito (Supabase), então o que você
+cadastra no navegador aparece também no celular e vice-versa.
+
+1. Crie uma conta grátis em [supabase.com](https://supabase.com) e um novo projeto.
+2. No **SQL Editor**, cole e execute o conteúdo de [`db/schema.sql`](db/schema.sql)
+   para criar as tabelas `games` e `tasks`.
+3. Em **Project Settings → Data API**, copie a **Project URL** e a chave **anon/public**.
+4. Cole os dois valores em [`js/config/supabase.config.js`](js/config/supabase.config.js).
+5. Abra a aplicação (local ou no GitHub Pages) — os dados iniciais são semeados
+   automaticamente na primeira vez.
+
+> ⚠️ Como o site é público, a chave `anon` fica visível no código. Isso é
+> intencional para o uso pessoal/aberto configurado aqui. Para restringir o
+> acesso, adicione autenticação e troque as *policies* de RLS em `db/schema.sql`
+> por regras baseadas em `auth.uid()`. **Nunca** use a chave `service_role` no
+> front-end.
 
 ## 🎯 Features
 Add under Gacha Schedule:

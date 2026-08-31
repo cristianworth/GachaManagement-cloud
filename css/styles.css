@@ -87,3 +87,60 @@ textarea:focus {
 textarea::placeholder {
     text-align: center;
 }
+
+/* ============================================================
+   Responsividade (mobile) — permite usar bem no celular
+   ============================================================ */
+@media (max-width: 640px) {
+    body {
+        padding: 10px;
+    }
+
+    /* Tabelas largas passam a rolar horizontalmente em vez de estourar a tela */
+    table {
+        display: block;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        white-space: nowrap;
+    }
+
+    th, td {
+        padding: 6px;
+    }
+
+    .icon {
+        width: 36px;
+        height: 36px;
+    }
+
+    /* Alvos de toque maiores e formulários em coluna */
+    button,
+    input,
+    select,
+    textarea {
+        font-size: 16px; /* evita zoom automático do iOS ao focar */
+    }
+
+    button {
+        padding: 10px 14px;
+        margin-top: 6px;
+    }
+
+    .spacing-left {
+        margin-left: 0.4em;
+    }
+
+    form {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        max-width: 100%;
+    }
+
+    form input,
+    form select {
+        width: 100%;
+        box-sizing: border-box;
+        padding: 8px;
+    }
+}

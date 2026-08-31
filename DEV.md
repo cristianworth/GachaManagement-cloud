@@ -22,12 +22,20 @@
 - [X] Limpar os formulários após adicionar uma nova tarefa/jogo
 
 ## 🐛 Correções de Bug Pendentes
-- [ ] A primeira vez que a página é carregada fica em branco (deve esperar o carregamento dos dados)
+- [X] A primeira vez que a página é carregada fica em branco (agora `initializeDatabase()` é aguardado antes da primeira renderização em `js/index.js`)
 - [ ] Corrigir chamadas duplicadas da função `displayAllGames()` ao carregar a página
+
+## ☁️ Migração de Armazenamento (Local → Nuvem)
+- Substituído o **IndexedDB (Dexie.js)**, que guardava os dados apenas no navegador
+  atual, pelo **Supabase (Postgres na nuvem)**, sincronizando navegador e celular.
+- A camada de dados manteve a **mesma API pública** (`gameDB.js` / `taskDB.js`), então
+  a UI não precisou mudar. A conexão vive em `supabaseClient.js`, a configuração em
+  `js/config/supabase.config.js`, e a conversão de schema em `js/database/mappers/`.
+- Veja o passo a passo de configuração no `README.md` e o schema em `db/schema.sql`.
 
 ## 📌 Aprendizados Importantes
 - Uso de **módulos JavaScript** (`import/export`)
-- Introdução ao **Dexie.js** para banco de dados IndexedDB
+- **Supabase** (Postgres na nuvem) e o padrão **Repository + Mapper** para isolar o schema do domínio
 - Uso de **Event Listeners** ao invés de funções inline no HTML
 - **Evitar `var`** (escopo de função), preferindo `const` e `let` (escopo de bloco)
 - Diferenças entre **ES Modules** (`import/export`) e **CommonJS** (`require()`)
