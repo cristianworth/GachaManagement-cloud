@@ -8,9 +8,14 @@
     
     <!-- Dynamic base href for different environments -->
     <script>
-        // Set base href only for GitHub Pages
+        // No GitHub Pages, deriva o nome do repositório do primeiro segmento da
+        // URL. Assim funciona em qualquer repo (ex.: /GachaManagement/ ou
+        // /GachaManagement-cloud/) sem precisar fixar o nome aqui.
         if (window.location.hostname.includes('github.io')) {
-            document.write('<base href="/GachaManagement/" />');
+            const repo = window.location.pathname.split('/')[1];
+            if (repo) {
+                document.write(`<base href="/${repo}/" />`);
+            }
         }
     </script>
     

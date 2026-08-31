@@ -2,7 +2,13 @@
 import NavigationService from '../services/navigation.service.js';
 
 class Router {
-  static BASE_PATH = window.location.hostname.includes('github.io') ? '/GachaManagement' : '';
+  // Deriva o base path do repositório servido no GitHub Pages (primeiro
+  // segmento da URL). Fora do github.io (local/host próprio) usa raiz.
+  static BASE_PATH = (() => {
+    if (!window.location.hostname.includes('github.io')) return '';
+    const repo = window.location.pathname.split('/')[1];
+    return repo ? `/${repo}` : '';
+  })();
   static routes = {
     '/': 'games',
     '/games/create': 'createGame',
