@@ -63,22 +63,32 @@ export function addGameEventListeners(game) {
 }
 
 async function handleGameSave(gameId) {
-    let game = await fetchGameById(gameId);
+    setLoadingState(true);
 
-    const currentStamina = parseInt(document.getElementById(`currentStamina${game.id}`).value, 10);
-    const pendingTask = document.getElementById(`pendingTask${gameId}`).value;
+    try {
+        let game = await fetchGameById(gameId);
+        const currentStamina = parseInt(document.getElementById(`currentStamina${game.id}`).value, 10);
+        const pendingTask = document.getElementById(`pendingTask${gameId}`).value;
 
-    if (!isNaN(currentStamina)) {
-        game.currentStamina = currentStamina;
-        game.pendingTasks = pendingTask;
-        game.dateMaxStamina = calculateMaxStaminaDate(game);
-        game.maxStaminaAt = formatDateToDayHour(game.dateMaxStamina);
-        
-        await updateGame(game);
-        await displayAllGames();
-    } else {
-        alert("Please enter a valid number for stamina.");
+        if (!isNaN(currentStamina)) {
+            game.currentStamina = currentStamina;
+            game.pendingTasks = pendingTask;
+            game.dateMaxStamina = calculateMaxStaminaDate(game);
+            game.maxStaminaAt = formatDateToDayHour(game.dateMaxStamina);
+            
+            await updateGame(game);
+            await displayAllGames();
+        } else {
+            alert("Please enter a valid number for stamina.");
+        }
+    } finally {
+        setLoadingState(false);
     }
+}
+
+function setLoadingState(isLoading) {
+    const loadingOverlay = document.getElementById("loadingOverlay");
+    loadingOverlay.hidden = !isLoading;
 }
 
 async function handleGameEdit(gameId) {
