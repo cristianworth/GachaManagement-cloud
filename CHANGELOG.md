@@ -8,6 +8,13 @@ O projeto segue o versionamento semântico (SemVer), no formato `MAJOR.MINOR.PAT
 - `MINOR`: nova funcionalidade compatível com a versão anterior.
 - `PATCH`: correção de bug ou melhoria pequena, sem nova funcionalidade relevante.
 
+## [1.0.1] - 2026-09-18
+
+### Melhorado
+
+- Tabelas com rolagem horizontal e formulários adaptados para telas pequenas.
+- Editor responsivo de tarefas pendentes com continuidade automática de bullet points.
+
 ## [1.0.0] - 2026-09-12
 
 ### Adicionado

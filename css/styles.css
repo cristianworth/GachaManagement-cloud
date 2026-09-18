@@ -3,6 +3,12 @@
     --main-blue: #2020b9;
 }
 
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
 .main-title {
     color: var(--main-blue);
 }
@@ -46,7 +52,27 @@
 
 body {
     font-family: Arial, sans-serif;
+    width: min(100%, 1200px);
+    margin: 0 auto;
     padding: 20px;
+}
+
+section {
+    min-width: 0;
+}
+
+button,
+input,
+select,
+textarea {
+    max-width: 100%;
+}
+
+.table-container {
+    width: 100%;
+    margin-top: 20px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
 }
 
 .loading-overlay {
@@ -97,7 +123,6 @@ h1 {
 table {
     width: 100%;
     border-collapse: collapse;
-    margin-top: 20px;
 }
 
 th, td {
@@ -122,7 +147,7 @@ th {
 
 textarea {
     width: 100%;
-    height: 50%; /* Adjust height as needed */
+    min-height: 7rem;
     padding: 10px;
     border: 1px solid #ccc;
     border-radius: 4px;
@@ -130,10 +155,8 @@ textarea {
     resize: vertical; /* Allow vertical resize only */
     box-sizing: border-box; /* Ensures padding is included in width */
     text-align: center;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
+    display: block;
+    text-align: left;
     font-family: 'Roboto', sans-serif;
 }
 
@@ -144,7 +167,17 @@ textarea:focus {
 }
 
 textarea::placeholder {
-    text-align: center;
+    color: #777;
+    opacity: 1;
+}
+
+.pending-task-editor {
+    width: clamp(13rem, 24vw, 20rem);
+    min-height: 7rem;
+    line-height: 1.45;
+    resize: vertical;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
 }
 
 /* ============================================================
@@ -152,14 +185,22 @@ textarea::placeholder {
    ============================================================ */
 @media (max-width: 640px) {
     body {
-        padding: 10px;
+        padding: 12px;
     }
 
-    /* Tabelas largas passam a rolar horizontalmente em vez de estourar a tela */
+    .main-title {
+        font-size: 1.5rem;
+        line-height: 1.25;
+        overflow-wrap: anywhere;
+    }
+
+    .main-title a {
+        overflow-wrap: anywhere;
+    }
+
+    /* Mantém tabelas densas legíveis, permitindo rolagem só dentro delas. */
     table {
-        display: block;
-        overflow-x: auto;
-        -webkit-overflow-scrolling: touch;
+        min-width: 620px;
         white-space: nowrap;
     }
 
@@ -181,8 +222,14 @@ textarea::placeholder {
     }
 
     button {
+        width: auto;
         padding: 10px 14px;
-        margin-top: 6px;
+        margin: 4px 0;
+    }
+
+    section > button,
+    form button {
+        width: 100%;
     }
 
     .spacing-left {
@@ -197,9 +244,25 @@ textarea::placeholder {
     }
 
     form input,
-    form select {
+    form select,
+    form textarea {
         width: 100%;
         box-sizing: border-box;
         padding: 8px;
+    }
+
+    .pending-task-editor {
+        width: min(100%, 20rem);
+        min-height: 8rem;
+    }
+
+    #divExpirationDayAndHour {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 6px 10px;
+    }
+
+    #divExpirationDayAndHour input {
+        min-width: 0;
     }
 }

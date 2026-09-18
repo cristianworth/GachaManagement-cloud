@@ -28,7 +28,14 @@ function createGameRow(game) {
         </td>
         <td>${game.description}</td>
         <td>
-            <textarea id="pendingTask${game.id}" spellcheck="false">${game.pendingTasks || ''}</textarea>
+            <textarea
+                id="pendingTask${game.id}"
+                class="pending-task-editor"
+                rows="4"
+                spellcheck="true"
+                placeholder="• Exemplo de tarefa&#10;• Outra tarefa"
+                aria-label="Tarefas pendentes de ${game.description}"
+            >${game.pendingTasks || ''}</textarea>
         </td>
         <td>
             <input class="input-centered spacing-left" id="currentStamina${game.id}" type="number" value="${game.currentStamina | ''}" />
@@ -50,6 +57,7 @@ export function addGameEventListeners(game) {
     const saveGame = document.getElementById(`save-game-${game.id}`);
     const editGame = document.getElementById(`edit-game-${game.id}`);
     const deleteGame = document.getElementById(`delete-game-${game.id}`);
+    const pendingTaskEditor = document.getElementById(`pendingTask${game.id}`);
 
     if (saveGame)
         saveGame.addEventListener("click", () => handleGameSave(game.id));
@@ -59,7 +67,30 @@ export function addGameEventListeners(game) {
     
     if (deleteGame)     
         deleteGame.addEventListener("click", () => handleDelete(game.id))
+
+    if (pendingTaskEditor)
+        pendingTaskEditor.addEventListener("keydown", handleBulletPoint)
     
+}
+
+function handleBulletPoint(event) {
+    if (event.key !== "Enter") return;
+
+    const editor = event.currentTarget;
+    const lineStart = editor.value.lastIndexOf("\n", editor.selectionStart - 1) + 1;
+    const currentLine = editor.value.slice(lineStart, editor.selectionStart);
+
+    if (!currentLine.trim() || currentLine.trim() === "•") return;
+
+    event.preventDefault();
+    const bullet = currentLine.match(/^\s*•\s*/)?.[0] || "• ";
+    const beforeCursor = editor.value.slice(0, editor.selectionStart);
+    const afterCursor = editor.value.slice(editor.selectionEnd);
+    const nextValue = `${beforeCursor}\n${bullet}${afterCursor}`;
+    const nextCursor = beforeCursor.length + bullet.length + 1;
+
+    editor.value = nextValue;
+    editor.setSelectionRange(nextCursor, nextCursor);
 }
 
 async function handleGameSave(gameId) {
