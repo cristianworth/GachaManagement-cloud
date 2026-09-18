@@ -12,20 +12,55 @@ document.addEventListener('DOMContentLoaded', async function () {
     return;
   }
 
-  // Garante que o banco esteja semeado/atualizado antes da primeira renderização
-  // (evita a tela em branco no primeiro carregamento).
-  await initializeDatabase();
+  setLoadingState(true, 'Loading...');
 
-  // Single initialization point
-  Router.init();
+  try {
+    // Garante que o banco esteja semeado/atualizado antes da primeira renderização.
+    await withTimeout(initializeDatabase());
 
-  // Initialize application modules
-  initializeGameForm();
-  initializeTaskForm();
-  populateGameDropDown();
-  populateRefreshTypeDropDown();
-  initializeNumberInputValidation();
+    // Aguarda a primeira rota e seus dados antes de liberar a tela.
+    await withTimeout(Router.init());
+
+    initializeGameForm();
+    initializeTaskForm();
+    populateGameDropDown();
+    populateRefreshTypeDropDown();
+    initializeNumberInputValidation();
+  } catch (error) {
+    console.error('Falha ao carregar a aplicação:', error);
+    showLoadingError();
+  } finally {
+    setLoadingState(false);
+  }
 });
+
+function setLoadingState(isLoading, message) {
+  const loadingOverlay = document.getElementById('loadingOverlay');
+  const loadingMessage = loadingOverlay.querySelector('.loading-message');
+
+  if (message) {
+    loadingMessage.textContent = message;
+  }
+
+  loadingOverlay.hidden = !isLoading;
+}
+
+function withTimeout(promise, timeout = 15000) {
+  return Promise.race([
+    promise,
+    new Promise((_, reject) => {
+      setTimeout(() => reject(new Error('Tempo limite de carregamento excedido.')), timeout);
+    })
+  ]);
+}
+
+function showLoadingError() {
+  const message = document.createElement('div');
+  message.style.cssText =
+    'margin:20px;padding:16px;border:1px solid #d33;background:#fff0f0;border-radius:8px;font-family:Arial,sans-serif;';
+  message.textContent = 'Não foi possível carregar os dados. Verifique sua conexão e tente recarregar a página.';
+  document.body.prepend(message);
+}
 
 function showConfigWarning() {
   const message = document.createElement('div');

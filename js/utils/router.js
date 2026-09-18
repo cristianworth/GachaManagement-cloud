@@ -16,10 +16,10 @@ class Router {
     '/tasks/create': 'createTask'
   };
 
-  static init() {
+  static async init() {
     NavigationService.init();
     window.addEventListener('popstate', () => this.route());
-    this.route();
+    await this.route();
   }
 
   static navigateTo(path) {
@@ -28,7 +28,7 @@ class Router {
     this.route();
   }
 
-  static route() {
+  static async route() {
     const path = this.getCurrentPath();
     const view = this.routes[path] || 'games';
     
@@ -39,10 +39,10 @@ class Router {
     // Load data when navigating to specific views
     switch(view) {
       case 'games':
-        import('../ui/gameUI.js').then(module => module.displayAllGames());
+        await import('../ui/gameUI.js').then(module => module.displayAllGames());
         break;
       case 'taskList':
-        import('../ui/taskUI.js').then(module => module.displayAllTasks());
+        await import('../ui/taskUI.js').then(module => module.displayAllTasks());
         break;
     }
   }
