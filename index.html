@@ -56,8 +56,8 @@
                 <a href="https://github.com/cristianworth/GachaManagement-cloud/tree/main" target="_blank">Dev Repo</a>
             </h1>
 
-            <button id="createGameBtn">Create New Game</button>
-            <button id="viewTasksBtn">View Tasks</button>
+            <button id="createGameBtn" class="button-add"><span class="button-icon" aria-hidden="true">+</span> Create New Game</button>
+            <button id="viewTasksBtn" class="button-neutral"><span class="button-icon" aria-hidden="true">&#9776;</span> View Tasks</button>
             
             <div class="table-container">
                 <table id="gameList">
@@ -82,7 +82,7 @@
     <div data-page="createGame" style="display:none">
         <section>
             <h1 id="game-form-title" class="main-title">Create/Edit Game</h1>
-            <button id="backToGamesBtn">Back to Games</button>
+            <button id="backToGamesBtn" class="button-neutral"><span class="button-icon" aria-hidden="true">&#8592;</span> Back to Games</button>
             
             <form id="game-form">
                 <label for="gameId" hidden>Id:</label>
@@ -100,7 +100,7 @@
                 <label for="staminaPerMinute">Stamina p/ Minute:</label>
                 <input id="staminaPerMinute" value="6" type="text" required/>
                 
-                <button id="submitGameForm" type="submit">Save / Update</button>
+                <button id="submitGameForm" class="button-save" type="submit"><span class="button-icon" aria-hidden="true">&#10003;</span> Save / Update</button>
             </form>
         </section>
     </div>
@@ -109,8 +109,8 @@
     <div data-page="taskList" style="display:none">
         <section>
             <h1 class="main-title">Task List</h1>
-            <button id="backToGamesFromTasksBtn">Back to Games</button>
-            <button id="createTaskBtn">Create New Task</button>
+            <button id="backToGamesFromTasksBtn" class="button-neutral"><span class="button-icon" aria-hidden="true">&#8592;</span> Back to Games</button>
+            <button id="createTaskBtn" class="button-add"><span class="button-icon" aria-hidden="true">+</span> Create New Task</button>
             
             <div class="table-container">
                 <table id="gameSchedule">
@@ -137,7 +137,7 @@
     <div data-page="createTask" style="display:none">
         <section>
             <h1 id="task-form-title" class="main-title">Create/Edit Task</h1>
-            <button id="backToTasksBtn">Back to Tasks</button>
+            <button id="backToTasksBtn" class="button-neutral"><span class="button-icon" aria-hidden="true">&#8592;</span> Back to Tasks</button>
             
             <form id="task-form">
                 <label for="taskId" hidden>Id:</label>
@@ -168,7 +168,7 @@
                 <label for="refreshType">Refresh Type:</label>
                 <select id="refreshType"></select>
                 
-                <button id="submitTaskForm" type="submit">Save / Update</button>
+                <button id="submitTaskForm" class="button-save" type="submit"><span class="button-icon" aria-hidden="true">&#10003;</span> Save / Update</button>
             </form>
         </section>
     </div>

@@ -39,14 +39,14 @@ function createGameRow(game) {
         </td>
         <td>
             <input class="input-centered spacing-left" id="currentStamina${game.id}" type="number" value="${game.currentStamina | ''}" />
-            <button class="spacing-left" id="save-game-${game.id}">Save</button>
+            <button class="spacing-left button-save" id="save-game-${game.id}"><span class="button-icon" aria-hidden="true">&#10003;</span> Save</button>
         </td>
         <td>
             <span id="newMaxStaminaAt${game.id}" class="spacing-left red-text">${maxStaminaAt}<\span>
         </td>
         <td>
-            <button class="spacing-left" id="edit-game-${game.id}">Edit</button>
-            <button class="spacing-left" id="delete-game-${game.id}">Delete</button>
+            <button class="spacing-left button-edit" id="edit-game-${game.id}"><span class="button-icon" aria-hidden="true">&#9998;</span> Edit</button>
+            <button class="spacing-left button-delete" id="delete-game-${game.id}"><span class="button-icon" aria-hidden="true">&#128465;</span> Delete</button>
         </td>
     `;
 

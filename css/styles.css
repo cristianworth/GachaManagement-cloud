@@ -68,6 +68,68 @@ textarea {
     max-width: 100%;
 }
 
+button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.45rem;
+    min-height: 2.5rem;
+    padding: 0.55rem 0.85rem;
+    border: 1px solid transparent;
+    border-radius: 5px;
+    background: #344054;
+    color: #fff;
+    font: inherit;
+    font-weight: 700;
+    line-height: 1.2;
+    cursor: pointer;
+    transition: background-color 140ms ease, border-color 140ms ease, transform 140ms ease;
+}
+
+button:hover {
+    transform: translateY(-1px);
+}
+
+button:focus-visible {
+    outline: 3px solid #93c5fd;
+    outline-offset: 2px;
+}
+
+.button-icon {
+    font-size: 1.1em;
+    line-height: 1;
+}
+
+.button-add,
+.button-save {
+    background: #16803c;
+}
+
+.button-add:hover,
+.button-save:hover {
+    background: #116530;
+}
+
+.button-edit {
+    background: #2457a7;
+}
+
+.button-edit:hover {
+    background: #1d4687;
+}
+
+.button-delete {
+    background: #c62828;
+}
+
+.button-delete:hover {
+    background: #a61f1f;
+}
+
+.button-neutral:hover {
+    background: #1f2937;
+}
+
 .table-container {
     width: 100%;
     margin-top: 20px;

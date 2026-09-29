@@ -33,8 +33,8 @@ function createTaskRow(task) {
         <td>${RefreshTypeEnum.findNameById(task.refreshType)}</td>
         <td>${formatDateForDisplay(task.expirationDate)}</td>
         <td>
-            <button class="spacing-left" id="edit-task-${task.id}">Edit</button>
-            <button class="spacing-left" id="delete-task-${task.id}">Delete</button>
+            <button class="spacing-left button-edit" id="edit-task-${task.id}"><span class="button-icon" aria-hidden="true">&#9998;</span> Edit</button>
+            <button class="spacing-left button-delete" id="delete-task-${task.id}"><span class="button-icon" aria-hidden="true">&#128465;</span> Delete</button>
         </td>
     `;
 
