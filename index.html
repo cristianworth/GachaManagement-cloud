@@ -111,6 +111,13 @@
             <h1 class="main-title">Task List</h1>
             <button id="backToGamesFromTasksBtn" class="button-neutral"><span class="button-icon" aria-hidden="true">&#8592;</span> Back to Games</button>
             <button id="createTaskBtn" class="button-add"><span class="button-icon" aria-hidden="true">+</span> Create New Task</button>
+            <button id="reviewEventsBtn" class="button-neutral" type="button" aria-controls="eventReviewPanel" aria-expanded="false">Revisar eventos (<span id="eventReviewCount">0</span>)</button>
+
+            <div id="eventReviewPanel" class="event-review-panel" hidden>
+                <h2>Eventos encontrados no Genshin</h2>
+                <p id="eventReviewStatus" aria-live="polite"></p>
+                <ul id="eventReviewList" class="event-review-list"></ul>
+            </div>
             
             <div class="table-container">
                 <table id="gameSchedule">

@@ -5,6 +5,7 @@ import { isSupabaseConfigured } from './config/supabase.config.js';
 import { initializeGameForm, initializeTaskForm } from './ui/formHandler.js';
 import { populateGameDropDown, populateRefreshTypeDropDown } from './ui/dropdownHandler.js';
 import { initializeNumberInputValidation } from './ui/inputValidation.js';
+import { initializeEventReview } from './ui/eventReviewUI.js';
 
 document.addEventListener('DOMContentLoaded', async function () {
   if (!isSupabaseConfigured()) {
@@ -26,6 +27,7 @@ document.addEventListener('DOMContentLoaded', async function () {
     populateGameDropDown();
     populateRefreshTypeDropDown();
     initializeNumberInputValidation();
+    initializeEventReview();
   } catch (error) {
     console.error('Falha ao carregar a aplicação:', error);
     showLoadingError();

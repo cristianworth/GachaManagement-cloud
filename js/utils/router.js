@@ -43,6 +43,7 @@ class Router {
         break;
       case 'taskList':
         await import('../ui/taskUI.js').then(module => module.displayAllTasks());
+        await import('../ui/eventReviewUI.js').then(module => module.displayEventCandidates());
         break;
     }
   }

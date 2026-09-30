@@ -25,6 +25,14 @@ Versão atual: **1.0.1**. Consulte o [CHANGELOG](CHANGELOG.md) para ver as alter
   - **Eventos personalizados**
 - Permite visualizar todas as tarefas em um **calendário simples**, evitando que você esqueça **eventos importantes**.
 
+### Eventos do Genshin (piloto)
+
+Uma rotina semanal consulta o calendário comunitário [hoyoverse-api](https://github.com/torikushiii/hoyoverse-api) e registra **candidatos** de eventos do Genshin no Supabase. Ela não cria tarefas por conta própria. Na lista de tarefas, o botão **Revisar eventos** mostra os candidatos: confira o prazo, aprove para criar uma tarefa, vincule a uma tarefa de evento existente ou ignore. A aprovação grava a tarefa e o vínculo juntos. Uma nova data da fonte reabre a revisão antes de alterar a tarefa aprovada; candidatos que somem da fonte saem da fila de revisão. Tarefas manuais e recorrentes não são alteradas pela rotina.
+
+O calendário público consultado nesta versão retorna horários do servidor Ásia. Se o fim recebido é 03:59:59 nesse servidor, a tela propõe o prazo do servidor América (+13 horas no instante UTC). Outros horários e registros sem datas ficam sem prazo proposto para revisão. A fonte não permite escolher região; confira casos especiais antes de aprovar.
+
+Para habilitar o piloto em um banco já existente, primeiro confira o backup de `games` e `tasks` e então execute [`db/migrations/2026-09-29-genshin-events.sql`](db/migrations/2026-09-29-genshin-events.sql) no SQL Editor do Supabase. Essa migração adiciona `event_candidates` e a função de aprovação sem alterar as tabelas e policies existentes. Depois, execute `node scripts/syncGenshinEvents.js --dry-run` para inspecionar a fonte sem escrever no banco e `node scripts/syncGenshinEvents.js` para guardar os candidatos. A sincronização semanal está em [`.github/workflows/sync-genshin-events.yml`](.github/workflows/sync-genshin-events.yml) e passa a rodar às segundas-feiras, 12:00 UTC, quando o workflow estiver na branch padrão do repositório. Também pode ser acionada manualmente pelo GitHub Actions. Ela usa a URL e a chave **pública** já configuradas no aplicativo; `SUPABASE_URL` e `SUPABASE_PUBLISHABLE_KEY` podem sobrescrevê-las no ambiente.
+
 ![Gacha Schedule](img/demo/gacha-schedule-demo-02.png)
 
 ## 🔧 Tecnologias Utilizadas
