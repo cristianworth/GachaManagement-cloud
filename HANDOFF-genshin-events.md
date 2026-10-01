@@ -1,32 +1,27 @@
 # Handoff: piloto de eventos do Genshin
 
-## Objetivo e escopo
+## Objetivo
 
-Automatizar a descoberta de **eventos temporários do Genshin ainda não cadastrados** no GachaManagement. O usuário joga no **servidor América**; o prazo final é o dado mais importante, pois um vencimento antecipado pode fazê-lo perder o evento. Começar por Genshin; HSR e ZZZ ficam para depois. Na primeira etapa, listar candidatos para inspeção, sem notificações nem gravação automática. Preservar tarefas manuais e recorrentes existentes.
+Descobrir eventos temporários ainda não cadastrados no GachaManagement. A conta de Cristian usa o servidor América; o prazo final é o dado mais importante. O piloto usa somente o endpoint inglês de Genshin da StarRailAssistant. HSR, ZZZ, WuWa e NTE ficam para etapas posteriores.
 
-## Estado do projeto
+## Fluxo atual
 
-- Aplicação simples em HTML/JavaScript/CSS com Supabase. `db/schema.sql` define `games` e `tasks`; `tasks` tem `description`, `expiration_date`, `refresh_type`, `game_id` etc., mas não tem fonte, região ou ID externo.
-- `scripts/previewGenshinEvents.js` consulta, em modo somente leitura, `https://api.ennead.cc/mihoyo/genshin/calendar?lang=en-us` e mostra dados recebidos, prazo americano proposto e motivo de revisão. `scripts/syncGenshinEvents.js` usa a mesma normalização e grava **candidatos** no Supabase. Executar com `--dry-run` para não gravar.
-- Na consulta real de 29/09/2026, havia nove candidatos: Silverwing com prazo americano proposto, três com horário fora do padrão e cinco sem datas válidas. O retorno muda com o calendário e deve ser reconsultado.
+- `js/events/starRailAssistantGenshin.js` normaliza a resposta de `https://starrailassistant.top/api/v1/activity/ys-en-US.json`. O endpoint não fornece ID de atividade nem fuso nas datas. O nome normalizado é a chave do candidato, para que uma atualização de data da mesma atividade atualize o registro.
+- `scripts/previewStarRailAssistantGenshin.js` compara eventos recebidos com candidatos e tarefas de Genshin sem gravar nada. `scripts/syncGenshinEvents.js --dry-run` também não grava; sem a opção, sincroniza candidatos no Supabase.
+- Na primeira sincronização após a troca de fonte, candidatos antigos com nome correspondente são adotados pela StarRailAssistant, preservando status e vínculo com a tarefa. Os demais candidatos antigos são desativados; tarefas existentes não são apagadas ou alteradas. A tela de revisão lê somente candidatos da StarRailAssistant.
+- Candidatos novos ficam pendentes. Uma mudança de prazo em candidato aprovado reabre a revisão sem alterar imediatamente sua tarefa. A aprovação SQL grava o prazo da tarefa e o vínculo na mesma transação.
+- O GitHub Actions executa a sincronização semanal quando o workflow estiver na branch padrão.
 
-## Fonte e evidência sobre região
+## Horários e cobertura
 
-- `api.ennead.cc` é uma **API comunitária** que consulta o calendário da HoYoLab. [Código do endpoint Genshin](https://github.com/torikushiii/hoyoverse-api/blob/main/src/http/routes/calendar/genshin.rs): envia `role_id` e `server` configurados pelo mantenedor ao calendário da HoYoverse e repassa os timestamps; o endpoint público não recebe região, só idioma ([documentação](https://github.com/torikushiii/hoyoverse-api#event-calendar)).
-- Exemplo: evento 446, *Silverwing in Pursuit of the Moon*. API: início `2026-09-24T02:00:00Z`, fim `2026-10-11T19:59:59Z`. Em UTC+8 são 24/09 10:00 e 12/10 03:59:59, exatamente os horários de servidor informados pelo Game8. Cristian comparou os contadores simultâneos do Game8: Ásia `11d 18h`, América `12d 7h`, diferença de **13 horas**. Isso também confere com os fusos de servidor publicados pela HoYoverse: [Ásia UTC+8 e América UTC-5](https://genshin.hoyoverse.com/en/news/detail/103756). Portanto, **esta resposta da API corresponde ao servidor Ásia**. Para este evento, o prazo americano derivado é `2026-10-12T08:59:59Z` (12/10 03:59:59 no servidor América; 12/10 05:59:59 em Brasília).
-- Para eventos anunciados no **mesmo horário local de cada servidor**, converter o instante asiático para o americano somando 13h. Eventos com horário global único ou regra própria não devem receber essa conversão. O script atual ainda mostra os timestamps brutos e sinaliza que não representam diretamente o prazo americano.
+- O evento *Silverwing in Pursuit of the Moon* confirmou a diferença de 13 horas entre os instantes de fim dos servidores Ásia e América. Para fim `03:59:59` no horário Ásia, o piloto propõe a mesma hora local no servidor América. Outros horários usam o instante recebido da fonte como proposta inicial, ainda sujeita a ajuste na aprovação. No caso de *Across the Frozen Wilds* e *Tabletop Troupe*, `14:59:59` na fonte (UTC+8) é `03:59:59` em Brasília, conforme os fins informados por Cristian no HoYoLAB.
+- A API fornece `cover` como URL HTTPS; a sincronização salva essa URL no novo campo `cover_url`. A tela mostra a imagem, o prazo sugerido no fuso do dispositivo e o tempo restante até o valor selecionado no formulário. Bancos que já receberam a migração inicial precisam executar `db/migrations/2026-09-30-event-cover.sql` antes da próxima sincronização.
+- Em 30/09/2026, o endpoint inglês de Genshin trouxe quatro atividades; o chinês trouxe oito. Eventos ausentes do endpoint inglês não aparecem automaticamente na fila e exigem conferência manual. *Rainbow's End* também agrega benefícios com prazos distintos, segundo o Game8; seu prazo deve ser conferido antes da aprovação.
 
-## Decisão arquitetural provisória
+## Dados existentes e validação
 
-Para o piloto, manter a rotina no mesmo repositório, isolada do código de UI e sem criar uma segunda API/serviço. A rotina semanal armazena candidatos no Supabase; a UI aprova e cria/atualiza tarefas. Uma API separada só passa a fazer sentido se houver necessidade real de compartilhar o processamento entre aplicações.
-
-## Implementação do piloto
-
-Implementado em `js/events/genshinCalendar.js`, `scripts/syncGenshinEvents.js`, `db/schema.sql` e na área **Revisar eventos** da tela de tarefas. A sincronização semanal salva candidatos idempotentemente pelo par fonte + ID externo. Nenhuma tarefa é criada antes da aprovação; a função SQL aprova e grava tarefa/vínculo na mesma transação. Pode-se vincular tarefa de evento já existente. Se a fonte alterar o prazo de um evento aprovado, a candidata volta para revisão e a tarefa mantém o prazo anterior até nova aprovação. Candidatos ausentes da fonte saem da fila sem apagar tarefas. Datas ausentes ou horários não reconhecidos ficam sem sugestão. O workflow GitHub Actions precisa estar na branch padrão; o SQL atualizado precisa ser aplicado ao Supabase existente para a tela e a sincronização funcionarem.
-
-## Pendências operacionais
-
-1. Branch local `codex/genshin-events-pilot` criada neste worktree a partir de `cloud/main` (`11e072b`). Cristian executou `db/backup-existing-data.sql` no SQL Editor e confirmou `games` 5/5 e `tasks` 15/15 nas tabelas originais e `_duplicate`.
-2. Cristian executou `db/migrations/2026-09-29-genshin-events.sql`; a consulta final retornou zero candidatos antes da primeira sincronização.
-3. A sincronização inicial gravou nove candidatos; a segunda execução reportou nove inalterados e zero novos. A leitura pela API confirmou `games` 5, `tasks` 15 e `event_candidates` 9. A interface local exibiu nove candidatos na área **Revisar eventos**. Nenhum candidato foi aprovado neste teste.
-4. Publicar o workflow na branch padrão para a execução semanal. Continuar avaliando padrões de horário além de 03:59:59 antes de propor datas automaticamente para esses eventos.
+- Cristian confirmou backup de `games` (5/5) e `tasks` (15/15) e aplicou `db/migrations/2026-09-29-genshin-events.sql`.
+- A sincronização anterior criou nove candidatos; Cristian aprovou somente *Silverwing*. Em 30/09/2026, a primeira sincronização da StarRailAssistant migrou três candidatos existentes, criou *Rainbow's End* e desativou seis candidatos antigos. *Silverwing* continuou aprovado no candidato 2, ligado à tarefa 16. A segunda execução teve quatro candidatos inalterados e zero novos.
+- A interface local mostrou três candidatos pendentes da StarRailAssistant e manteve a tarefa aprovada na lista de atividades. Para nova conferência, execute `node scripts/previewStarRailAssistantGenshin.js` ou `node scripts/syncGenshinEvents.js --dry-run`.
+- Em 30/09/2026, a migração `db/migrations/2026-09-30-event-cover.sql` foi aplicada no projeto Supabase GachaManagement pelo SQL Editor. A sincronização seguinte atualizou os quatro candidatos, sem criar tarefas: quatro capas preenchidas, dois candidatos pendentes, um aprovado e um ignorado; a contagem de tarefas permaneceu 16. Na tela local, *Across the Frozen Wilds* apareceu com capa, prazo inicial de 03/11/2026 03:59:59 em Brasília e tempo restante. O host da imagem exigiu `referrerPolicy = 'no-referrer'` para carregá-la no navegador.
+- Em 01/10/2026, o mantenedor explicou que os endpoints chinês e inglês usam fontes diferentes e adicionou traduções oficiais para eventos ausentes. Uma nova consulta retornou oito atividades em cada idioma, com os mesmos prazos. A sincronização criou quatro candidatos em inglês (*To Temper Thyself*, *The Godforsaken Frostlands*, *Raiment Collection* e *A Rekviem for the Underworld*). O estado verificado depois foi: seis pendentes, um aprovado (*Silverwing*, tarefa 16) e um ignorado (*Tabletop Troupe*). Nenhuma tarefa foi criada pela sincronização.

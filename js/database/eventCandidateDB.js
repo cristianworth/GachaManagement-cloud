@@ -1,9 +1,11 @@
 import { getClient, Tables } from './supabaseClient.js';
+import { STAR_RAIL_ASSISTANT_GENSHIN_SOURCE } from '../events/starRailAssistantGenshin.js';
 
 export async function fetchPendingEventCandidates() {
     const { data, error } = await getClient()
         .from(Tables.EVENT_CANDIDATES)
         .select('*')
+        .eq('source', STAR_RAIL_ASSISTANT_GENSHIN_SOURCE)
         .eq('status', 'pending')
         .eq('is_active', true)
         .order('proposed_end_at', { ascending: true, nullsFirst: false });

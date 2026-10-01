@@ -29,7 +29,7 @@ export function getExpirationDate(expirationDay, expirationHour) {
     return currentDate;
 }
 
-export function formatDateForInput(date) {
+ export function formatDateForInput(date) {
     const d = new Date(date);
     const year = d.getFullYear();
     const month = String(d.getMonth() + 1).padStart(2, '0');
@@ -38,6 +38,18 @@ export function formatDateForInput(date) {
     const minutes = String(d.getMinutes()).padStart(2, '0');
     
     return `${year}-${month}-${day}T${hours}:${minutes}`;
+ }
+
+export function formatTimeUntil(deadline, now = Date.now()) {
+    const remainingMs = new Date(deadline).getTime() - now;
+    if (Number.isNaN(remainingMs)) return 'Informe um prazo válido para ver o tempo restante.';
+    if (remainingMs <= 0) return 'Prazo encerrado.';
+
+    const totalHours = Math.floor(remainingMs / (60 * 60 * 1000));
+    if (totalHours === 0) return 'Falta menos de 1 hora.';
+    const days = Math.floor(totalHours / 24);
+    const hours = totalHours % 24;
+    return `Faltam ${days} ${days === 1 ? 'dia' : 'dias'} e ${hours} ${hours === 1 ? 'hora' : 'horas'}.`;
 }
 
 export function formatDateForDisplay(date) {

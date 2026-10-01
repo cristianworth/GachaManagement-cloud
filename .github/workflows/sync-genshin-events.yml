@@ -17,5 +17,5 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
-      - name: Fetch Genshin events and save review candidates
+      - name: Fetch StarRailAssistant Genshin events and save review candidates
         run: node scripts/syncGenshinEvents.js

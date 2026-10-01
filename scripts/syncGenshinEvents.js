@@ -1,10 +1,13 @@
 import {
-    GENSHIN_CALENDAR_URL,
-    GENSHIN_EVENT_SOURCE,
-    normalizeGenshinEvents,
-} from '../js/events/genshinCalendar.js';
+    STAR_RAIL_ASSISTANT_GENSHIN_URL,
+    STAR_RAIL_ASSISTANT_GENSHIN_SOURCE,
+    genshinActivityKey,
+    normalizeStarRailAssistantGenshin,
+} from '../js/events/starRailAssistantGenshin.js';
 import { pathToFileURL } from 'node:url';
 import { SUPABASE_URL, SUPABASE_ANON_KEY } from '../js/config/supabase.config.js';
+
+export const LEGACY_GENSHIN_EVENT_SOURCE = 'ennead-genshin-calendar';
 
 async function readJson(response, label) {
     if (!response.ok) {
@@ -14,7 +17,7 @@ async function readJson(response, label) {
 }
 
 async function fetchCalendar() {
-    return readJson(await fetch(GENSHIN_CALENDAR_URL), 'Genshin calendar');
+    return readJson(await fetch(STAR_RAIL_ASSISTANT_GENSHIN_URL), 'StarRailAssistant Genshin');
 }
 
 function databaseUrl(path) {
@@ -46,9 +49,24 @@ async function databaseRequest(url, options = {}) {
 async function fetchExistingCandidates() {
     const url = databaseUrl('event_candidates');
     url.searchParams.set('select', '*');
-    url.searchParams.set('source', `eq.${GENSHIN_EVENT_SOURCE}`);
     const response = await databaseRequest(url);
-    return response.json();
+    return (await response.json()).filter(candidate =>
+        candidate.source === STAR_RAIL_ASSISTANT_GENSHIN_SOURCE ||
+        candidate.source === LEGACY_GENSHIN_EVENT_SOURCE);
+}
+
+export function candidateFromActivity(activity) {
+    return {
+        source: STAR_RAIL_ASSISTANT_GENSHIN_SOURCE,
+        external_id: genshinActivityKey(activity.name),
+        name: activity.name,
+        type_name: null,
+        source_start_at: activity.sourceStartAt,
+        source_end_at: activity.sourceEndAt,
+        proposed_end_at: activity.proposedEndAt,
+        cover_url: activity.coverUrl,
+        review_reason: activity.reviewReason,
+    };
 }
 
 function sameInstant(left, right) {
@@ -58,13 +76,13 @@ function sameInstant(left, right) {
 export function reconcileCandidate(existing, candidate, seenAt) {
     if (!existing) return { ...candidate, status: 'pending', is_active: true, last_seen_at: seenAt };
 
-    const deadlineChanged = !sameInstant(existing.source_end_at, candidate.source_end_at) ||
-        !sameInstant(existing.proposed_end_at, candidate.proposed_end_at);
+    // A proposal can change when our conversion improves, even if the source deadline did not.
+    const deadlineChanged = !sameInstant(existing.source_end_at, candidate.source_end_at);
     const changedAfterApproval = 'O prazo mudou na fonte desde a aprovação; revisar antes de atualizar a tarefa.';
     const next = {
         ...candidate,
         is_active: true,
-        status: deadlineChanged && existing.status !== 'pending' ? 'pending' : existing.status,
+        status: deadlineChanged && existing.status === 'approved' ? 'pending' : existing.status,
         review_reason: deadlineChanged && existing.status === 'approved'
             ? changedAfterApproval
             : existing.status === 'pending' && existing.review_reason === changedAfterApproval
@@ -72,7 +90,7 @@ export function reconcileCandidate(existing, candidate, seenAt) {
                 : candidate.review_reason,
         last_seen_at: seenAt,
     };
-    next.changed = ['name', 'type_name', 'review_reason', 'status', 'is_active']
+    next.changed = ['source', 'external_id', 'name', 'type_name', 'cover_url', 'review_reason', 'status', 'is_active']
         .some(field => existing[field] !== next[field]) ||
         ['source_start_at', 'source_end_at', 'proposed_end_at']
             .some(field => !sameInstant(existing[field], next[field]));
@@ -102,7 +120,8 @@ async function saveCandidate(existing, candidate, seenAt) {
     });
     return data.status === 'pending' && existing.status !== 'pending'
         ? 'review'
-        : changed ? 'updated' : 'unchanged';
+        : existing.source === LEGACY_GENSHIN_EVENT_SOURCE ? 'migrated'
+            : changed ? 'updated' : 'unchanged';
 }
 
 async function markMissingCandidateInactive(existing) {
@@ -119,8 +138,12 @@ async function markMissingCandidateInactive(existing) {
 
 async function main() {
     const calendar = await fetchCalendar();
-    if (!calendar.events?.length) throw new Error('Calendar has no events; refusing to hide existing candidates.');
-    const { candidates, skipped } = normalizeGenshinEvents(calendar);
+    const { events, skipped } = normalizeStarRailAssistantGenshin(calendar);
+    if (!events.length) throw new Error('Calendar has no current events; refusing to hide existing candidates.');
+    const candidates = events.map(candidateFromActivity);
+    if (new Set(candidates.map(candidate => candidate.external_id)).size !== candidates.length) {
+        throw new Error('Calendar contains repeated activity names; cannot assign stable candidate keys.');
+    }
     if (process.argv.includes('--dry-run')) {
         console.table(candidates.map(({ external_id, name, source_end_at, proposed_end_at, review_reason }) => ({
             external_id, name, source_end_at, proposed_end_at, review_reason,
@@ -129,17 +152,27 @@ async function main() {
         return;
     }
 
-    const existing = new Map((await fetchExistingCandidates()).map(row => [row.external_id, row]));
+    const existing = await fetchExistingCandidates();
+    const current = new Map(existing
+        .filter(row => row.source === STAR_RAIL_ASSISTANT_GENSHIN_SOURCE)
+        .map(row => [row.external_id, row]));
+    const legacy = new Map();
+    for (const row of existing.filter(row => row.source === LEGACY_GENSHIN_EVENT_SOURCE)) {
+        const key = genshinActivityKey(row.name);
+        if (legacy.has(key)) throw new Error(`Multiple legacy candidates share the name ${row.name}.`);
+        legacy.set(key, row);
+    }
     const seenAt = new Date().toISOString();
-    const counts = { new: 0, updated: 0, review: 0, unchanged: 0, inactive: 0 };
-    const seenIds = new Set();
+    const counts = { new: 0, migrated: 0, updated: 0, review: 0, unchanged: 0, inactive: 0 };
+    const seenRowIds = new Set();
     for (const candidate of candidates) {
-        seenIds.add(candidate.external_id);
-        const result = await saveCandidate(existing.get(candidate.external_id), candidate, seenAt);
+        const previous = current.get(candidate.external_id) ?? legacy.get(candidate.external_id);
+        if (previous) seenRowIds.add(previous.id);
+        const result = await saveCandidate(previous, candidate, seenAt);
         counts[result]++;
     }
-    for (const previous of existing.values()) {
-        if (!seenIds.has(previous.external_id) && await markMissingCandidateInactive(previous)) counts.inactive++;
+    for (const previous of existing) {
+        if (!seenRowIds.has(previous.id) && await markMissingCandidateInactive(previous)) counts.inactive++;
     }
     console.log({ ...counts, skipped });
 }

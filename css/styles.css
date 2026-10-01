@@ -164,6 +164,19 @@ button:focus-visible {
     margin-top: 0;
 }
 
+.event-candidate-cover {
+    display: block;
+    width: min(100%, 24rem);
+    max-height: 12rem;
+    object-fit: contain;
+    object-position: left center;
+    border-radius: 6px;
+}
+
+.event-review-remaining {
+    font-weight: 700;
+}
+
 .event-candidate label {
     display: block;
     margin: 0.8rem 0;

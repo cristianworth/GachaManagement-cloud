@@ -4,10 +4,10 @@ import {
     fetchPendingEventCandidates,
     ignoreEventCandidate,
 } from '../database/eventCandidateDB.js';
-import { formatDateForInput } from '../utils/dateUtils.js';
+import { formatDateForInput, formatTimeUntil } from '../utils/dateUtils.js';
 import Router from '../utils/router.js';
+import { STAR_RAIL_ASSISTANT_GENSHIN_URL } from '../events/starRailAssistantGenshin.js';
 
-const sourceUrl = 'https://api.ennead.cc/mihoyo/genshin/calendar?lang=en-us';
 
 function appendText(parent, tag, value, className) {
     const element = document.createElement(tag);
@@ -18,20 +18,35 @@ function appendText(parent, tag, value, className) {
 }
 
 function displayDate(value, timeZone) {
-    return value ? new Date(value).toLocaleString('pt-BR', timeZone ? { timeZone } : undefined) : 'ausente';
+    if (!value) return 'ausente';
+    return new Date(value).toLocaleString('pt-BR', {
+        ...(timeZone ? { timeZone } : {}),
+        day: '2-digit', month: '2-digit', year: 'numeric',
+        hour: '2-digit', minute: '2-digit', second: '2-digit',
+    });
 }
 
 function makeCandidateCard(candidate, existingTasks) {
     const card = document.createElement('li');
     card.className = 'event-candidate';
+    if (candidate.cover_url) {
+        const cover = document.createElement('img');
+        cover.className = 'event-candidate-cover';
+        cover.src = candidate.cover_url;
+        cover.alt = `Capa do evento ${candidate.name}`;
+        cover.loading = 'lazy';
+        // The image host rejects hotlinks that include this app as the referrer.
+        cover.referrerPolicy = 'no-referrer';
+        card.appendChild(cover);
+    }
     appendText(card, 'h3', candidate.name);
-    appendText(card, 'p', `ID ${candidate.external_id} · ${candidate.type_name ?? 'tipo desconhecido'}`);
+    appendText(card, 'p', 'Fonte: StarRailAssistant');
     appendText(card, 'p', `Fim recebido da API: ${displayDate(candidate.source_end_at, 'Asia/Shanghai')} (servidor Ásia)`);
-    appendText(card, 'p', `Fim proposto: ${displayDate(candidate.proposed_end_at, 'Etc/GMT+5')} (servidor América)`);
+    appendText(card, 'p', `Prazo sugerido no seu horário: ${displayDate(candidate.proposed_end_at)}`);
     if (candidate.review_reason) appendText(card, 'p', candidate.review_reason, 'event-review-warning');
 
     const source = document.createElement('a');
-    source.href = sourceUrl;
+    source.href = STAR_RAIL_ASSISTANT_GENSHIN_URL;
     source.target = '_blank';
     source.rel = 'noopener noreferrer';
     source.textContent = 'Ver resposta da fonte';
@@ -45,6 +60,14 @@ function makeCandidateCard(candidate, existingTasks) {
         ? `${formatDateForInput(candidate.proposed_end_at)}:${String(new Date(candidate.proposed_end_at).getSeconds()).padStart(2, '0')}`
         : '';
     deadlineLabel.appendChild(deadlineInput);
+    const remaining = appendText(card, 'p', '', 'event-review-remaining');
+    function updateRemainingTime() {
+        remaining.textContent = deadlineInput.value
+            ? formatTimeUntil(deadlineInput.value)
+            : 'Informe um prazo para ver o tempo restante.';
+    }
+    deadlineInput.addEventListener('input', updateRemainingTime);
+    updateRemainingTime();
 
     const taskLabel = appendText(card, 'label', 'Tarefa existente (opcional):');
     const taskSelect = document.createElement('select');
@@ -101,8 +124,10 @@ function makeCandidateCard(candidate, existingTasks) {
         await approveEventCandidate(candidate.id, deadline.toISOString(), taskSelect.value ? Number(taskSelect.value) : null);
     }));
     ignoreButton.addEventListener('click', () => act(() => ignoreEventCandidate(candidate.id)));
-    return card;
+    return { card, updateRemainingTime };
 }
+
+let remainingTimeInterval;
 
 export function initializeEventReview() {
     const button = document.getElementById('reviewEventsBtn');
@@ -117,6 +142,7 @@ export async function displayEventCandidates() {
     const count = document.getElementById('eventReviewCount');
     const list = document.getElementById('eventReviewList');
     const message = document.getElementById('eventReviewStatus');
+    clearInterval(remainingTimeInterval);
     list.replaceChildren();
     try {
         const candidates = await fetchPendingEventCandidates();
@@ -126,7 +152,15 @@ export async function displayEventCandidates() {
             : 'Nenhum evento precisa de revisão.';
         const tasks = await fetchAllTasks();
         const existingTasks = tasks.filter(task => task.game?.abbreviation === 'GI' && task.refreshType === 0);
-        for (const candidate of candidates) list.appendChild(makeCandidateCard(candidate, existingTasks));
+        const counters = [];
+        for (const candidate of candidates) {
+            const { card, updateRemainingTime } = makeCandidateCard(candidate, existingTasks);
+            list.appendChild(card);
+            counters.push(updateRemainingTime);
+        }
+        if (counters.length) {
+            remainingTimeInterval = setInterval(() => counters.forEach(update => update()), 60_000);
+        }
     } catch (error) {
         count.textContent = '?';
         message.textContent = 'Não foi possível carregar os eventos. Confira se o SQL atualizado foi aplicado no Supabase.';

@@ -46,6 +46,7 @@ create table if not exists public.event_candidates (
     source_start_at  timestamptz,
     source_end_at    timestamptz,
     proposed_end_at  timestamptz,
+    cover_url        text,
     approved_end_at  timestamptz,
     review_reason    text,
     is_active        boolean not null default true,
