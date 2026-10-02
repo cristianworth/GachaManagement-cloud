@@ -8,6 +8,24 @@ O projeto segue o versionamento semântico (SemVer), no formato `MAJOR.MINOR.PAT
 - `MINOR`: nova funcionalidade compatível com a versão anterior.
 - `PATCH`: correção de bug ou melhoria pequena, sem nova funcionalidade relevante.
 
+## [1.1.0] - 2026-10-01
+
+### Adicionado
+
+- Piloto de eventos do Genshin Impact usando a API em inglês da StarRailAssistant.
+- Sincronização semanal pelo GitHub Actions, com execução manual e carga inicial de candidatos para revisão.
+- Revisão de eventos para aprovar o prazo, criar ou vincular uma tarefa existente e ignorar atividades.
+- Prazo sugerido com conversão para América nos horários validados, alternativa com a data recebida da fonte e ajuste manual.
+- Contagem de dias e horas até o fim e capa do evento no formulário de aprovação.
+- Capas salvas nas tarefas aprovadas e exibidas como miniaturas na lista de atividades.
+
+### Melhorado
+
+- Sincronização preserva eventos ignorados e reabre a revisão quando o prazo de um evento aprovado muda, sem alterar sua tarefa automaticamente.
+- Eventos que deixam de aparecer na fonte saem da fila de revisão, preservando as tarefas existentes.
+- Edição de nome ou prazo mantém a capa da tarefa; imagens indisponíveis são ocultadas na lista.
+- Migrações do banco versionadas e backup dos dados existentes antes da implantação do piloto.
+
 ## [1.0.1] - 2026-09-18
 
 ### Melhorado
