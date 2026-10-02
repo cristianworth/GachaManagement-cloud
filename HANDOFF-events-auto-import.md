@@ -27,7 +27,7 @@ O planejamento detalhado e critérios de conclusão estão nos itens 8–12 de `
 - O planejamento, este handoff e a implementação da automação fazem parte da entrega 1.2. Conferir `git status` ao retomar. Há `.claude/` não rastreado, preexistente; não incluí-lo por engano.
 - Antes de implementar, conferir mudanças posteriores preservando estes documentos. Não trabalhar contra o seed antigo nem sobrescrever alterações de Cristian.
 - Remoto de publicação: `cloud` = `https://github.com/cristianworth/GachaManagement-cloud.git`. `origin` aponta para `https://github.com/cristianworth/GachaManagement.git`; não confundir.
-- PR da 1.2: `https://github.com/cristianworth/GachaManagement-cloud/pull/3`. Foi conferido aberto, com base `main` e sem conflitos antes do último push de documentação. O merge aguarda a validação local de Cristian, conforme o fluxo combinado.
+- PR da 1.2: `https://github.com/cristianworth/GachaManagement-cloud/pull/3`, com base `main`. Cristian validou a entrega localmente e autorizou o merge em 02/10/2026. Conferir o estado do PR e a publicação ao retomar; não solicitar novamente a mesma validação ou autorização.
 - Não criar outra branch por conveniência: seguir a branch indicada por Cristian; confirmar o destino se o estado atual ficar ambíguo.
 
 ## O que já funciona
