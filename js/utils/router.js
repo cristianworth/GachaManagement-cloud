@@ -13,10 +13,18 @@ class Router {
     '/': 'games',
     '/games/create': 'createGame',
     '/tasks': 'taskList',
-    '/tasks/create': 'createTask'
+    '/tasks/create': 'createTask',
+    '/events': 'eventGames',
+    '/events/genshin': 'eventReview',
+    '/events/hsr': 'eventReview'
   };
 
   static async init() {
+    // Restore a route redirected by static hosting when a page is opened directly.
+    const redirectedPath = window.location.hash.slice(1);
+    if (this.routes[redirectedPath]) {
+      history.replaceState({}, '', `${this.BASE_PATH}${redirectedPath}`);
+    }
     NavigationService.init();
     window.addEventListener('popstate', () => this.route());
     await this.route();
@@ -29,6 +37,8 @@ class Router {
   }
 
   static async route() {
+    const eventReview = await import('../ui/eventReviewUI.js');
+    eventReview.stopEventReviewTimer();
     const path = this.getCurrentPath();
     const view = this.routes[path] || 'games';
     
@@ -43,7 +53,13 @@ class Router {
         break;
       case 'taskList':
         await import('../ui/taskUI.js').then(module => module.displayAllTasks());
-        await import('../ui/eventReviewUI.js').then(module => module.displayEventCandidates());
+        await eventReview.displayEventReviewCount();
+        break;
+      case 'eventGames':
+        await eventReview.displayEventGames();
+        break;
+      case 'eventReview':
+        await eventReview.displayEventCandidates(path.split('/').at(-1));
         break;
     }
   }

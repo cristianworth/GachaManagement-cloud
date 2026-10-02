@@ -15,6 +15,9 @@ class NavigationService {
 
   static _bindTaskNavigations() {
     this._bindNavigation('#backToGamesFromTasksBtn', '/');
+    this._bindNavigation('#reviewEventsBtn', '/events');
+    this._bindNavigation('#backToTasksFromEventsBtn', '/tasks');
+    this._bindNavigation('#backToEventGamesBtn', '/events');
     // this._bindNavigation('#createTaskBtn', '/tasks/create'); changed to --> js\ui\formHandler.js
   }
 

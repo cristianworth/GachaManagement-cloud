@@ -8,6 +8,29 @@ O projeto segue o versionamento semântico (SemVer), no formato `MAJOR.MINOR.PAT
 - `MINOR`: nova funcionalidade compatível com a versão anterior.
 - `PATCH`: correção de bug ou melhoria pequena, sem nova funcionalidade relevante.
 
+## [1.2.0] - 2026-10-02
+
+### Adicionado
+
+- Importação de eventos atuais e próximos do Honkai Star Rail pela StarRailAssistant, incluindo as edições de Memory of Chaos, Pure Fiction e Apocalyptic Shadow.
+- Página de revisão separada com seleção de jogo e contagem de candidatos para Genshin e HSR.
+- Início dos eventos salvo nas tarefas aprovadas e indicação dos eventos que ainda vão começar.
+- Placeholder para capas ausentes ou indisponíveis nos eventos importados.
+- Limpeza automática de tarefas importadas do HSR que venceram, ao abrir o app, carregar a lista e sincronizar. Tarefas manuais permanecem para remoção pelo usuário.
+- Ícones próprios para NTE e Arknights: Endfield, com Endfield incluído nas definições iniciais de jogos.
+- Importação automática dos eventos de Genshin e HSR com prazo final utilizável, mantendo a revisão para prazos ausentes ou inconsistentes.
+- Filtro por jogo na lista de atividades, com contagem dos resultados.
+- Proteção das datas corrigidas manualmente e ação para voltar a usar o prazo da API.
+
+### Melhorado
+
+- Recarregar ou abrir diretamente a página de revisão restaura a rota no servidor local e no GitHub Pages.
+- Aprovação usa o jogo do candidato e impede vincular tarefas de outro jogo.
+- Sincronização semanal consulta Genshin e HSR, preservando aprovações e eventos ignorados; a falha de um jogo não impede a tentativa do outro.
+- Datas válidas preenchem o prazo de revisão; horários sem regra de conversão conhecida usam o instante da Ásia como alternativa.
+- População inicial de tarefas limitada às atividades semanais; eventos fixos deixam de ser criados pelo seed. Tarefas já salvas permanecem no banco.
+- Eventos importados podem ser ignorados diretamente na lista, sem reaparecer na próxima sincronização. Atualizações da fonte preservam conclusão, vínculos e capas existentes quando a nova capa está ausente.
+
 ## [1.1.0] - 2026-10-01
 
 ### Adicionado

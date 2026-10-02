@@ -1,4 +1,4 @@
-name: Sync Genshin event candidates
+name: Sync game events
 
 on:
   schedule:
@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
 
 concurrency:
-  group: genshin-events-sync
+  group: game-events-sync
   cancel-in-progress: false
 
 jobs:
@@ -17,5 +17,5 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
-      - name: Fetch StarRailAssistant Genshin events and save review candidates
-        run: node scripts/syncGenshinEvents.js
+      - name: Import Genshin and HSR events and keep deadline exceptions for review
+        run: node scripts/syncEvents.js

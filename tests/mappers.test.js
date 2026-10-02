@@ -96,5 +96,12 @@ test('saving a task from the form does not clear its existing cover', () => {
     const edited = new Task('Event', new Date('2026-11-03T06:59:59Z'), 0, 1, 'Genshin Impact', 16);
     const row = taskToRow(edited);
     expect(row).not.toHaveProperty('cover_url');
+    expect(row).not.toHaveProperty('start_at');
     expect(row.expiration_date).toBe('2026-11-03T06:59:59.000Z');
+});
+
+test('imported task start survives database round trips', () => {
+    const task = taskFromRow({ id: 17, start_at: '2026-10-05T09:00:00Z' });
+    expect(task.startAt).toBeInstanceOf(Date);
+    expect(taskToRow(task).start_at).toBe('2026-10-05T09:00:00.000Z');
 });

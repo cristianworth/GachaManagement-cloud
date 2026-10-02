@@ -137,14 +137,6 @@ button:focus-visible {
     -webkit-overflow-scrolling: touch;
 }
 
-.event-review-panel {
-    margin-top: 1rem;
-    padding: 1rem;
-    border: 1px solid #cbd5e1;
-    border-radius: 8px;
-    background: #f8fafc;
-}
-
 .event-review-list {
     display: grid;
     gap: 0.8rem;
@@ -410,3 +402,15 @@ textarea::placeholder {
         min-width: 0;
     }
 }
+
+.event-games-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 16px;
+    margin-top: 24px;
+}
+.event-games-list button { padding: 24px 16px; }
+.task-start { display: block; margin-top: 6px; }
+.task-filters { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin: 20px 0; }
+.task-filters select { max-width: 100%; padding: 8px; }
+.task-deadline-note { display: block; margin-top: 6px; }

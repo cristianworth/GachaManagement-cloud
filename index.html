@@ -50,7 +50,7 @@
         <section>
             <h1 class="main-title">
                 <a href="https://cristianworth.github.io/GachaManagement-cloud/" target="_blank">
-                    Gacha Management <span class="version-badge">v1.1.0</span>
+                    Gacha Management <span class="version-badge">v1.2.0</span>
                 </a>
                 <br>
                 <a href="https://github.com/cristianworth/GachaManagement-cloud/tree/main" target="_blank">Dev Repo</a>
@@ -111,14 +111,14 @@
             <h1 class="main-title">Task List</h1>
             <button id="backToGamesFromTasksBtn" class="button-neutral"><span class="button-icon" aria-hidden="true">&#8592;</span> Back to Games</button>
             <button id="createTaskBtn" class="button-add"><span class="button-icon" aria-hidden="true">+</span> Create New Task</button>
-            <button id="reviewEventsBtn" class="button-neutral" type="button" aria-controls="eventReviewPanel" aria-expanded="false">Revisar eventos (<span id="eventReviewCount">0</span>)</button>
+            <button id="reviewEventsBtn" class="button-neutral" type="button">Revisar eventos (<span id="eventReviewCount">0</span>)</button>
 
-            <div id="eventReviewPanel" class="event-review-panel" hidden>
-                <h2>Eventos encontrados no Genshin</h2>
-                <p id="eventReviewStatus" aria-live="polite"></p>
-                <ul id="eventReviewList" class="event-review-list"></ul>
+            <div class="task-filters">
+                <label for="taskGameFilter">Game</label>
+                <select id="taskGameFilter"><option value="">All games</option></select>
+                <span id="taskListStatus" role="status" aria-live="polite"></span>
             </div>
-            
+
             <div class="table-container">
                 <table id="gameSchedule">
                 <thead>
@@ -137,6 +137,24 @@
                 </tbody>
                 </table>
             </div>
+        </section>
+    </div>
+
+    <div data-page="eventGames" style="display:none">
+        <section>
+            <h1 class="main-title">Revisar eventos</h1>
+            <button id="backToTasksFromEventsBtn" class="button-neutral">← Back to Tasks</button>
+            <p id="eventGamesStatus" aria-live="polite"></p>
+            <div id="eventGamesList" class="event-games-list"></div>
+        </section>
+    </div>
+
+    <div data-page="eventReview" style="display:none">
+        <section>
+            <h1 id="eventReviewTitle" class="main-title">Eventos encontrados</h1>
+            <button id="backToEventGamesBtn" class="button-neutral">← Selecionar outro jogo</button>
+            <p id="eventReviewStatus" aria-live="polite"></p>
+            <ul id="eventReviewList" class="event-review-list"></ul>
         </section>
     </div>
 
@@ -169,7 +187,7 @@
 
                 <div id="divExpirationDate" hidden>
                     <label for="expirationDate">Date:</label>
-                    <input id="expirationDate" type="datetime-local"/>    
+                    <input id="expirationDate" type="datetime-local" step="1"/>
                 </div>
 
                 <label for="refreshType">Refresh Type:</label>
