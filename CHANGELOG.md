@@ -17,6 +17,7 @@ O projeto segue o versionamento semântico (SemVer), no formato `MAJOR.MINOR.PAT
 - Início dos eventos salvo nas tarefas aprovadas e indicação dos eventos que ainda vão começar.
 - Placeholder para capas ausentes ou indisponíveis nos eventos importados.
 - Limpeza automática de tarefas importadas do HSR que venceram, ao abrir o app, carregar a lista e sincronizar. Tarefas manuais permanecem para remoção pelo usuário.
+- Ícones próprios para NTE e Arknights: Endfield, com Endfield incluído nas definições iniciais de jogos.
 
 ### Melhorado
 
@@ -24,6 +25,7 @@ O projeto segue o versionamento semântico (SemVer), no formato `MAJOR.MINOR.PAT
 - Aprovação usa o jogo do candidato e impede vincular tarefas de outro jogo.
 - Sincronização semanal consulta Genshin e HSR, preservando aprovações e eventos ignorados; a falha de um jogo não impede a tentativa do outro.
 - Datas válidas preenchem o prazo de revisão; horários sem regra de conversão conhecida usam o instante da Ásia como alternativa.
+- População inicial de tarefas limitada às atividades semanais; eventos fixos deixam de ser criados pelo seed. Tarefas já salvas permanecem no banco.
 
 ## [1.1.0] - 2026-10-01
 
