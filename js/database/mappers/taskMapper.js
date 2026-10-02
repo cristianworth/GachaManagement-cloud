@@ -21,6 +21,8 @@ export function taskToRow(task) {
         refresh_type: task.refreshType,
         game_id: task.gameId ?? null,
         game_description: task.gameDescription,
+        // The task form does not edit covers; omitting the field preserves the saved URL.
+        ...(task.coverUrl !== undefined ? { cover_url: task.coverUrl } : {}),
     };
 }
 
@@ -38,6 +40,7 @@ export function taskFromRow(row) {
         refreshType: row.refresh_type,
         gameId: row.game_id,
         gameDescription: row.game_description,
+        coverUrl: row.cover_url ?? null,
         game: row.game ? gameFromRow(row.game) : undefined,
     };
 }

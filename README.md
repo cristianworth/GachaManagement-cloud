@@ -35,6 +35,8 @@ Para habilitar o piloto em um banco já existente, primeiro confira o backup de 
 
 ![Gacha Schedule](img/demo/gacha-schedule-demo-02.png)
 
+As capas dos eventos aprovados ficam salvas como URL em `tasks.cover_url` e aparecem como miniaturas ao lado do nome na lista de tarefas. Para bancos existentes, execute [`db/migrations/2026-10-01-task-cover.sql`](db/migrations/2026-10-01-task-cover.sql) depois das migrações do piloto: ela atualiza a função de aprovação e preenche capas dos eventos já aprovados, preservando imagens existentes. Editar o prazo ou o nome mantém a capa. Tarefas sem imagem e links indisponíveis exibem apenas o texto; a edição manual de imagens fica para uma etapa posterior.
+
 ## 🔧 Tecnologias Utilizadas
 - HTML5, CSS3, JavaScript (ES6+)
 - **Supabase** (Postgres na nuvem) — sincroniza os dados entre **navegador e celular**

@@ -29,7 +29,7 @@ function createTaskRow(task) {
             <input type="checkbox" id="task-checkbox-${task.id}" ${task.isDone ? "checked" : ""}>
         </td>
         <td>${task.gameDescription}</td>
-        <td>${task.description}</td>
+        <td class="task-description"></td>
         <td>${RefreshTypeEnum.findNameById(task.refreshType)}</td>
         <td>${formatDateForDisplay(task.expirationDate)}</td>
         <td>
@@ -37,6 +37,23 @@ function createTaskRow(task) {
             <button class="spacing-left button-delete" id="delete-task-${task.id}"><span class="button-icon" aria-hidden="true">&#128465;</span> Delete</button>
         </td>
     `;
+
+    const summary = document.createElement('div');
+    summary.className = 'task-summary';
+    if (task.coverUrl?.startsWith('https://')) {
+        const cover = document.createElement('img');
+        cover.className = 'task-cover';
+        cover.alt = '';
+        cover.loading = 'lazy';
+        cover.referrerPolicy = 'no-referrer';
+        cover.addEventListener('error', () => cover.remove(), { once: true });
+        cover.src = task.coverUrl;
+        summary.appendChild(cover);
+    }
+    const description = document.createElement('span');
+    description.textContent = task.description;
+    summary.appendChild(description);
+    row.querySelector('.task-description').appendChild(summary);
 
     return row;
 }

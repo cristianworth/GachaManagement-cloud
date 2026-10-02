@@ -30,7 +30,8 @@ create table if not exists public.tasks (
     is_done          boolean default false,
     refresh_type     integer,
     game_id          bigint references public.games (id) on delete cascade,
-    game_description text
+    game_description text,
+    cover_url        text
 );
 
 create index if not exists tasks_game_id_idx on public.tasks (game_id);
@@ -115,13 +116,14 @@ begin
             raise exception 'Essa tarefa já está vinculada a outro evento.';
         end if;
         update public.tasks
-        set expiration_date = p_deadline
+        set expiration_date = p_deadline,
+            cover_url = coalesce(nullif(btrim(v_candidate.cover_url), ''), cover_url)
         where id = v_task_id;
     else
         insert into public.tasks
-            (description, expiration_date, is_done, refresh_type, game_id, game_description)
+            (description, expiration_date, is_done, refresh_type, game_id, game_description, cover_url)
         values
-            (v_candidate.name, p_deadline, false, 0, v_game_id, 'Genshin Impact')
+            (v_candidate.name, p_deadline, false, 0, v_game_id, 'Genshin Impact', nullif(btrim(v_candidate.cover_url), ''))
         returning id into v_task_id;
     end if;
 
