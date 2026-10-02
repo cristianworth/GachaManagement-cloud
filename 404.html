@@ -5,10 +5,11 @@
   <meta charset="utf-8">
   <title>Redirecting...</title>
   <script>
-    const segments = window.location.pathname.split('/');
-    const repoName = segments[1];
-    const path = segments.slice(2).join('/') || '/';
-    window.location.href = `/${repoName}/#${path}`;
+    const pathname = window.location.pathname;
+    const repo = window.location.hostname.includes('github.io') ? pathname.split('/')[1] : '';
+    const base = repo ? `/${repo}` : '';
+    const path = pathname.slice(base.length) || '/';
+    window.location.replace(`${base}/#${path}`);
   </script>
 </head>
 <body>

@@ -31,7 +31,8 @@ create table if not exists public.tasks (
     refresh_type     integer,
     game_id          bigint references public.games (id) on delete cascade,
     game_description text,
-    cover_url        text
+    cover_url        text,
+    start_at         timestamptz
 );
 
 create index if not exists tasks_game_id_idx on public.tasks (game_id);
@@ -44,6 +45,8 @@ create table if not exists public.event_candidates (
     external_id      text not null,
     name             text not null,
     type_name        text,
+    game_id          bigint references public.games (id) on delete cascade,
+    proposed_start_at timestamptz,
     source_start_at  timestamptz,
     source_end_at    timestamptz,
     proposed_end_at  timestamptz,
@@ -58,6 +61,7 @@ create table if not exists public.event_candidates (
     unique (source, external_id)
 );
 
+create index if not exists event_candidates_game_id_idx on public.event_candidates (game_id);
 create index if not exists event_candidates_status_idx on public.event_candidates (status);
 create unique index if not exists event_candidates_task_id_idx
     on public.event_candidates (task_id) where task_id is not null;
@@ -75,6 +79,8 @@ as $$
 declare
     v_candidate public.event_candidates%rowtype;
     v_game_id bigint;
+    v_game_name text;
+    v_abbreviation text;
     v_task_id bigint;
 begin
     if p_deadline is null or p_deadline <= now() then
@@ -92,13 +98,15 @@ begin
         raise exception 'O evento não aparece mais na fonte; sincronize antes de aprovar.';
     end if;
 
-    select id into v_game_id
-    from public.games
-    where abbreviation = 'GI'
-    order by id
-    limit 1;
+    select id, description, abbreviation into v_game_id, v_game_name, v_abbreviation
+    from public.games where id = v_candidate.game_id;
     if v_game_id is null then
-        raise exception 'Cadastre o jogo Genshin Impact (GI) antes de aprovar eventos.';
+        raise exception 'O candidato precisa estar associado a um jogo cadastrado; sincronize novamente.';
+    end if;
+
+    if (v_candidate.source in ('starrailassistant-genshin', 'ennead-genshin-calendar') and v_abbreviation <> 'GI')
+       or (v_candidate.source = 'starrailassistant-hsr' and v_abbreviation <> 'HSR') then
+        raise exception 'O jogo do candidato não corresponde à fonte.';
     end if;
 
     v_task_id := coalesce(v_candidate.task_id, p_existing_task_id);
@@ -107,7 +115,7 @@ begin
             select 1 from public.tasks
             where id = v_task_id and game_id = v_game_id and refresh_type = 0
         ) then
-            raise exception 'A tarefa selecionada deve ser um evento do Genshin.';
+            raise exception 'A tarefa selecionada deve ser um evento do mesmo jogo.';
         end if;
         if exists (
             select 1 from public.event_candidates
@@ -117,13 +125,14 @@ begin
         end if;
         update public.tasks
         set expiration_date = p_deadline,
+            start_at = v_candidate.proposed_start_at,
             cover_url = coalesce(nullif(btrim(v_candidate.cover_url), ''), cover_url)
         where id = v_task_id;
     else
         insert into public.tasks
-            (description, expiration_date, is_done, refresh_type, game_id, game_description, cover_url)
+            (description, expiration_date, is_done, refresh_type, game_id, game_description, cover_url, start_at)
         values
-            (v_candidate.name, p_deadline, false, 0, v_game_id, 'Genshin Impact', nullif(btrim(v_candidate.cover_url), ''))
+            (v_candidate.name, p_deadline, false, 0, v_game_id, v_game_name, nullif(btrim(v_candidate.cover_url), ''), v_candidate.proposed_start_at)
         returning id into v_task_id;
     end if;
 
@@ -133,6 +142,30 @@ begin
     return v_task_id;
 end;
 $$;
+
+-- Only linked HSR imports are owned by this cleanup. Manual tasks are untouched.
+create or replace function public.cleanup_expired_hsr_events()
+returns integer
+language plpgsql
+security invoker
+set search_path = public
+as $$
+declare
+    v_count integer;
+begin
+    delete from public.tasks as task
+    using public.event_candidates as candidate, public.games as game
+    where candidate.task_id = task.id
+      and candidate.source = 'starrailassistant-hsr'
+      and candidate.game_id = task.game_id
+      and game.id = task.game_id and game.abbreviation = 'HSR'
+      and task.refresh_type = 0 and task.expiration_date <= now();
+    get diagnostics v_count = row_count;
+    return v_count;
+end;
+$$;
+
+grant execute on function public.cleanup_expired_hsr_events() to anon;
 
 -- ------------------------------------------------------------
 -- Row Level Security (RLS)

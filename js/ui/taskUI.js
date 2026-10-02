@@ -1,4 +1,6 @@
 // js\ui\taskUI.js
+import { createEventCover } from './eventCover.js';
+import { cleanupExpiredHsrEvents } from '../database/eventCandidateDB.js';
 import { Task } from '../data/Task.js';
 import { fetchAllTasks, completeTask, fetchTaskById, addTask, updateTask, deleteTaskById } from '../database/taskDB.js';
 import { formatDateForDisplay, formatDateForInput, getExpirationDate } from '../utils/dateUtils.js';
@@ -7,6 +9,7 @@ import RefreshTypeEnum from '../enums/RefreshTypeEnum.js';
 import Router from '../utils/router.js';
 
 export async function displayAllTasks() {
+    await cleanupExpiredHsrEvents();
     const tasks = await fetchAllTasks();
     const gameScheduleBody = document.getElementById("gameScheduleBody");
     gameScheduleBody.innerHTML = ''; // clear data
@@ -40,18 +43,17 @@ function createTaskRow(task) {
 
     const summary = document.createElement('div');
     summary.className = 'task-summary';
-    if (task.coverUrl?.startsWith('https://')) {
-        const cover = document.createElement('img');
-        cover.className = 'task-cover';
-        cover.alt = '';
-        cover.loading = 'lazy';
-        cover.referrerPolicy = 'no-referrer';
-        cover.addEventListener('error', () => cover.remove(), { once: true });
-        cover.src = task.coverUrl;
-        summary.appendChild(cover);
+    if (task.coverUrl || task.refreshType === 0) {
+        summary.appendChild(createEventCover(task.coverUrl, 'task-cover'));
     }
     const description = document.createElement('span');
     description.textContent = task.description;
+    if (task.startAt && task.startAt > new Date()) {
+        const start = document.createElement('small');
+        start.className = 'task-start';
+        start.textContent = `Começa em ${task.startAt.toLocaleString('pt-BR')}`;
+        description.appendChild(start);
+    }
     summary.appendChild(description);
     row.querySelector('.task-description').appendChild(summary);
 

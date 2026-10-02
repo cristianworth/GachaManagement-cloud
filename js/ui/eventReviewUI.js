@@ -1,12 +1,14 @@
-import { fetchAllTasks } from '../database/taskDB.js';
+import { fetchTasksByGame } from '../database/taskDB.js';
 import {
     approveEventCandidate,
     fetchPendingEventCandidates,
+    fetchEventReviewCounts,
     ignoreEventCandidate,
 } from '../database/eventCandidateDB.js';
 import { formatDateForInput, formatTimeUntil } from '../utils/dateUtils.js';
 import Router from '../utils/router.js';
-import { STAR_RAIL_ASSISTANT_GENSHIN_URL } from '../events/starRailAssistantGenshin.js';
+import { EVENT_GAMES, getEventGame } from '../events/eventGames.js';
+import { createEventCover } from './eventCover.js';
 
 
 function appendText(parent, tag, value, className) {
@@ -26,27 +28,22 @@ function displayDate(value, timeZone) {
     });
 }
 
-function makeCandidateCard(candidate, existingTasks) {
+function makeCandidateCard(candidate, existingTasks, game) {
     const card = document.createElement('li');
     card.className = 'event-candidate';
-    if (candidate.cover_url) {
-        const cover = document.createElement('img');
-        cover.className = 'event-candidate-cover';
-        cover.src = candidate.cover_url;
-        cover.alt = `Capa do evento ${candidate.name}`;
-        cover.loading = 'lazy';
-        // The image host rejects hotlinks that include this app as the referrer.
-        cover.referrerPolicy = 'no-referrer';
-        card.appendChild(cover);
-    }
+    card.appendChild(createEventCover(candidate.cover_url, 'event-candidate-cover'));
     appendText(card, 'h3', candidate.name);
     appendText(card, 'p', 'Fonte: StarRailAssistant');
+    const startAt = candidate.proposed_start_at ?? candidate.source_start_at;
+    const phase = !startAt ? 'Início não informado'
+        : Date.parse(startAt) > Date.now() ? 'Próximo evento' : 'Evento em andamento';
+    appendText(card, 'p', `${phase} — início: ${displayDate(startAt)}`);
     appendText(card, 'p', `Fim recebido da API: ${displayDate(candidate.source_end_at, 'Asia/Shanghai')} (servidor Ásia)`);
     appendText(card, 'p', `Prazo sugerido no seu horário: ${displayDate(candidate.proposed_end_at)}`);
     if (candidate.review_reason) appendText(card, 'p', candidate.review_reason, 'event-review-warning');
 
     const source = document.createElement('a');
-    source.href = STAR_RAIL_ASSISTANT_GENSHIN_URL;
+    source.href = game.url;
     source.target = '_blank';
     source.rel = 'noopener noreferrer';
     source.textContent = 'Ver resposta da fonte';
@@ -129,32 +126,60 @@ function makeCandidateCard(candidate, existingTasks) {
 
 let remainingTimeInterval;
 
-export function initializeEventReview() {
-    const button = document.getElementById('reviewEventsBtn');
-    const panel = document.getElementById('eventReviewPanel');
-    button.addEventListener('click', () => {
-        panel.hidden = !panel.hidden;
-        button.setAttribute('aria-expanded', String(!panel.hidden));
-    });
+export function stopEventReviewTimer() {
+    clearInterval(remainingTimeInterval);
 }
 
-export async function displayEventCandidates() {
+export async function displayEventReviewCount() {
     const count = document.getElementById('eventReviewCount');
+    try {
+        const counts = await fetchEventReviewCounts();
+        count.textContent = String(Object.values(counts).reduce((sum, value) => sum + value, 0));
+    } catch (error) {
+        count.textContent = '?';
+        console.error('Failed to count event candidates:', error);
+    }
+}
+
+export async function displayEventGames() {
+    const list = document.getElementById('eventGamesList');
+    const message = document.getElementById('eventGamesStatus');
+    list.replaceChildren();
+    message.textContent = 'Carregando...';
+    try {
+        const counts = await fetchEventReviewCounts();
+        for (const game of EVENT_GAMES) {
+            const button = appendText(list, 'button', `${game.name} — ${counts[game.key]} para revisar`, 'button-neutral');
+            button.type = 'button';
+            button.addEventListener('click', () => Router.navigateTo(`/events/${game.key}`));
+        }
+        message.textContent = 'Selecione um jogo para revisar os eventos atuais e próximos.';
+    } catch (error) {
+        message.textContent = 'Não foi possível carregar a revisão de eventos.';
+        console.error(error);
+    }
+}
+
+export async function displayEventCandidates(gameKey) {
+    const game = getEventGame(gameKey);
+    document.getElementById('eventReviewTitle').textContent = `Eventos encontrados: ${game.name}`;
     const list = document.getElementById('eventReviewList');
     const message = document.getElementById('eventReviewStatus');
     clearInterval(remainingTimeInterval);
     list.replaceChildren();
+    message.textContent = 'Carregando...';
     try {
-        const candidates = await fetchPendingEventCandidates();
-        count.textContent = String(candidates.length);
+        const candidates = await fetchPendingEventCandidates(game);
+
         message.textContent = candidates.length
             ? 'Confira o prazo antes de criar ou atualizar uma tarefa.'
             : 'Nenhum evento precisa de revisão.';
-        const tasks = await fetchAllTasks();
-        const existingTasks = tasks.filter(task => task.game?.abbreviation === 'GI' && task.refreshType === 0);
+        if (!candidates.length) return;
+        const tasks = await fetchTasksByGame(candidates[0].game_id);
+        const existingTasks = tasks.filter(task => task.game?.abbreviation === game.abbreviation && task.refreshType === 0);
         const counters = [];
         for (const candidate of candidates) {
-            const { card, updateRemainingTime } = makeCandidateCard(candidate, existingTasks);
+            const { card, updateRemainingTime } = makeCandidateCard(candidate, existingTasks, game);
             list.appendChild(card);
             counters.push(updateRemainingTime);
         }
@@ -162,7 +187,6 @@ export async function displayEventCandidates() {
             remainingTimeInterval = setInterval(() => counters.forEach(update => update()), 60_000);
         }
     } catch (error) {
-        count.textContent = '?';
         message.textContent = 'Não foi possível carregar os eventos. Confira se o SQL atualizado foi aplicado no Supabase.';
         console.error('Failed to load event candidates:', error);
     }
