@@ -38,4 +38,5 @@ export function getClient() {
 export const Tables = Object.freeze({
     GAMES: 'games',
     TASKS: 'tasks',
+    EVENT_CANDIDATES: 'event_candidates',
 });

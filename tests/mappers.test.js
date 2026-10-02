@@ -1,6 +1,7 @@
 // tests/mappers.test.js
 import { gameToRow, gameFromRow } from '../js/database/mappers/gameMapper.js';
 import { taskToRow, taskFromRow } from '../js/database/mappers/taskMapper.js';
+import { Task } from '../js/data/Task.js';
 
 test('gameToRow converte camelCase para snake_case e datas para ISO', () => {
     const date = new Date(2025, 0, 1, 12, 0);
@@ -82,4 +83,18 @@ test('taskFromRow mapeia o jogo relacionado embutido (embedding do Supabase)', (
 
     expect(task.game).toBeDefined();
     expect(task.game.color).toBe('#ffffb3');
+});
+
+test('task cover survives database round trips', () => {
+    const task = taskFromRow({ id: 16, cover_url: 'https://example.com/event.jpg' });
+    expect(task.coverUrl).toBe('https://example.com/event.jpg');
+    expect(taskToRow(task).cover_url).toBe(task.coverUrl);
+    expect(taskFromRow({ id: 1 }).coverUrl).toBeNull();
+});
+
+test('saving a task from the form does not clear its existing cover', () => {
+    const edited = new Task('Event', new Date('2026-11-03T06:59:59Z'), 0, 1, 'Genshin Impact', 16);
+    const row = taskToRow(edited);
+    expect(row).not.toHaveProperty('cover_url');
+    expect(row.expiration_date).toBe('2026-11-03T06:59:59.000Z');
 });

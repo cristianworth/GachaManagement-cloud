@@ -1,43 +1,9 @@
--- db/schema.sql
--- Estrutura do banco Gacha Management no Supabase (Postgres).
--- Como usar: no painel do Supabase abra  SQL Editor > New query,
--- cole todo este conteúdo e clique em "Run".
+-- Migração do piloto de eventos para um Supabase que já possui games e tasks.
+-- Execute no SQL Editor depois de confirmar o backup das tabelas existentes.
+-- Não remove nem modifica games/tasks existentes ou suas policies.
 
--- ------------------------------------------------------------
--- Tabela: games
--- ------------------------------------------------------------
-create table if not exists public.games (
-    id                 bigint generated always as identity primary key,
-    description        text,
-    abbreviation       text,
-    img                text,
-    cap_stamina        numeric,
-    stamina_per_minute numeric,
-    current_stamina    numeric      default 0,
-    max_stamina_at     text         default '',
-    date_max_stamina   timestamptz  default now(),
-    pending_tasks      text         default '',
-    color              text
-);
+begin;
 
--- ------------------------------------------------------------
--- Tabela: tasks
--- ------------------------------------------------------------
-create table if not exists public.tasks (
-    id               bigint generated always as identity primary key,
-    description      text,
-    expiration_date  timestamptz,
-    is_done          boolean default false,
-    refresh_type     integer,
-    game_id          bigint references public.games (id) on delete cascade,
-    game_description text,
-    cover_url        text
-);
-
-create index if not exists tasks_game_id_idx on public.tasks (game_id);
-create index if not exists tasks_expiration_date_idx on public.tasks (expiration_date);
-
--- Candidatos descobertos pela rotina de eventos. Apenas a aprovação cria uma tarefa.
 create table if not exists public.event_candidates (
     id               bigint generated always as identity primary key,
     source           text not null,
@@ -58,11 +24,11 @@ create table if not exists public.event_candidates (
     unique (source, external_id)
 );
 
-create index if not exists event_candidates_status_idx on public.event_candidates (status);
+create index if not exists event_candidates_status_idx
+    on public.event_candidates (status);
 create unique index if not exists event_candidates_task_id_idx
     on public.event_candidates (task_id) where task_id is not null;
 
--- A aprovação e a escrita da tarefa acontecem na mesma transação.
 create or replace function public.approve_event_candidate(
     p_candidate_id bigint,
     p_deadline timestamptz,
@@ -116,14 +82,13 @@ begin
             raise exception 'Essa tarefa já está vinculada a outro evento.';
         end if;
         update public.tasks
-        set expiration_date = p_deadline,
-            cover_url = coalesce(nullif(btrim(v_candidate.cover_url), ''), cover_url)
+        set expiration_date = p_deadline
         where id = v_task_id;
     else
         insert into public.tasks
-            (description, expiration_date, is_done, refresh_type, game_id, game_description, cover_url)
+            (description, expiration_date, is_done, refresh_type, game_id, game_description)
         values
-            (v_candidate.name, p_deadline, false, 0, v_game_id, 'Genshin Impact', nullif(btrim(v_candidate.cover_url), ''))
+            (v_candidate.name, p_deadline, false, 0, v_game_id, 'Genshin Impact')
         returning id into v_task_id;
     end if;
 
@@ -134,31 +99,7 @@ begin
 end;
 $$;
 
--- ------------------------------------------------------------
--- Row Level Security (RLS)
--- Acesso pessoal/aberto (sem login): liberamos leitura e escrita para a
--- chave "anon". Troque estas policies por regras baseadas em auth.uid()
--- caso um dia adicione login.
--- ------------------------------------------------------------
-alter table public.games enable row level security;
-alter table public.tasks enable row level security;
 alter table public.event_candidates enable row level security;
-
-drop policy if exists "allow anon full access to games" on public.games;
-create policy "allow anon full access to games"
-    on public.games
-    for all
-    to anon
-    using (true)
-    with check (true);
-
-drop policy if exists "allow anon full access to tasks" on public.tasks;
-create policy "allow anon full access to tasks"
-    on public.tasks
-    for all
-    to anon
-    using (true)
-    with check (true);
 
 drop policy if exists "allow anon full access to event candidates" on public.event_candidates;
 create policy "allow anon full access to event candidates"
@@ -171,3 +112,8 @@ create policy "allow anon full access to event candidates"
 grant select, insert, update on public.event_candidates to anon;
 grant usage, select on sequence public.event_candidates_id_seq to anon;
 grant execute on function public.approve_event_candidate(bigint, timestamptz, bigint) to anon;
+
+commit;
+
+-- Resultado esperado antes da primeira sincronização: zero candidatos.
+select count(*) as event_candidates from public.event_candidates;

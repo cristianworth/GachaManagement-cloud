@@ -137,6 +137,68 @@ button:focus-visible {
     -webkit-overflow-scrolling: touch;
 }
 
+.event-review-panel {
+    margin-top: 1rem;
+    padding: 1rem;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    background: #f8fafc;
+}
+
+.event-review-list {
+    display: grid;
+    gap: 0.8rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.event-candidate {
+    padding: 1rem;
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
+    background: #fff;
+}
+
+.event-candidate h3 {
+    margin-top: 0;
+}
+
+.event-candidate-cover {
+    display: block;
+    width: min(100%, 24rem);
+    max-height: 12rem;
+    object-fit: contain;
+    object-position: left center;
+    border-radius: 6px;
+}
+
+.event-review-remaining {
+    font-weight: 700;
+}
+
+.event-candidate label {
+    display: block;
+    margin: 0.8rem 0;
+}
+
+.event-candidate label input,
+.event-candidate label select {
+    display: block;
+    width: min(100%, 28rem);
+    margin-top: 0.3rem;
+    padding: 0.5rem;
+}
+
+.event-candidate button {
+    margin-right: 0.5rem;
+}
+
+.event-review-warning,
+.event-review-message {
+    color: #9a3412;
+}
+
 .loading-overlay {
     position: fixed;
     inset: 0;
@@ -201,6 +263,21 @@ th {
 .icon {
     width: 50px;
     height: 50px;
+}
+
+.task-summary {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+}
+
+.task-cover {
+    width: 96px;
+    height: 54px;
+    flex-shrink: 0;
+    object-fit: cover;
+    border-radius: 4px;
 }
 
 .input-centered {
@@ -273,6 +350,11 @@ textarea::placeholder {
     .icon {
         width: 36px;
         height: 36px;
+    }
+
+    .task-cover {
+        width: 80px;
+        height: 45px;
     }
 
     /* Alvos de toque maiores e formulários em coluna */
