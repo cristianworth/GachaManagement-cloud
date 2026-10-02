@@ -1,4 +1,4 @@
-name: Sync game event candidates
+name: Sync game events
 
 on:
   schedule:
@@ -17,5 +17,5 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
-      - name: Fetch Genshin and HSR events and save review candidates
+      - name: Import Genshin and HSR events and keep deadline exceptions for review
         run: node scripts/syncEvents.js

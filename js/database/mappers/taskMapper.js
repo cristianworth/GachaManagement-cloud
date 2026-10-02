@@ -43,6 +43,8 @@ export function taskFromRow(row) {
         gameDescription: row.game_description,
         coverUrl: row.cover_url ?? null,
         startAt: row.start_at ? new Date(row.start_at) : null,
+        eventCandidateId: row.event_candidates?.[0]?.id ?? null,
+        eventDeadlineManual: row.event_deadline_manual ?? false,
         game: row.game ? gameFromRow(row.game) : undefined,
     };
 }

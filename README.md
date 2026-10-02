@@ -27,7 +27,9 @@ Versão atual: **1.2.0**. Consulte o [CHANGELOG](CHANGELOG.md) para ver as alter
 
 ### Eventos do Genshin e HSR
 
-Uma rotina semanal consulta o calendário em inglês da [StarRailAssistant](https://starrailassistant.top/reference/public-api/) e registra candidatos de Genshin e HSR no Supabase. Na lista de tarefas, **Revisar eventos** abre uma página para selecionar o jogo antes de revisar. A importação inclui os eventos atuais e próximos, sem filtro automático para login ou seletores: você pode ignorá-los. Confira o prazo, aprove para criar uma tarefa, vincule a uma tarefa de evento existente do mesmo jogo ou ignore. A aprovação grava a tarefa e o vínculo juntos. Uma nova data da fonte reabre a revisão; eventos ignorados continuam ignorados. Candidatos ausentes na fonte saem da fila.
+Uma rotina semanal consulta o calendário em inglês da [StarRailAssistant](https://starrailassistant.top/reference/public-api/) e importa automaticamente eventos atuais e próximos de Genshin e HSR com prazo final utilizável. A lista de atividades pode ser filtrada por jogo. **Revisar eventos** mostra as pendências de prazo, separadas por jogo: informe o fim, crie ou vincule uma tarefa do mesmo jogo, ou ignore. A gravação da tarefa e do vínculo é transacional. Login e seletores também podem aparecer; use **Ignorar** na lista para removê-los e impedir que voltem na próxima sincronização. Weeklies e tarefas manuais mantêm a ação de excluir.
+
+Uma nova data da fonte atualiza tarefas controladas pela API sem desfazer sua conclusão. Editar o prazo de um evento importado protege essa data contra sincronizações; a lista mostra **Prazo ajustado manualmente** e **Usar prazo da API** para devolver o controle à fonte. Candidatos ausentes da fonte saem da revisão, mas suas tarefas não são excluídas por essa ausência. A busca complementar em chinês e os demais jogos ficam para a próxima etapa.
 
 Cada edição dos modos do HSR usa o nome completo fornecido pela API como identidade, com início, fim e capa próprios. Edições vencidas aprovadas são removidas automaticamente da lista ao abrir o aplicativo, carregar a lista de tarefas ou executar a sincronização. **Somente tarefas vinculadas a candidatos importados do HSR são removidas**; as tarefas manuais, incluindo os ciclos antigos, ficam para você excluir após testar. Edições futuras aprovadas indicam quando começam. A limpeza utiliza o prazo salvo na tarefa, inclusive ajustes manuais.
 
@@ -40,6 +42,8 @@ Para habilitar o piloto em um banco já existente, primeiro confira o backup de 
 As capas dos eventos aprovados ficam salvas como URL em `tasks.cover_url` e aparecem como miniaturas ao lado do nome na lista de tarefas. Para bancos existentes, execute [`db/migrations/2026-10-01-task-cover.sql`](db/migrations/2026-10-01-task-cover.sql) depois das migrações do piloto: ela atualiza a função de aprovação e preenche capas dos eventos já aprovados, preservando imagens existentes. Editar o prazo ou o nome mantém a capa. Eventos importados sem imagem e links indisponíveis exibem um placeholder; a edição manual de imagens fica para uma etapa posterior.
 
 Para habilitar HSR e a revisão por jogo em um banco existente, execute [`db/migrations/2026-10-02-hsr-events.sql`](db/migrations/2026-10-02-hsr-events.sql) depois das três migrações anteriores. Ela associa os candidatos existentes ao Genshin, adiciona início às tarefas e atualiza a aprovação e a limpeza. Para um banco novo, `db/schema.sql` já contém a estrutura atual.
+
+Depois, execute [`db/migrations/2026-10-02-auto-events.sql`](db/migrations/2026-10-02-auto-events.sql) para habilitar a importação automática e a proteção de prazos manuais. A migração não importa nem exclui tarefas; a primeira execução de `node scripts/syncEvents.js` importa os candidatos elegíveis já encontrados. As validações transacionais estão em [`tests/autoEvents.sql`](tests/autoEvents.sql) e usam rollback.
 
 ```bash
 # Inspecionar HSR sem gravar

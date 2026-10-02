@@ -73,18 +73,11 @@ function sameInstant(left, right) {
 export function reconcileCandidate(existing, candidate, seenAt) {
     if (!existing) return { ...candidate, status: 'pending', is_active: true, last_seen_at: seenAt };
 
-    // A proposal can change when our conversion improves, even if the source deadline did not.
-    const deadlineChanged = !sameInstant(existing.source_end_at, candidate.source_end_at);
-    const changedAfterApproval = 'O prazo mudou na fonte desde a aprovação; revisar antes de atualizar a tarefa.';
     const next = {
         ...candidate,
         is_active: true,
-        status: deadlineChanged && existing.status === 'approved' ? 'pending' : existing.status,
-        review_reason: deadlineChanged && existing.status === 'approved'
-            ? changedAfterApproval
-            : existing.status === 'pending' && existing.review_reason === changedAfterApproval
-                ? changedAfterApproval
-                : candidate.review_reason,
+        status: existing.status,
+        review_reason: candidate.review_reason,
         last_seen_at: seenAt,
     };
     next.changed = ['source', 'external_id', 'game_id', 'name', 'type_name', 'cover_url', 'review_reason', 'status', 'is_active']
@@ -110,14 +103,14 @@ async function saveCandidate(existing, candidate, seenAt) {
 
     const url = databaseUrl('event_candidates');
     url.searchParams.set('id', `eq.${existing.id}`);
+    // The UI may have ignored this event since our initial read; do not overwrite its decision.
+    delete data.status;
     await databaseRequest(url, {
         method: 'PATCH',
         headers: { Prefer: 'return=minimal' },
         body: JSON.stringify(data),
     });
-    return data.status === 'pending' && existing.status !== 'pending'
-        ? 'review'
-        : existing.source === LEGACY_GENSHIN_EVENT_SOURCE ? 'migrated'
+    return existing.source === LEGACY_GENSHIN_EVENT_SOURCE ? 'migrated'
             : changed ? 'updated' : 'unchanged';
 }
 
@@ -180,8 +173,11 @@ export async function syncGameEvents(game, { dryRun = false } = {}) {
     for (const previous of existing) {
         if (!seenRowIds.has(previous.id) && await markMissingCandidateInactive(previous)) counts.inactive++;
     }
+    const importResponse = await databaseRequest(databaseUrl('rpc/import_event_candidates'), {
+        method: 'POST', body: JSON.stringify({ p_source: game.source }),
+    });
     const response = await databaseRequest(databaseUrl('rpc/cleanup_expired_hsr_events'), {
         method: 'POST', body: '{}',
     });
-    console.log(game.name, { ...counts, skipped, expiredTasksRemoved: await response.json() });
+    console.log(game.name, { ...counts, skipped, tasks: await importResponse.json(), expiredTasksRemoved: await response.json() });
 }

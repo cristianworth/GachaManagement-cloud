@@ -411,3 +411,6 @@ textarea::placeholder {
 }
 .event-games-list button { padding: 24px 16px; }
 .task-start { display: block; margin-top: 6px; }
+.task-filters { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin: 20px 0; }
+.task-filters select { max-width: 100%; padding: 8px; }
+.task-deadline-note { display: block; margin-top: 6px; }

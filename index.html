@@ -113,6 +113,12 @@
             <button id="createTaskBtn" class="button-add"><span class="button-icon" aria-hidden="true">+</span> Create New Task</button>
             <button id="reviewEventsBtn" class="button-neutral" type="button">Revisar eventos (<span id="eventReviewCount">0</span>)</button>
 
+            <div class="task-filters">
+                <label for="taskGameFilter">Game</label>
+                <select id="taskGameFilter"><option value="">All games</option></select>
+                <span id="taskListStatus" role="status" aria-live="polite"></span>
+            </div>
+
             <div class="table-container">
                 <table id="gameSchedule">
                 <thead>
@@ -181,7 +187,7 @@
 
                 <div id="divExpirationDate" hidden>
                     <label for="expirationDate">Date:</label>
-                    <input id="expirationDate" type="datetime-local"/>    
+                    <input id="expirationDate" type="datetime-local" step="1"/>
                 </div>
 
                 <label for="refreshType">Refresh Type:</label>

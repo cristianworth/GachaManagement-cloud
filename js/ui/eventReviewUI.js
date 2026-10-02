@@ -4,6 +4,7 @@ import {
     fetchPendingEventCandidates,
     fetchEventReviewCounts,
     ignoreEventCandidate,
+    ignoreImportedTask,
 } from '../database/eventCandidateDB.js';
 import { formatDateForInput, formatTimeUntil } from '../utils/dateUtils.js';
 import Router from '../utils/router.js';
@@ -120,7 +121,8 @@ function makeCandidateCard(candidate, existingTasks, game) {
         }
         await approveEventCandidate(candidate.id, deadline.toISOString(), taskSelect.value ? Number(taskSelect.value) : null);
     }));
-    ignoreButton.addEventListener('click', () => act(() => ignoreEventCandidate(candidate.id)));
+    ignoreButton.addEventListener('click', () => act(() => candidate.task_id
+        ? ignoreImportedTask(candidate.task_id) : ignoreEventCandidate(candidate.id)));
     return { card, updateRemainingTime };
 }
 
@@ -172,7 +174,7 @@ export async function displayEventCandidates(gameKey) {
         const candidates = await fetchPendingEventCandidates(game);
 
         message.textContent = candidates.length
-            ? 'Confira o prazo antes de criar ou atualizar uma tarefa.'
+            ? 'Informe o prazo dos eventos que vieram sem uma data final utilizável.'
             : 'Nenhum evento precisa de revisão.';
         if (!candidates.length) return;
         const tasks = await fetchTasksByGame(candidates[0].game_id);

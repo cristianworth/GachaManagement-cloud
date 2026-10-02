@@ -9,7 +9,7 @@ import { taskToRow, taskFromRow } from './mappers/taskMapper.js';
 import { allTasks } from '../data/Task.js';
 
 // `game:games(*)` embute a linha do jogo relacionado em cada tarefa.
-const SELECT_WITH_GAME = '*, game:games(*)';
+const SELECT_WITH_GAME = '*, game:games(*), event_candidates(id,source)';
 
 function tasks() {
     return getClient().from(Tables.TASKS);

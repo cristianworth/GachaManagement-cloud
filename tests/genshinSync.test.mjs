@@ -15,15 +15,15 @@ test('a new candidate is pending and keeps its source identity', () => {
     assert.equal(result.external_id, 'silverwing');
 });
 
-test('a changed deadline reopens an approved candidate without replacing its task link', () => {
+test('a changed deadline keeps approval until the automatic importer reconciles the task', () => {
     const previous = { ...candidate, id: 1, task_id: 9, status: 'approved', is_active: true };
     const result = reconcileCandidate(previous, {
         ...candidate,
         source_end_at: '2026-10-12T19:59:59.000Z',
         proposed_end_at: '2026-10-13T08:59:59.000Z',
     }, '2026-09-30T00:00:00Z');
-    assert.equal(result.status, 'pending');
-    assert.match(result.review_reason, /prazo mudou/);
+    assert.equal(result.status, 'approved');
+    assert.equal(result.review_reason, null);
     assert.equal(result.task_id, undefined);
 });
 

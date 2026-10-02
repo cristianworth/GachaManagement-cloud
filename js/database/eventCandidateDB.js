@@ -45,3 +45,15 @@ export async function cleanupExpiredHsrEvents() {
     const { error } = await getClient().rpc('cleanup_expired_hsr_events');
     if (error) throw error;
 }
+
+export async function ignoreImportedTask(taskId) {
+    const { error } = await getClient().rpc('ignore_imported_task', { p_task_id: taskId });
+    if (error) throw error;
+}
+
+export async function restoreEventApiDeadline(candidateId) {
+    const { error } = await getClient().rpc('sync_event_candidate', {
+        p_candidate_id: candidateId, p_force_api: true,
+    });
+    if (error) throw error;
+}

@@ -67,3 +67,59 @@ Complexidade estimada para este projeto (HTML, CSS, JavaScript e Supabase): **ba
 - **Complexidade: média.** Pode aproveitar a apresentação de datas do item 7, mas precisa permitir editar o anúncio caso personagens ou horários mudem.
 - **Concluído quando:** cada jogo mostra seu próximo banner e a contagem de dias, sem exibir anúncios vencidos como futuros.
 - **Origem dos dados:** cadastro manual inicialmente; integração automática com fontes de banners fica fora deste item.
+
+## 8. Importar eventos automaticamente pelo StarRailAssistant — MVP
+
+**Recorte implementado e validado para a versão 1.2:** importação automática dos calendários em inglês de Genshin/HSR, proteção de datas manuais, ação de ignorar na lista e filtro por jogo. Migração aplicada, carga inicial de 21 eventos concluída e repetição sem duplicatas verificada. Fallback chinês e expansão para WuWa/ZZZ/NTE ficam para a próxima entrega; os itens abaixo descrevem o MVP completo.
+
+- [ ] Importar eventos atuais e futuros diretamente para a lista de tarefas quando existir uma data final utilizável. A revisão humana fica reservada aos eventos sem prazo utilizável nas fontes disponíveis.
+- [ ] Preferir os dados em `en-US`; completar o prazo com o registro chinês do mesmo evento quando necessário. Se o calendário inglês estiver indisponível, usar o chinês quando disponível. Registrar a origem do prazo e manter a edição manual.
+- [ ] Usar capa quando disponível e placeholder quando estiver ausente ou não carregar. A falta de capa ou de data inicial não impede a importação de um evento com prazo final utilizável.
+- [ ] Manter o motor de sincronização, a tabela de candidatos e a gravação de tarefas no projeto atual. A tabela de candidatos continua registrando a origem, o vínculo com a tarefa e as decisões de ignorar; a tela de revisão mostra apenas as pendências de prazo.
+- [ ] Validar a mudança primeiro nos jogos já integrados, Genshin e HSR, e depois habilitar WuWa, ZZZ e NTE no mesmo fluxo. O MVP usa os cinco jogos atuais, sem tela inicial de seleção. Endfield fica preparado para uma expansão posterior, salvo mudança explícita de escopo.
+- [ ] Fazer uma sincronização inicial dos eventos atuais/futuros e reaproveitar o workflow semanal existente. A aplicação lê as tarefas salvas no Supabase; abrir a página não precisa disparar uma importação completa.
+- [ ] Criar ou atualizar cada edição sem duplicar tarefas em novas execuções. Preservar a conclusão da mesma edição e as decisões de ignorar. Uma edição futura de um modo recorrente deve ter sua própria identidade e estado.
+- [ ] Implementar a proteção dos prazos ajustados manualmente. **Decisão aprovada:** atualizar automaticamente o prazo controlado pela API, mas preservar uma correção manual até o usuário optar por voltar à data da fonte.
+- [ ] Generalizar a limpeza de edições importadas vencidas para os jogos habilitados, preservando tarefas manuais e weeklies. Não excluir tarefas apenas porque um evento sumiu de uma resposta parcial da API.
+- [ ] Isolar falhas por jogo/fonte e registrar o resultado da sincronização. Falha de rede ou resposta inválida não apaga tarefas nem cria uma pendência de revisão para cada evento já conhecido.
+- [ ] Verificar importação automática, fallback de prazo, ausência de capa/início, repetição da sincronização, eventos ignorados, correções manuais e troca de edição dos modos recorrentes.
+
+- **Complexidade: média para automatizar o fluxo existente; alta para completar o fallback entre idiomas e cobrir os cinco jogos.** A expansão exige conferir os calendários de cada jogo e as peculiaridades de suas edições recorrentes.
+- **Ponto a resolver antes do fallback por evento:** o contrato atual da API não fornece ID por atividade. Nomes e capas podem mudar entre idiomas; vários eventos podem compartilhar exatamente o início e o fim. Definir uma associação explícita entre os registros, com aliases por jogo quando necessário, e persistir a identidade escolhida. Não unir por posição da lista ou somente por datas. Usar o calendário chinês inteiro quando o inglês falha não resolve sozinho um evento sem prazo dentro de uma lista inglesa parcialmente preenchida.
+- **Horários:** idioma não identifica servidor. Manter as conversões já conhecidas para América e aceitar o prazo original da fonte como fallback, com sua origem visível. Para NTE, o calendário asiático pode diferir em dias do global; aceitar essa limitação no MVP e avaliar outra fonte depois.
+- **Dados existentes:** comentar as tarefas iniciais não remove registros já salvos. Manter a retirada manual dos duplicados antigos, conforme combinado; não fazer uma exclusão automática ampla das tarefas atuais.
+- **Concluído quando:** eventos com prazo utilizável aparecem sem aprovação prévia, somente os sem prazo vão para revisão, repetir a sincronização não duplica nem desfaz decisões do usuário e as weeklies continuam independentes.
+
+## 9. Manter somente weeklies na população inicial
+
+- [ ] Substituir a lista de eventos fixos por definições de atividades semanais separadas dos dados vindos da API.
+- [ ] Resolver o jogo pela abreviação cadastrada, sem depender de IDs numéricos fixos, e calcular o próximo vencimento pela regra de reset semanal em vez de usar datas de 2025.
+- [ ] Permitir criar o lote de weeklies de um jogo sem repetir atividades já existentes. A operação deve funcionar mesmo quando a tabela já tiver tarefas de outros jogos.
+- [ ] Preservar a recorrência das weeklies e impedir que a limpeza de eventos importados as exclua.
+- **Complexidade: média.** Hoje `populateInitialTasks` só roda quando a tabela inteira está vazia. A criação por jogo exige identificar o lote de origem e tratar repetição, datas e vínculos corretamente.
+- **Concluído quando:** a população inicial cria apenas weeklies, com prazos atuais e jogos corretos, e executar novamente não duplica nem restaura atividades que o usuário decidiu remover.
+- **Futuro:** na seleção de jogos, oferecer a opção de criar o lote semanal. A preferência do usuário sobre esse lote deve ser persistida para que a abertura da aplicação não o recrie automaticamente.
+
+## 10. Catálogo de jogos e seleção inicial — depois do MVP
+
+- [ ] Evoluir o registro central de integração com chave da API, idiomas disponíveis e regras específicas por jogo, reaproveitando `eventGames.js`.
+- [ ] Separar os jogos disponíveis no catálogo dos jogos que o usuário acompanha. Incluir o catálogo completo suportado pela API, distinguindo variantes regionais quando existirem.
+- [ ] Criar a tela inicial para selecionar jogos e oferecer opcionalmente seus lotes de weeklies.
+- [ ] Usar a mesma seleção nas telas de jogos/resina, tarefas e revisão, e na elegibilidade para importação. Se os perfis do item 3 forem implementados, guardar a seleção por perfil.
+- [ ] Cadastrar jogos selecionados em bases já existentes: adicionar uma definição em `Game.js` não basta, porque a população atual de jogos só roda quando a tabela inteira está vazia.
+- [ ] Tratar controle de resina como uma capacidade configurada por jogo. Ter um calendário na API não garante que seus parâmetros de resina estejam definidos no sistema.
+- **Complexidade: alta.** Envolve seleção persistida, cadastro de jogos, filtros consistentes e sincronização. Preparação no MVP: centralizar os metadados realmente usados e resolver jogos por chave estável; adicionar a persistência da seleção quando a tela for implementada.
+- **Concluído quando:** escolher um jogo habilita seus dados e sua integração sem exigir cadastro manual de eventos, e todas as telas respeitam a seleção salva.
+
+## 11. Identificar eventos recém-adicionados — prioridade baixa
+
+- [ ] Mostrar uma indicação discreta como **Recém-adicionado**, baseada na primeira importação da edição para a lista de atividades.
+- [ ] Definir por quanto tempo o indicador aparece. Uma atualização de prazo/capa ou uma nova consulta semanal não deve tornar o mesmo evento novo novamente.
+- **Complexidade: baixa a média.** Precisa registrar quando a tarefa foi importada; `last_seen_at` do candidato representa sincronização e não serve como data de entrada na lista.
+
+## 12. Paginar a lista de atividades
+
+- [ ] Avaliar paginação quando o filtro por jogo não for suficiente para reduzir a rolagem. A primeira melhoria da versão 1.2 é o filtro por jogo.
+- [ ] Paginar a consulta no Supabase, aplicando filtro por jogo antes do limite e ordenação estável por prazo e ID. Mostrar quantidade total e estados sem resultados/erro.
+- [ ] Voltar à primeira página ao trocar de jogo e manter a página válida após ignorar/excluir uma atividade.
+- **Complexidade: média.** Envolve consultas, navegação e tratamento das alterações na lista; esconder linhas no navegador não reduz a quantidade carregada do banco.

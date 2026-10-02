@@ -67,6 +67,8 @@ function handleCallTaskFormButton() {
 }
 
 export function resetTaskForm() {
+    document.getElementById('taskGameId').disabled = false;
+    document.getElementById('refreshType').disabled = false;
     document.getElementById("taskId").value = '';
     document.getElementById("taskDescription").value = '';
     document.getElementById("expirationDay").value = 0;
