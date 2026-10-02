@@ -13,6 +13,12 @@ Descobrir eventos temporários ainda não cadastrados no GachaManagement. A cont
 - O GitHub Actions executa a sincronização semanal quando o workflow estiver na branch padrão.
 - `db/migrations/2026-10-01-task-cover.sql` adiciona `tasks.cover_url`, copia capas dos candidatos vinculados e aprovados sem sobrescrever imagens existentes e atualiza a função de aprovação para gravar a capa junto do prazo. A lista exibe uma miniatura; o mapper omite a capa quando ela não foi informada pelo formulário, preservando a imagem em edições de nome/prazo. Imagens quebradas são removidas da exibição.
 
+## Próxima etapa: mais jogos
+
+- A carga inicial e a sincronização semanal usam a mesma rotina: importam eventos disponíveis na fonte que ainda não venceram, inclusive futuros quando fornecidos, para revisão. Não há aprovação automática nem necessidade de uma carga inicial diferente. A execução semanal começa após o merge do workflow na branch padrão; novos candidatos ficam pendentes, aprovados só reabrem se o prazo da fonte mudar e ignorados continuam ignorados.
+- Antes de habilitar um segundo jogo, mover a revisão para uma página própria com o fluxo `Revisar eventos → selecionar jogo (com quantidade pendente) → revisar eventos desse jogo`. Usar o router existente; não requer um framework novo.
+- Ao expandir, associar candidatos explicitamente ao jogo e parametrizar consulta e aprovação: hoje a interface filtra a fonte de Genshin e a função SQL procura o jogo `GI`. Preservar os vínculos existentes ao migrar e compartilhar a UI de revisão entre jogos, mantendo regras de prazo em cada adaptador.
+
 ## Horários e cobertura
 
 - O evento *Silverwing in Pursuit of the Moon* confirmou a diferença de 13 horas entre os instantes de fim dos servidores Ásia e América. Para fim `03:59:59` no horário Ásia, o piloto propõe a mesma hora local no servidor América. Outros horários usam o instante recebido da fonte como proposta inicial, ainda sujeita a ajuste na aprovação. No caso de *Across the Frozen Wilds* e *Tabletop Troupe*, `14:59:59` na fonte (UTC+8) é `03:59:59` em Brasília, conforme os fins informados por Cristian no HoYoLAB.
