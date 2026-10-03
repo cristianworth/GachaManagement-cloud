@@ -1,9 +1,9 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { syncGameEvents } from '../scripts/eventSync.js';
-import { getEventGame } from '../js/events/eventGames.js';
+import { EVENT_GAMES, getEventGame } from '../js/events/eventGames.js';
 
-test('sync delegates task writes to the transactional importer and never overwrites a concurrent ignore', async t => {
+for (const game of EVENT_GAMES) test(`${game.abbreviation} sync delegates task writes to the transactional importer and never overwrites a concurrent ignore`, async t => {
     const requests = [];
     const activities = ['Imported', 'Ignored', 'Missing end'].map(name => ({
         name, startTime: '2099-01-01T04:00:00',
@@ -13,13 +13,16 @@ test('sync delegates task writes to the transactional importer and never overwri
     t.mock.method(globalThis, 'fetch', async (input, options = {}) => {
         const url = new URL(input);
         const body = options.body ? JSON.parse(options.body) : null;
-        requests.push({ path: url.pathname, method: options.method ?? 'GET', body });
+        requests.push({ path: url.pathname, search: url.searchParams, method: options.method ?? 'GET', body });
         let result;
-        if (url.hostname === 'starrailassistant.top') result = { activities };
+        if (url.hostname === 'starrailassistant.top') {
+            assert.equal(url.href, game.url);
+            result = { activities };
+        }
         else if (url.pathname.endsWith('/games')) result = [{ id: 1 }];
         else if (url.pathname.endsWith('/event_candidates') && !options.method) result = [
-            { id: 1, source: 'starrailassistant-genshin', external_id: 'imported', status: 'approved', is_active: true },
-            { id: 2, source: 'starrailassistant-genshin', external_id: 'ignored', status: 'ignored', is_active: true },
+            { id: 1, source: game.source, external_id: 'imported', status: 'approved', is_active: true },
+            { id: 2, source: game.source, external_id: 'ignored', status: 'ignored', is_active: true },
         ];
         else if (url.pathname.endsWith('/rpc/import_event_candidates')) result = { imported: 1, review: 1 };
         else if (url.pathname.endsWith('/rpc/cleanup_expired_hsr_events')) result = 0;
@@ -27,13 +30,18 @@ test('sync delegates task writes to the transactional importer and never overwri
         else throw new Error(`Unexpected request: ${url}`);
         return new Response(JSON.stringify(result), { status: 200 });
     });
-    await syncGameEvents(getEventGame('genshin'));
+    await syncGameEvents(game);
+    assert.equal(requests.find(request => request.path.endsWith('/games')).search.get('abbreviation'), `eq.${game.abbreviation}`);
+    const candidateRead = requests.find(request => request.path.endsWith('/event_candidates') && request.method === 'GET');
+    assert.equal(candidateRead.search.get('source'), game.key === 'genshin'
+        ? `in.(${game.source},ennead-genshin-calendar)` : `eq.${game.source}`);
     const patches = requests.filter(request => request.method === 'PATCH');
     assert.equal(patches.length, 2);
     assert.ok(patches.every(request => !Object.hasOwn(request.body, 'status')));
+    assert.ok(patches.every(request => request.body.source === game.source && request.body.game_id === 1));
     const imports = requests.filter(request => request.path.endsWith('/rpc/import_event_candidates'));
     assert.equal(imports.length, 1);
-    assert.deepEqual(imports[0].body, { p_source: 'starrailassistant-genshin' });
+    assert.deepEqual(imports[0].body, { p_source: game.source });
     assert.ok(!requests.some(request => request.path.endsWith('/tasks')));
 });
 

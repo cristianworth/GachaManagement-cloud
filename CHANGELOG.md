@@ -8,6 +8,18 @@ O projeto segue o versionamento semântico (SemVer), no formato `MAJOR.MINOR.PAT
 - `MINOR`: nova funcionalidade compatível com a versão anterior.
 - `PATCH`: correção de bug ou melhoria pequena, sem nova funcionalidade relevante.
 
+## [1.3.0] - 2026-10-03
+
+### Adicionado
+
+- Importação e revisão de eventos do Zenless Zone Zero pela StarRailAssistant, incluindo os eventos atuais e próximos na sincronização semanal.
+- Filtro por Refresh Type na lista de tarefas, combinável com o filtro por jogo e preservado ao atualizar a lista.
+- Migração das funções de eventos para aceitar ZZZ, com testes de normalização, sincronização, rotas e integração SQL.
+
+### Melhorado
+
+- Dicas nos botões da lista esclarecem a diferença entre excluir uma tarefa manual e ignorar um evento importado para impedir sua reimportação.
+
 ## [1.2.0] - 2026-10-02
 
 ### Adicionado

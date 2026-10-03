@@ -16,7 +16,8 @@ class Router {
     '/tasks/create': 'createTask',
     '/events': 'eventGames',
     '/events/genshin': 'eventReview',
-    '/events/hsr': 'eventReview'
+    '/events/hsr': 'eventReview',
+    '/events/zzz': 'eventReview'
   };
 
   static async init() {

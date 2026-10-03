@@ -105,7 +105,8 @@ begin
     end if;
 
     if (v_candidate.source in ('starrailassistant-genshin', 'ennead-genshin-calendar') and v_abbreviation <> 'GI')
-       or (v_candidate.source = 'starrailassistant-hsr' and v_abbreviation <> 'HSR') then
+       or (v_candidate.source = 'starrailassistant-hsr' and v_abbreviation <> 'HSR')
+       or (v_candidate.source = 'starrailassistant-zzz' and v_abbreviation <> 'ZZZ') then
         raise exception 'O jogo do candidato não corresponde à fonte.';
     end if;
 
@@ -261,7 +262,8 @@ begin
     if c.status = 'ignored' then return 'ignored'; end if;
     select abbreviation into v_abbreviation from public.games where id = c.game_id;
     if not ((c.source = 'starrailassistant-genshin' and v_abbreviation = 'GI')
-         or (c.source = 'starrailassistant-hsr' and v_abbreviation = 'HSR')) then
+         or (c.source = 'starrailassistant-hsr' and v_abbreviation = 'HSR')
+         or (c.source = 'starrailassistant-zzz' and v_abbreviation = 'ZZZ')) then
         raise exception 'O jogo do candidato não corresponde à fonte.';
     end if;
     if v_abbreviation is null then raise exception 'Jogo não cadastrado.'; end if;
@@ -302,7 +304,7 @@ returns jsonb language plpgsql security invoker set search_path = public as $$
 declare v_id bigint; v_result text; v_counts jsonb := '{}'::jsonb;
 begin
     for v_id in select id from public.event_candidates
-        where source in ('starrailassistant-genshin', 'starrailassistant-hsr')
+        where source in ('starrailassistant-genshin', 'starrailassistant-hsr', 'starrailassistant-zzz')
           and (p_source is null or source = p_source) and is_active and status <> 'ignored'
         order by id
     loop

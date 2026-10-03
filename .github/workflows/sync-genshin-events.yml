@@ -17,5 +17,5 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
-      - name: Import Genshin and HSR events and keep deadline exceptions for review
+      - name: Import Genshin, HSR and ZZZ events and keep deadline exceptions for review
         run: node scripts/syncEvents.js

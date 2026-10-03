@@ -21,8 +21,14 @@ export async function displayAllTasks() {
     filter.replaceChildren(new Option('All games', ''));
     for (const game of games) filter.add(new Option(game.description, String(game.id)));
     filter.value = [...filter.options].some(option => option.value === selectedGame) ? selectedGame : '';
+    const refreshFilter = document.getElementById('taskRefreshTypeFilter');
     if (!filterInitialized) {
+        refreshFilter.replaceChildren(new Option('All refresh types', ''));
+        for (const refreshType of RefreshTypeEnum.values) {
+            refreshFilter.add(new Option(refreshType.value, String(refreshType.id)));
+        }
         filter.addEventListener('change', renderTaskList);
+        refreshFilter.addEventListener('change', renderTaskList);
         filterInitialized = true;
     }
     renderTaskList();
@@ -30,7 +36,10 @@ export async function displayAllTasks() {
 
 function renderTaskList() {
     const gameId = document.getElementById('taskGameFilter').value;
-    const tasks = loadedTasks.filter(task => !gameId || String(task.gameId) === gameId);
+    const refreshType = document.getElementById('taskRefreshTypeFilter').value;
+    const tasks = loadedTasks.filter(task =>
+        (!gameId || String(task.gameId) === gameId) &&
+        (refreshType === '' || String(task.refreshType) === refreshType));
     const gameScheduleBody = document.getElementById("gameScheduleBody");
     gameScheduleBody.innerHTML = ''; // clear data
 
@@ -40,7 +49,7 @@ function renderTaskList() {
         addTaskEventListeners(task);
     });
     document.getElementById('taskListStatus').textContent = tasks.length
-        ? `${tasks.length} activities` : 'No activities for this game.';
+        ? `${tasks.length} activities` : 'No activities match the selected filters.';
 }
 
 function createTaskRow(task) {
@@ -94,6 +103,11 @@ function addTaskEventListeners(task) {
     const editButton = document.getElementById(`edit-task-${task.id}`);
     const deleteButton = document.getElementById(`delete-task-${task.id}`);
     const restoreButton = document.getElementById(`restore-deadline-${task.id}`);
+    if (deleteButton) {
+        deleteButton.title = task.eventCandidateId
+            ? 'Remove esta tarefa e impede que o evento seja recriado pela sincronização.'
+            : 'Exclui esta tarefa.';
+    }
 
     if (checkbox) 
         checkbox.addEventListener("change", () => handleTaskCompletion(task.id, checkbox.checked))
