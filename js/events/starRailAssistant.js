@@ -5,7 +5,11 @@ const SOURCE_DATE_PATTERN = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}$/;
 function toUtc(value, offset) {
     if (typeof value !== 'string' || !SOURCE_DATE_PATTERN.test(value)) return null;
     const date = new Date(`${value}${offset}`);
-    return Number.isNaN(date.getTime()) ? null : date.toISOString();
+    if (Number.isNaN(date.getTime())) return null;
+    // Date accepts impossible days by rolling into the next month. Keep them in review.
+    const local = new Date(`${value}Z`);
+    if (local.toISOString().slice(0, 19) !== value) return null;
+    return date.toISOString();
 }
 
 // The API has no activity ID. A name key lets recurring runs update the same candidate.

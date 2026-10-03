@@ -8,6 +8,19 @@ O projeto segue o versionamento semântico (SemVer), no formato `MAJOR.MINOR.PAT
 - `MINOR`: nova funcionalidade compatível com a versão anterior.
 - `PATCH`: correção de bug ou melhoria pequena, sem nova funcionalidade relevante.
 
+## [1.3.1] - 2026-10-03
+
+### Melhorado
+
+- Preparação de WuWa e NTE no catálogo, sem ativar a importação, com amostras reais dos cinco jogos e metadados de captura.
+- Rotas de revisão derivadas dos jogos ativos; sincronização com relógio controlável e resultados estruturados para testes.
+- Comando único de testes incluindo Jest, integração, HTML real e SQL em PostgreSQL descartável, validando schema novo e sequência de migrações.
+- CI em Windows/Linux e testes antes da sincronização semanal; roteiro de políticas de horário, identidade e validação das próximas integrações.
+
+### Corrigido
+
+- Datas impossíveis da API ficam para revisão em vez de serem convertidas silenciosamente para outro dia.
+
 ## [1.3.0] - 2026-10-03
 
 ### Adicionado

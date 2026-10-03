@@ -1,5 +1,7 @@
 # Próximas melhorias
 
+Preparação dos eventos atualizada em [docs/event-integrations.md](docs/event-integrations.md): GI/HSR/ZZZ ativos; fixtures, testes SQL/DOM e CI prontos. Próximas entregas: WuWa e depois NTE. Políticas de horário e identidade de novas edições precisam ser validadas antes da ativação.
+
 Complexidade estimada para este projeto (HTML, CSS, JavaScript e Supabase): **baixa** = alteração localizada; **média** = envolve interface e lógica existente; **alta** = envolve várias partes do sistema, migração de dados ou decisões de produto. São estimativas relativas, não prazos.
 
 ## 1. Mostrar a resina atual na coluna "Max Stamina At"
@@ -17,8 +19,8 @@ Complexidade estimada para este projeto (HTML, CSS, JavaScript e Supabase): **ba
 
 ## 2. Usar imagem por URL para jogos novos
 
-- [ ] Adicionar ao formulário de jogo um campo opcional de URL da imagem. Quando estiver vazio, manter `img/default-icon.png` como imagem padrão.
-- **Complexidade: baixa a média.** O banco e o modelo já possuem o campo `img`; falta expor a edição na interface, validar a URL e tratar links que não carreguem.
+- [x] Adicionar ao formulário de jogo um campo opcional de URL da imagem. Quando estiver vazio, manter `img/default-icon.png` como imagem padrão.
+- **Entregue em 1.3.0:** cadastro/edição com URL HTTPS, preservação de ícone interno e placeholder para falhas. Cobertura com HTML real em `uiIntegration.test.mjs`.
 - **Concluído quando:** é possível cadastrar ou editar um jogo com imagem externa sem fazer upload, e uma URL vazia ou imagem indisponível não deixa um ícone quebrado na lista.
 
 ## 3. Separar os dados em dois perfis fixos
@@ -70,7 +72,7 @@ Complexidade estimada para este projeto (HTML, CSS, JavaScript e Supabase): **ba
 
 ## 8. Importar eventos automaticamente pelo StarRailAssistant — MVP
 
-**Recorte implementado e validado para a versão 1.2:** importação automática dos calendários em inglês de Genshin/HSR, proteção de datas manuais, ação de ignorar na lista e filtro por jogo. Migração aplicada, carga inicial de 21 eventos concluída e repetição sem duplicatas verificada. Fallback chinês e expansão para WuWa/ZZZ/NTE ficam para a próxima entrega; os itens abaixo descrevem o MVP completo.
+**Recorte implementado e validado até a versão 1.3:** importação automática dos calendários em inglês de Genshin/HSR/ZZZ, proteção de datas manuais, ação de ignorar e filtros por jogo, intervalo e conclusão. Preparação local inclui fixtures dos cinco jogos, testes de SQL/HTML e CI. Próxima integração: WuWa; por último, NTE. Fallback chinês, identidade entre edições de mesmo nome e limpeza geral ainda estão pendentes; os itens abaixo descrevem o MVP completo.
 
 - [ ] Importar eventos atuais e futuros diretamente para a lista de tarefas quando existir uma data final utilizável. A revisão humana fica reservada aos eventos sem prazo utilizável nas fontes disponíveis.
 - [ ] Preferir os dados em `en-US`; completar o prazo com o registro chinês do mesmo evento quando necessário. Se o calendário inglês estiver indisponível, usar o chinês quando disponível. Registrar a origem do prazo e manter a edição manual.

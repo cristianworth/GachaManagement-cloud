@@ -1,0 +1,2 @@
+# Fixture hashes must not depend on the checkout's line-ending preferences.
+tests/fixtures/*.json text eol=lf

@@ -126,9 +126,11 @@ async function markMissingCandidateInactive(existing) {
     return true;
 }
 
-export async function syncGameEvents(game, { dryRun = false } = {}) {
+export async function syncGameEvents(game, { dryRun = false, now = Date.now() } = {}) {
+    getEventGame(game.key);
+    if (!Number.isFinite(now)) throw new Error('Sync time must be a finite timestamp.');
     const calendar = await fetchCalendar(game);
-    const { events, skipped } = normalizeStarRailAssistantActivities(calendar);
+    const { events, skipped } = normalizeStarRailAssistantActivities(calendar, now);
     if (!events.length) throw new Error('Calendar has no current events; refusing to hide existing candidates.');
     let gameId;
     if (!dryRun) {
@@ -148,7 +150,7 @@ export async function syncGameEvents(game, { dryRun = false } = {}) {
             external_id, name, source_end_at, proposed_end_at, review_reason,
         })));
         console.log(`${candidates.length} candidates; ${skipped} omitted.`);
-        return;
+        return { gameKey: game.key, dryRun: true, candidates, skipped };
     }
 
     const existing = await fetchExistingCandidates(game);
@@ -161,7 +163,7 @@ export async function syncGameEvents(game, { dryRun = false } = {}) {
         if (legacy.has(key)) throw new Error(`Multiple legacy candidates share the name ${row.name}.`);
         legacy.set(key, row);
     }
-    const seenAt = new Date().toISOString();
+    const seenAt = new Date(now).toISOString();
     const counts = { new: 0, migrated: 0, updated: 0, review: 0, unchanged: 0, inactive: 0 };
     const seenRowIds = new Set();
     for (const candidate of candidates) {
@@ -179,5 +181,7 @@ export async function syncGameEvents(game, { dryRun = false } = {}) {
     const response = await databaseRequest(databaseUrl('rpc/cleanup_expired_hsr_events'), {
         method: 'POST', body: '{}',
     });
-    console.log(game.name, { ...counts, skipped, tasks: await importResponse.json(), expiredTasksRemoved: await response.json() });
+    const summary = { ...counts, skipped, tasks: await importResponse.json(), expiredTasksRemoved: await response.json() };
+    console.log(game.name, summary);
+    return { gameKey: game.key, dryRun: false, ...summary };
 }

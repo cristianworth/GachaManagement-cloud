@@ -42,7 +42,7 @@ test('ZZZ can be inspected without reading or writing the database', async t => 
         requests++;
         return new Response(JSON.stringify(calendar));
     });
-    await syncGameEvents(game, { dryRun: true });
+    await syncGameEvents(game, { dryRun: true, now });
     assert.equal(requests, 1);
 });
 

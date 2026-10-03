@@ -4,7 +4,7 @@ As melhorias planejadas e suas estimativas de complexidade estão em [TODO.md](T
 
 O **Gacha Management** é uma aplicação projetada para ajudar jogadores de **gacha games** a gerenciar sua **resina/stamina** e acompanhar **tarefas recorrentes** nos jogos. Ele oferece ferramentas para rastrear a regeneração da stamina, organizar atividades programadas e facilitar o planejamento dentro dos jogos.
 
-Versão atual: **1.3.0**. Consulte o [CHANGELOG](CHANGELOG.md) para ver as alterações de cada versão e as regras de versionamento utilizadas.
+Versão atual: **1.3.1**. Consulte o [CHANGELOG](CHANGELOG.md) para ver as alterações de cada versão e as regras de versionamento utilizadas.
 
 ![Resin Management](img/demo/resin-management-demo-01.png)
 
@@ -120,19 +120,13 @@ npm start
 ```
 
 ## 🧪 Rodando Testes
-O projeto usa **Jest** para testes automatizados. Para rodar os testes:
+Com Node 20 ou superior, um comando executa os testes Jest, os testes de integração Node, os formulários com HTML real e as funções SQL em PostgreSQL descartável na memória. Não precisa conectar ao Supabase nem capturar novamente a API:
 
 ```bash
+npm ci
 npm test
+# Executar somente o banco descartável
+npm run test:db
 ```
 
-Certifique-se de que o Babel está configurado corretamente para suportar **ES Modules** ao rodar os testes. Caso precise configurar, adicione o seguinte no `jest.config.js`:
-
-```js
-export default {
-  transform: {
-    "^.+\\.js$": "babel-jest"
-  },
-  testEnvironment: "node",
-};
-```
+As amostras reais dos cinco jogos ficam em `tests/fixtures/`, com origem e relógio de referência em `manifest.json`. WuWa e NTE continuam planejados, sem sincronização habilitada. Veja o [mapa de testes e roteiro das próximas integrações](docs/event-integrations.md) para comandos separados, atualização de fixtures, limites da validação e decisões de horário/identidade.

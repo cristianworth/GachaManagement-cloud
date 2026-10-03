@@ -1,0 +1,47 @@
+{
+  "genshin": {
+    "file": "ys-en-US.json",
+    "url": "https://starrailassistant.top/api/v1/activity/ys-en-US.json",
+    "locale": "en-US",
+    "capturedAt": "2026-10-03T17:40:51.217Z",
+    "referenceTime": "2026-10-03T17:40:51.217Z",
+    "sha256": "637bfe6afdc2d2f924f1de38e4325839c54e13f43978d9e7e7c27788109e6143",
+    "activityCount": 8
+  },
+  "hsr": {
+    "file": "sr-en-US.json",
+    "url": "https://starrailassistant.top/api/v1/activity/sr-en-US.json",
+    "locale": "en-US",
+    "capturedAt": "2026-10-03T17:40:51.911Z",
+    "referenceTime": "2026-10-03T17:40:51.911Z",
+    "sha256": "40f8ebd32fdc36f7e10788d032f771f9d0319d7e9ecc2914722f1dc0063a3971",
+    "activityCount": 15
+  },
+  "wuwa": {
+    "file": "ww-en-US.json",
+    "url": "https://starrailassistant.top/api/v1/activity/ww-en-US.json",
+    "locale": "en-US",
+    "capturedAt": "2026-10-03T17:40:52.574Z",
+    "referenceTime": "2026-10-03T17:40:52.574Z",
+    "sha256": "c99c70f1999b7b909be287bf0aead48ba72297186383562364422a2e385c1436",
+    "activityCount": 10
+  },
+  "nte": {
+    "file": "nte-en-US.json",
+    "url": "https://starrailassistant.top/api/v1/activity/nte-en-US.json",
+    "locale": "en-US",
+    "capturedAt": "2026-10-03T17:40:53.262Z",
+    "referenceTime": "2026-10-03T17:40:53.262Z",
+    "sha256": "30637006a744fa63417da58f4d519fc004fc7a74834207df56122adb23715c00",
+    "activityCount": 9
+  },
+  "zzz": {
+    "file": "zzz-en-US.json",
+    "url": "https://starrailassistant.top/api/v1/activity/zzz-en-US.json",
+    "locale": "en-US",
+    "capturedAt": "2026-10-02",
+    "referenceTime": "2026-10-02T12:00:00Z",
+    "sha256": "f08e057bcd6d469d53b9034013fe0314085598c381bcb21d69de63e70979aaea",
+    "activityCount": 12
+  }
+}

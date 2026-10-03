@@ -1,11 +1,14 @@
 {
   "name": "gachamanagement",
-  "version": "1.3.0",
+  "version": "1.3.1",
   "description": "O **Gacha Management** é uma aplicação projetada para ajudar jogadores de **gacha games** a gerenciar sua **resina/stamina** e acompanhar **tarefas recorrentes** nos jogos.",
   "type": "module",
   "main": "index.js",
   "scripts": {
-    "test": "jest",
+    "test": "node scripts/runTests.js",
+    "test:jest": "jest --runInBand",
+    "test:node": "node scripts/runTests.js --node-only",
+    "test:db": "node scripts/runTests.js --db-only",
     "start": "http-server -p 5500"
   },
   "author": "cristianworth",
@@ -13,8 +16,10 @@
   "keywords": [],
   "devDependencies": {
     "@babel/preset-env": "^7.26.9",
+    "@electric-sql/pglite": "0.5.8",
     "babel-jest": "^29.7.0",
     "http-server": "^14.1.1",
-    "jest": "^29.7.0"
+    "jest": "^29.7.0",
+    "jsdom": "26.1.0"
   }
 }

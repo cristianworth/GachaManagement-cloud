@@ -17,5 +17,9 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
+          cache: npm
+      - run: npm ci
+      - name: Verify offline contracts before touching event data
+        run: npm test
       - name: Import Genshin, HSR and ZZZ events and keep deadline exceptions for review
         run: node scripts/syncEvents.js

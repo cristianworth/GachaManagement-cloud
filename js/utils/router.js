@@ -1,5 +1,6 @@
 // js/utils/router.js
 import NavigationService from '../services/navigation.service.js';
+import { EVENT_GAMES } from '../events/eventGames.js';
 
 class Router {
   // Deriva o base path do repositório servido no GitHub Pages (primeiro
@@ -15,9 +16,7 @@ class Router {
     '/tasks': 'taskList',
     '/tasks/create': 'createTask',
     '/events': 'eventGames',
-    '/events/genshin': 'eventReview',
-    '/events/hsr': 'eventReview',
-    '/events/zzz': 'eventReview'
+    ...Object.fromEntries(EVENT_GAMES.map(game => [`/events/${game.key}`, 'eventReview']))
   };
 
   static async init() {
