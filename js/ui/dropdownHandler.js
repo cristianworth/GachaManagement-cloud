@@ -17,7 +17,8 @@ export async function populateGameDropDown() {
 export function populateRefreshTypeDropDown() {
     const selectRefreshType = document.getElementById("refreshType");
 
-    RefreshTypeEnum.values.forEach(rType => {
+    selectRefreshType.replaceChildren();
+    RefreshTypeEnum.presets.forEach(rType => {
         let option = document.createElement("option");
         option.value = rType.id;
         option.textContent = rType.value;

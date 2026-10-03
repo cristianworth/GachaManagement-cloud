@@ -105,3 +105,11 @@ test('imported task start survives database round trips', () => {
     expect(task.startAt).toBeInstanceOf(Date);
     expect(taskToRow(task).start_at).toBe('2026-10-05T09:00:00.000Z');
 });
+
+test('repeat days survive mapping and legacy intervals are preserved', () => {
+    const task = taskFromRow({ id: 18, refresh_type: 8, repeat_days: 19 });
+    expect(taskToRow(task).repeat_days).toBe(19);
+    expect(taskFromRow({ refresh_type: 6 }).repeatDays).toBe(31);
+    expect(taskFromRow({ refresh_type: 6, repeat_days: 30 }).repeatDays).toBe(30);
+    expect(taskFromRow({ refresh_type: 0 }).repeatDays).toBeNull();
+});

@@ -20,9 +20,9 @@ Versão atual: **1.3.0**. Consulte o [CHANGELOG](CHANGELOG.md) para ver as alter
 - As tarefas são **vinculadas aos jogos cadastrados** e possuem **atualização automática** com base no tipo de recorrência:
   - **Diário**
   - **Semanal**
-  - **Quinzenal**
-  - **Mensal**
-  - **Eventos personalizados**
+  - **Mensal (a cada 30 dias)**
+  - **Personalizado (quantidade inteira de dias)**
+  - **Evento sem repetição**
 - Permite visualizar todas as tarefas em um **calendário simples**, evitando que você esqueça **eventos importantes**.
 
 ### Eventos do Genshin, HSR e ZZZ
@@ -40,6 +40,16 @@ Para habilitar o piloto em um banco já existente, primeiro confira o backup de 
 ![Gacha Schedule](img/demo/gacha-schedule-demo-02.png)
 
 As capas dos eventos aprovados ficam salvas como URL em `tasks.cover_url` e aparecem como miniaturas ao lado do nome na lista de tarefas. Para bancos existentes, execute [`db/migrations/2026-10-01-task-cover.sql`](db/migrations/2026-10-01-task-cover.sql) depois das migrações do piloto: ela atualiza a função de aprovação e preenche capas dos eventos já aprovados, preservando imagens existentes. Tarefas manuais permitem informar uma URL HTTPS no cadastro e na edição; deixar o campo vazio remove a URL. Nas tarefas importadas, esse campo mostra a capa da fonte e fica desabilitado. Tarefas sem imagem e links indisponíveis exibem o mesmo placeholder, mantendo o alinhamento das descrições.
+
+O cadastro de jogos também aceita uma URL HTTPS em `games.img`. Ao editar um jogo com ícone interno, deixe o campo vazio para mantê-lo. Apagar uma URL personalizada volta ao ícone padrão. Imagens indisponíveis usam esse ícone, e editar o cadastro preserva stamina, tarefas pendentes e cor.
+
+### Intervalos de repetição e tarefas concluídas
+
+**Repeat interval** oferece Event / No repeat, Daily, Weekly, Monthly e Custom. Os atalhos preenchem 1, 7 e 30 dias; editar a quantidade seleciona Custom. Monthly representa um intervalo fixo de 30 dias, não o mesmo dia do mês. A lista mostra o intervalo como **Every N days**. **Hide completed** oculta tarefas e eventos concluídos, mantendo os filtros de jogo e intervalo; desmarque-o para mostrar e desfazer uma conclusão. Ocultar não exclui tarefas nem impede a renovação de recorrentes.
+
+Em bancos existentes, aplique [`db/migrations/2026-10-03-task-repeat-days.sql`](db/migrations/2026-10-03-task-repeat-days.sql) antes de usar os novos intervalos. Ela adiciona `tasks.repeat_days`, preservando 1, 7, 14, 15, 28, 31 e 42 dias dos tipos antigos. Tarefas antigas de 31 dias aparecem como Custom; selecionar o novo Monthly muda explicitamente para 30. Eventos da API permanecem sem repetição. O código legado `refresh_type` é mantido para compatibilidade com os importadores e clientes anteriores. A migração não altera prazos, conclusão ou vínculos.
+
+Ao abrir o aplicativo, tarefas recorrentes vencidas são reabertas no próximo ciclo futuro, calculado a partir do prazo anterior e preservando o horário local. Os testes transacionais da migração estão em [`tests/taskRepeatDays.sql`](tests/taskRepeatDays.sql) e usam rollback. Um erro ao salvar um cadastro mantém o formulário preenchido e exibe a mensagem para tentar novamente.
 
 Para habilitar HSR e a revisão por jogo em um banco existente, execute [`db/migrations/2026-10-02-hsr-events.sql`](db/migrations/2026-10-02-hsr-events.sql) depois das três migrações anteriores. Ela associa os candidatos existentes ao Genshin, adiciona início às tarefas e atualiza a aprovação e a limpeza. Para um banco novo, `db/schema.sql` já contém a estrutura atual.
 

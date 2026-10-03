@@ -20,7 +20,7 @@ export async function addGame(game) {
         return gameFromRow(data);
     } catch (error) {
         console.error('Failed to add game:', error);
-        return null;
+        throw error;
     }
 }
 
@@ -35,6 +35,7 @@ export async function updateGame(game) {
         if (error) throw error;
     } catch (error) {
         console.error('Erro ao atualizar o jogo:', error);
+        throw error;
     }
 }
 

@@ -5,9 +5,10 @@ import { fetchAllGames } from '../database/gameDB.js';
 import { Task } from '../data/Task.js';
 import { fetchAllTasks, completeTask, fetchTaskById, addTask, updateTask, deleteTaskById } from '../database/taskDB.js';
 import { formatDateForDisplay, formatDateForInput, getExpirationDate } from '../utils/dateUtils.js';
-import { resetTaskForm, setDateSelector, setTaskFormMessage } from './formHandler.js'
+import { resetTaskForm, setDateSelector, setTaskFormMessage, setTaskRecurrence } from './formHandler.js'
 import RefreshTypeEnum from '../enums/RefreshTypeEnum.js';
 import Router from '../utils/router.js';
+import { filterTasks } from '../utils/taskFilters.js';
 
 let loadedTasks = [];
 let filterInitialized = false;
@@ -23,12 +24,13 @@ export async function displayAllTasks() {
     filter.value = [...filter.options].some(option => option.value === selectedGame) ? selectedGame : '';
     const refreshFilter = document.getElementById('taskRefreshTypeFilter');
     if (!filterInitialized) {
-        refreshFilter.replaceChildren(new Option('All refresh types', ''));
-        for (const refreshType of RefreshTypeEnum.values) {
+        refreshFilter.replaceChildren(new Option('All intervals', ''));
+        for (const refreshType of RefreshTypeEnum.presets) {
             refreshFilter.add(new Option(refreshType.value, String(refreshType.id)));
         }
         filter.addEventListener('change', renderTaskList);
         refreshFilter.addEventListener('change', renderTaskList);
+        document.getElementById('taskHideCompleted').addEventListener('change', renderTaskList);
         filterInitialized = true;
     }
     renderTaskList();
@@ -37,9 +39,8 @@ export async function displayAllTasks() {
 function renderTaskList() {
     const gameId = document.getElementById('taskGameFilter').value;
     const refreshType = document.getElementById('taskRefreshTypeFilter').value;
-    const tasks = loadedTasks.filter(task =>
-        (!gameId || String(task.gameId) === gameId) &&
-        (refreshType === '' || String(task.refreshType) === refreshType));
+    const hideCompleted = document.getElementById('taskHideCompleted').checked;
+    const tasks = filterTasks(loadedTasks, { gameId, interval: refreshType, hideCompleted });
     const gameScheduleBody = document.getElementById("gameScheduleBody");
     gameScheduleBody.innerHTML = ''; // clear data
 
@@ -64,7 +65,7 @@ function createTaskRow(task) {
         </td>
         <td>${task.gameDescription}</td>
         <td class="task-description"></td>
-        <td>${RefreshTypeEnum.findNameById(task.refreshType)}</td>
+        <td>${RefreshTypeEnum.describe(task)}</td>
         <td>${formatDateForDisplay(task.expirationDate)}</td>
         <td class="list-action-cell">
             <div class="list-actions">
@@ -152,9 +153,8 @@ async function handleTaskEdit (taskId) {
         setDateSelector(true);
         document.getElementById("expirationDate").value = task.expirationDate
             ? `${formatDateForInput(task.expirationDate)}:${String(task.expirationDate.getSeconds()).padStart(2, '0')}` : '';
-        document.getElementById("refreshType").value = task.refreshType;
+        setTaskRecurrence(RefreshTypeEnum.getRepeatDays(task), Boolean(task.eventCandidateId));
         document.getElementById('taskGameId').disabled = Boolean(task.eventCandidateId);
-        document.getElementById('refreshType').disabled = Boolean(task.eventCandidateId);
     }
 }    
 
@@ -173,7 +173,12 @@ export async function handleAddTask() {
     const gameId = parseInt(selectGame.value);
     const gameDescription = selectGame.options[selectGame.selectedIndex].text;
     const taskDescription = document.getElementById("taskDescription").value;
-    const refreshType = parseInt(document.getElementById("refreshType").value);
+    const repeats = document.getElementById('refreshType').value !== '0';
+    const repeatDays = repeats ? Number(document.getElementById('taskRepeatDays').value) : null;
+    if (repeats && (!Number.isInteger(repeatDays) || repeatDays < 1 || repeatDays > 2147483647)) {
+        throw new Error('Enter a positive whole number of days.');
+    }
+    const refreshType = RefreshTypeEnum.findPresetId(repeatDays);
 
     const hasDateSelector = document.getElementById("hasDateSelector").checked;
     let expirationDate = new Date();
@@ -186,6 +191,8 @@ export async function handleAddTask() {
     }
 
     const taskId = document.getElementById("taskId").value ? parseInt(document.getElementById("taskId").value) : undefined;
+    const existingTask = taskId ? await fetchTaskById(taskId) : null;
+    if (taskId && !existingTask) throw new Error('Task not found. Reload the list before saving.');
 
     const task = new Task(
         taskDescription,
@@ -196,6 +203,8 @@ export async function handleAddTask() {
         taskId,
     );
     const coverInput = document.getElementById('taskCoverUrl');
+    task.repeatDays = repeatDays;
+    if (existingTask) task.isDone = existingTask.isDone;
     if (!coverInput.disabled) task.coverUrl = coverInput.value.trim() || null;
     
     if (taskId) {

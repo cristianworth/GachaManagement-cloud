@@ -2,13 +2,13 @@
 import { handleAddGame } from './gameUI.js';
 import { handleAddTask } from './taskUI.js';
 import Router from '../utils/router.js';
+import RefreshTypeEnum from '../enums/RefreshTypeEnum.js';
 
 export function initializeGameForm() {
     const gameForm = document.getElementById("game-form");
     gameForm.addEventListener("submit", async function (e) {
         e.preventDefault();
-        await handleAddGame();
-        Router.navigateTo('/');
+        await submitForm('gameFormStatus', handleAddGame, '/');
     });
 
     const createGameBtn = document.getElementById("createGameBtn");
@@ -26,6 +26,8 @@ export function resetGameForm() {
     document.getElementById("gameId").value = '';
     document.getElementById("gameDescription").value = '';
     document.getElementById("abbreviation").value = '';
+    document.getElementById('gameImageUrl').value = '';
+    document.getElementById('gameFormStatus').hidden = true;
     document.getElementById("capStamina").value = 240;
     document.getElementById("staminaPerMinute").value = 6;
     setGameFormMessage();
@@ -46,8 +48,7 @@ export function initializeTaskForm() {
     const taskForm = document.getElementById("task-form");
     taskForm.addEventListener("submit", async function (e) {
         e.preventDefault();
-        await handleAddTask();
-        Router.navigateTo('/tasks');
+        await submitForm('taskFormStatus', handleAddTask, '/tasks');
     })
 
     const createTaskBtn = document.getElementById("createTaskBtn");
@@ -59,6 +60,27 @@ export function initializeTaskForm() {
     if (hasDateSelector) {
         hasDateSelector.addEventListener("change", () => handleDateSelector(hasDateSelector.checked));
     }
+
+    const refreshType = document.getElementById('refreshType');
+    refreshType.addEventListener('change', () => {
+        const preset = RefreshTypeEnum.presets.find(item => String(item.id) === refreshType.value);
+        const days = preset.id === 8 ? document.getElementById('taskRepeatDays').value : preset.days;
+        setTaskRecurrence(days, false, preset.id);
+    });
+    document.getElementById('taskRepeatDays').addEventListener('input', () => {
+        refreshType.value = '8';
+    });
+}
+
+export function setTaskRecurrence(days, sourceManaged = false, presetId = RefreshTypeEnum.findPresetId(days)) {
+    document.getElementById('refreshType').value = String(presetId);
+    document.getElementById('refreshType').disabled = sourceManaged;
+    const repeats = presetId !== 0;
+    const input = document.getElementById('taskRepeatDays');
+    document.getElementById('taskRepeatDaysFields').hidden = !repeats;
+    input.value = repeats ? days : '';
+    input.disabled = !repeats || sourceManaged;
+    input.required = repeats;
 }
 
 function handleCallTaskFormButton() {
@@ -68,7 +90,8 @@ function handleCallTaskFormButton() {
 
 export function resetTaskForm() {
     document.getElementById('taskGameId').disabled = false;
-    document.getElementById('refreshType').disabled = false;
+    setTaskRecurrence(null);
+    document.getElementById('taskFormStatus').hidden = true;
     document.getElementById("taskId").value = '';
     document.getElementById("taskDescription").value = '';
     document.getElementById('taskCoverUrl').value = '';
@@ -103,5 +126,17 @@ function handleDateSelector(hasDateSelector) {
     } else {
         document.getElementById("divExpirationDate").hidden = true;
         document.getElementById("divExpirationDayAndHour").hidden = false;
+    }
+}
+
+async function submitForm(statusId, save, route) {
+    const status = document.getElementById(statusId);
+    status.hidden = true;
+    try {
+        await save();
+        Router.navigateTo(route);
+    } catch (error) {
+        status.textContent = error.message ?? 'Could not save. Please try again.';
+        status.hidden = false;
     }
 }

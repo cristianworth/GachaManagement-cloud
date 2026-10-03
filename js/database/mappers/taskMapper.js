@@ -4,6 +4,7 @@
 // e a linha da tabela `tasks` no Postgres (snake_case, datas como ISO string).
 
 import { gameFromRow } from './gameMapper.js';
+import RefreshTypeEnum from '../../enums/RefreshTypeEnum.js';
 
 function toIsoStringOrNull(value) {
     if (!value) return null;
@@ -19,6 +20,7 @@ export function taskToRow(task) {
         expiration_date: toIsoStringOrNull(task.expirationDate),
         is_done: task.isDone ?? false,
         refresh_type: task.refreshType,
+        ...(task.repeatDays !== undefined ? { repeat_days: task.repeatDays } : {}),
         game_id: task.gameId ?? null,
         game_description: task.gameDescription,
         ...(task.startAt !== undefined ? { start_at: toIsoStringOrNull(task.startAt) } : {}),
@@ -39,6 +41,7 @@ export function taskFromRow(row) {
         expirationDate: row.expiration_date ? new Date(row.expiration_date) : null,
         isDone: row.is_done ?? false,
         refreshType: row.refresh_type,
+        repeatDays: row.refresh_type === 0 ? null : row.repeat_days ?? RefreshTypeEnum.findDaysById(row.refresh_type),
         gameId: row.game_id,
         gameDescription: row.game_description,
         coverUrl: row.cover_url ?? null,

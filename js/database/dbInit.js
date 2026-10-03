@@ -9,7 +9,7 @@ import { populateInitialGames } from './gameDB.js';
 import { updateTask, populateInitialTasks, fetchAllOverdueTasks } from './taskDB.js';
 import { displayAllTasks } from '../ui/taskUI.js';
 import RefreshTypeEnum from '../enums/RefreshTypeEnum.js';
-import { formatDateForDisplay } from '../utils/dateUtils.js';
+import { formatDateForDisplay, getNextRecurringDeadline } from '../utils/dateUtils.js';
 
 /**
  * Ponto único de inicialização, chamado no boot da aplicação (js/index.js).
@@ -49,13 +49,12 @@ export async function updateExpiratedTasksRoutine() {
     }
 
     for (const task of expiredTasks) {
-        const daysToRefresh = RefreshTypeEnum.findDaysById(task.refreshType);
+        const daysToRefresh = RefreshTypeEnum.getRepeatDays(task);
         if (!daysToRefresh) continue;
 
         const previousDate = new Date(task.expirationDate);
+        task.expirationDate = getNextRecurringDeadline(previousDate, daysToRefresh);
         task.isDone = false;
-        task.expirationDate = new Date(previousDate);
-        task.expirationDate.setDate(previousDate.getDate() + daysToRefresh);
 
         console.log(
             `updated ${task.gameDescription} expirated task ${task.description} ` +

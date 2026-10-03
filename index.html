@@ -94,6 +94,10 @@
                 
                 <label for="abbreviation">Abbreviation:</label>
                 <input id="abbreviation" type="text" required/>
+
+                <label for="gameImageUrl">Image URL (optional):</label>
+                <input id="gameImageUrl" type="url" pattern="https://.+" placeholder="https://example.com/game.png" aria-describedby="gameImageUrlHint" title="Use a direct HTTPS image link."/>
+                <small id="gameImageUrlHint">Use a direct HTTPS image link. Leave blank to use a built-in icon.</small>
                 
                 <label for="capStamina">Cap Stamina:</label>
                 <input id="capStamina" value="240" type="text" required/>
@@ -101,6 +105,7 @@
                 <label for="staminaPerMinute">Stamina p/ Minute:</label>
                 <input id="staminaPerMinute" value="6" type="text" required/>
                 
+                <p id="gameFormStatus" role="alert" hidden></p>
                 <button id="submitGameForm" class="button-save" type="submit"><span class="button-icon" aria-hidden="true">&#10003;</span> Save / Update</button>
             </form>
         </section>
@@ -117,8 +122,11 @@
             <div class="task-filters">
                 <label for="taskGameFilter">Game</label>
                 <select id="taskGameFilter"><option value="">All games</option></select>
-                <label for="taskRefreshTypeFilter">Refresh Type</label>
-                <select id="taskRefreshTypeFilter"><option value="">All refresh types</option></select>
+                <label for="taskRefreshTypeFilter">Repeat interval</label>
+                <select id="taskRefreshTypeFilter"><option value="">All intervals</option></select>
+                <label class="task-completed-filter" for="taskHideCompleted">
+                    <input id="taskHideCompleted" type="checkbox"> Hide completed
+                </label>
                 <span id="taskListStatus" role="status" aria-live="polite"></span>
             </div>
 
@@ -130,7 +138,7 @@
                         <th>Done?</th>
                         <th>Game</th>
                         <th>Task</th>
-                        <th>Refresh Type</th>
+                        <th>Repeat interval</th>
                         <th>Ending Date</th>
                         <th>Actions</th>
                     </tr>
@@ -201,9 +209,16 @@
                     <input id="expirationDate" type="datetime-local" step="1"/>
                 </div>
 
-                <label for="refreshType">Refresh Type:</label>
+                <label for="refreshType">Repeat interval:</label>
                 <select id="refreshType"></select>
+
+                <div id="taskRepeatDaysFields" hidden>
+                    <label for="taskRepeatDays">Repeat every (days):</label>
+                    <input id="taskRepeatDays" type="number" min="1" max="2147483647" step="1" disabled aria-describedby="taskRepeatDaysHint"/>
+                    <small id="taskRepeatDaysHint">Choose a preset or enter a whole number of days. Monthly means every 30 days.</small>
+                </div>
                 
+                <p id="taskFormStatus" role="alert" hidden></p>
                 <button id="submitTaskForm" class="button-save" type="submit"><span class="button-icon" aria-hidden="true">&#10003;</span> Save / Update</button>
             </form>
         </section>

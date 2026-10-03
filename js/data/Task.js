@@ -7,6 +7,7 @@ export class Task {
     expirationDate;
     isDone = false;
     refreshType;
+    repeatDays;
     gameId;
     gameDescription;
     coverUrl;
@@ -16,6 +17,7 @@ export class Task {
         this.description = description;
         this.expirationDate = expirationDate;
         this.refreshType = refreshType;
+        this.repeatDays = RefreshTypeEnum.findDaysById(refreshType);
         this.gameId = gameId;
         this.gameDescription = gameDescription;
         this.id = id;

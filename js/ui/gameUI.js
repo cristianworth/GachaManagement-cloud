@@ -5,6 +5,7 @@ import { calculateMaxStaminaDate, formatDateToDayHour } from '../utils/dateUtils
 import { resetGameForm, setGameFormMessage } from './formHandler.js';
 import { getRandomColor } from '../utils/colorUtils.js';
 import Router from '../utils/router.js';
+import { createGameIcon } from './eventCover.js';
 
 export async function displayAllGames() {
     const games = await fetchAllGames();
@@ -23,9 +24,7 @@ function createGameRow(game) {
     const maxStaminaAt = formatDateToDayHour(game.dateMaxStamina);
 
     row.innerHTML = `
-        <td>
-            <img src=${game.img} alt="${game.description} Icon" class="icon">
-        </td>
+        <td class="game-icon-cell"></td>
         <td>${game.description}</td>
         <td>
             <textarea
@@ -54,6 +53,7 @@ function createGameRow(game) {
         </td>
     `;
 
+    row.querySelector('.game-icon-cell').appendChild(createGameIcon(game.img, game.description));
     return row;
 }
 
@@ -116,6 +116,8 @@ async function handleGameSave(gameId) {
         } else {
             alert("Please enter a valid number for stamina.");
         }
+    } catch (error) {
+        alert(error.message ?? 'Could not save this game.');
     } finally {
         setLoadingState(false);
     }
@@ -136,6 +138,7 @@ async function handleGameEdit(gameId) {
         
         document.getElementById("gameDescription").value = game.description;
         document.getElementById("abbreviation").value = game.abbreviation;
+        document.getElementById('gameImageUrl').value = game.img?.startsWith('https://') ? game.img : '';
         document.getElementById("capStamina").value = game.capStamina;
         document.getElementById("staminaPerMinute").value = game.staminaPerMinute;
     }
@@ -151,13 +154,19 @@ export async function handleAddGame() {
     const abbreviation = document.getElementById("abbreviation").value;
     const capStamina = document.getElementById("capStamina").value;
     const staminaPerMinute = document.getElementById("staminaPerMinute").value;
+    const imageUrl = document.getElementById('gameImageUrl').value.trim();
 
     const gameId = (document.getElementById("gameId").value) ? parseInt(document.getElementById("gameId").value) : undefined;
     
-    const game = new Game(
+    const existingGame = gameId ? await fetchGameById(gameId) : null;
+    if (gameId && !existingGame) throw new Error('Game not found. Reload the list before saving.');
+    const image = imageUrl || (existingGame?.img?.startsWith('img/') ? existingGame.img : 'img/default-icon.png');
+    const game = existingGame ? Object.assign(existingGame, {
+        description: gameDescription, abbreviation, img: image, capStamina, staminaPerMinute,
+    }) : new Game(
         gameDescription, 
         abbreviation, 
-        'img/default-icon.png',
+        image,
         capStamina,
         staminaPerMinute,
         getRandomColor(),

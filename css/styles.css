@@ -319,7 +319,8 @@ th {
     padding: 8px;
 }
 
-#task-form {
+#task-form,
+#game-form {
     display: flex;
     flex-direction: column;
     gap: 8px;
@@ -327,13 +328,15 @@ th {
     margin: 24px auto;
 }
 
-#task-form label:not([hidden]) {
+#task-form label:not([hidden]),
+#game-form label:not([hidden]) {
     margin-top: 8px;
     font-weight: 600;
 }
 
 #task-form input:not([type="checkbox"]):not([hidden]),
-#task-form select {
+#task-form select,
+#game-form input:not([hidden]) {
     width: 100%;
     padding: 8px;
 }
@@ -356,15 +359,28 @@ th {
 }
 
 #task-form #divExpirationDayAndHour > div,
-#task-form #divExpirationDate:not([hidden]) {
+#task-form #divExpirationDate:not([hidden]),
+#task-form #taskRepeatDaysFields:not([hidden]) {
     display: flex;
     flex-direction: column;
     gap: 8px;
 }
 
-#task-form small {
+#task-form small,
+#game-form small {
     color: #475467;
     line-height: 1.4;
+}
+
+.task-completed-filter {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.task-completed-filter > input {
+    width: auto;
+    margin: 0;
 }
 
 .input-centered {

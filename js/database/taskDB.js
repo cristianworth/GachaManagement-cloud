@@ -23,7 +23,7 @@ export async function addTask(task) {
         return taskFromRow(data);
     } catch (error) {
         console.error('Failed to add task:', error);
-        return null;
+        throw error;
     }
 }
 
@@ -38,6 +38,7 @@ export async function updateTask(task) {
         if (error) throw error;
     } catch (error) {
         console.error('Erro ao atualizar a tarefa:', error);
+        throw error;
     }
 }
 
