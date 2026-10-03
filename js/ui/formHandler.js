@@ -71,6 +71,8 @@ export function resetTaskForm() {
     document.getElementById('refreshType').disabled = false;
     document.getElementById("taskId").value = '';
     document.getElementById("taskDescription").value = '';
+    document.getElementById('taskCoverUrl').value = '';
+    document.getElementById('taskCoverUrl').disabled = false;
     document.getElementById("expirationDay").value = 0;
     document.getElementById("expirationHour").value = 0;
     document.getElementById("expirationDate").value = '';

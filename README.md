@@ -39,7 +39,7 @@ Para habilitar o piloto em um banco já existente, primeiro confira o backup de 
 
 ![Gacha Schedule](img/demo/gacha-schedule-demo-02.png)
 
-As capas dos eventos aprovados ficam salvas como URL em `tasks.cover_url` e aparecem como miniaturas ao lado do nome na lista de tarefas. Para bancos existentes, execute [`db/migrations/2026-10-01-task-cover.sql`](db/migrations/2026-10-01-task-cover.sql) depois das migrações do piloto: ela atualiza a função de aprovação e preenche capas dos eventos já aprovados, preservando imagens existentes. Editar o prazo ou o nome mantém a capa. Eventos importados sem imagem e links indisponíveis exibem um placeholder; a edição manual de imagens fica para uma etapa posterior.
+As capas dos eventos aprovados ficam salvas como URL em `tasks.cover_url` e aparecem como miniaturas ao lado do nome na lista de tarefas. Para bancos existentes, execute [`db/migrations/2026-10-01-task-cover.sql`](db/migrations/2026-10-01-task-cover.sql) depois das migrações do piloto: ela atualiza a função de aprovação e preenche capas dos eventos já aprovados, preservando imagens existentes. Tarefas manuais permitem informar uma URL HTTPS no cadastro e na edição; deixar o campo vazio remove a URL. Nas tarefas importadas, esse campo mostra a capa da fonte e fica desabilitado. Tarefas sem imagem e links indisponíveis exibem o mesmo placeholder, mantendo o alinhamento das descrições.
 
 Para habilitar HSR e a revisão por jogo em um banco existente, execute [`db/migrations/2026-10-02-hsr-events.sql`](db/migrations/2026-10-02-hsr-events.sql) depois das três migrações anteriores. Ela associa os candidatos existentes ao Genshin, adiciona início às tarefas e atualiza a aprovação e a limpeza. Para um banco novo, `db/schema.sql` já contém a estrutura atual.
 

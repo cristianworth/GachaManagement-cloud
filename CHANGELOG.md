@@ -15,10 +15,18 @@ O projeto segue o versionamento semântico (SemVer), no formato `MAJOR.MINOR.PAT
 - Importação e revisão de eventos do Zenless Zone Zero pela StarRailAssistant, incluindo os eventos atuais e próximos na sincronização semanal.
 - Filtro por Refresh Type na lista de tarefas, combinável com o filtro por jogo e preservado ao atualizar a lista.
 - Migração das funções de eventos para aceitar ZZZ, com testes de normalização, sincronização, rotas e integração SQL.
+- URL opcional de imagem no cadastro e na edição de tarefas manuais, com placeholder para tarefas sem capa e imagens indisponíveis.
 
 ### Melhorado
 
 - Dicas nos botões da lista esclarecem a diferença entre excluir uma tarefa manual e ignorar um evento importado para impedir sua reimportação.
+- Lista de jogos usa o mesmo tamanho e espaçamento dos botões de tarefas, incluindo Save. Ignorar usa um ícone de bloqueio nas tarefas e na revisão de eventos; Delete mantém a lixeira.
+- Formulário de tarefas organizado em coluna, com campos de dias e horas lado a lado e ajuda para a URL da imagem.
+
+### Corrigido
+
+- Botões da lista de tarefas têm o mesmo tamanho e espaçamento consistente. Edit e Delete/Ignorar ocupam duas colunas fixas, independentemente dos filtros; a ação opcional de restaurar o prazo da API fica centralizada abaixo, com as mesmas dimensões.
+- Capas e descrições de tarefas alinhadas à esquerda, mantendo a posição da imagem consistente para títulos curtos e longos.
 
 ## [1.2.0] - 2026-10-02
 

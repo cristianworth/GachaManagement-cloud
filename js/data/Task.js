@@ -9,6 +9,7 @@ export class Task {
     refreshType;
     gameId;
     gameDescription;
+    coverUrl;
     game;
 
     constructor(description, expirationDate, refreshType, gameId, gameDescription, id = undefined) {

@@ -68,6 +68,7 @@
                         <th>To-do</th>
                         <th>Stamina</th>
                         <th>Max Stamina At</th>
+                        <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody id="gameListBody">
@@ -175,16 +176,24 @@
                 
                 <label for="taskDescription">Task:</label>
                 <input id="taskDescription" type="text" required/>
+
+                <label for="taskCoverUrl">Image URL (optional):</label>
+                <input id="taskCoverUrl" type="url" pattern="https://.+" placeholder="https://example.com/image.jpg" aria-describedby="taskCoverUrlHint" title="Use a direct HTTPS image link."/>
+                <small id="taskCoverUrlHint">Use a direct HTTPS image link. Imported event images are managed by the source.</small>
                 
-                <label for="hasDateSelector">Use Date Selector:</label>
-                <input id="hasDateSelector" type="checkbox">
+                <label for="hasDateSelector" class="task-date-toggle">
+                    <input id="hasDateSelector" type="checkbox"> Use Date Selector
+                </label>
 
                 <div id="divExpirationDayAndHour">
-                    <label for="expirationDay">Expiration Day:</label>
-                    <input id="expirationDay" type="number" value="0" required/>
-                
-                    <label for="expirationHour">Expiration Hour:</label>
-                    <input id="expirationHour" type="number" value="0" required/>    
+                    <div>
+                        <label for="expirationDay">Expiration Day:</label>
+                        <input id="expirationDay" type="number" value="0" required/>
+                    </div>
+                    <div>
+                        <label for="expirationHour">Expiration Hour:</label>
+                        <input id="expirationHour" type="number" value="0" required/>
+                    </div>
                 </div>
 
                 <div id="divExpirationDate" hidden>

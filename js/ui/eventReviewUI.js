@@ -96,6 +96,11 @@ function makeCandidateCard(candidate, existingTasks, game) {
     approveButton.type = 'button';
     const ignoreButton = appendText(card, 'button', 'Ignorar', 'button-neutral');
     ignoreButton.type = 'button';
+    const ignoreIcon = document.createElement('span');
+    ignoreIcon.className = 'button-icon';
+    ignoreIcon.setAttribute('aria-hidden', 'true');
+    ignoreIcon.textContent = '\u2298';
+    ignoreButton.prepend(ignoreIcon);
 
     async function act(action) {
         approveButton.disabled = true;

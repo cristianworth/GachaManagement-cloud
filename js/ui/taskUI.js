@@ -66,18 +66,18 @@ function createTaskRow(task) {
         <td class="task-description"></td>
         <td>${RefreshTypeEnum.findNameById(task.refreshType)}</td>
         <td>${formatDateForDisplay(task.expirationDate)}</td>
-        <td>
-            <button class="spacing-left button-edit" id="edit-task-${task.id}"><span class="button-icon" aria-hidden="true">&#9998;</span> Edit</button>
-            <button class="spacing-left button-delete" id="delete-task-${task.id}"><span class="button-icon" aria-hidden="true">&#128465;</span> ${task.eventCandidateId ? 'Ignorar' : 'Delete'}</button>
-            ${task.eventCandidateId && task.eventDeadlineManual ? `<button class="spacing-left button-neutral" id="restore-deadline-${task.id}" type="button">Usar prazo da API</button>` : ''}
+        <td class="list-action-cell">
+            <div class="list-actions">
+                <button class="button-edit" id="edit-task-${task.id}"><span class="button-icon" aria-hidden="true">&#9998;</span> Edit</button>
+                <button class="button-delete" id="delete-task-${task.id}"><span class="button-icon" aria-hidden="true">${task.eventCandidateId ? '&#8856;' : '&#128465;'}</span> ${task.eventCandidateId ? 'Ignorar' : 'Delete'}</button>
+                ${task.eventCandidateId && task.eventDeadlineManual ? `<button class="button-neutral" id="restore-deadline-${task.id}" type="button">Usar prazo da API</button>` : ''}
+            </div>
         </td>
     `;
 
     const summary = document.createElement('div');
     summary.className = 'task-summary';
-    if (task.coverUrl || task.refreshType === 0) {
-        summary.appendChild(createEventCover(task.coverUrl, 'task-cover'));
-    }
+    summary.appendChild(createEventCover(task.coverUrl, 'task-cover'));
     const description = document.createElement('span');
     description.textContent = task.description;
     if (task.startAt && task.startAt > new Date()) {
@@ -144,6 +144,8 @@ async function handleTaskEdit (taskId) {
         setTaskFormMessage();
 
         document.getElementById("taskDescription").value = task.description;
+        document.getElementById('taskCoverUrl').value = task.coverUrl ?? '';
+        document.getElementById('taskCoverUrl').disabled = Boolean(task.eventCandidateId);
         document.getElementById("expirationDay").value = 0;
         document.getElementById("expirationHour").value = 0;
 
@@ -193,6 +195,8 @@ export async function handleAddTask() {
         gameDescription,
         taskId,
     );
+    const coverInput = document.getElementById('taskCoverUrl');
+    if (!coverInput.disabled) task.coverUrl = coverInput.value.trim() || null;
     
     if (taskId) {
         await updateTask(task);

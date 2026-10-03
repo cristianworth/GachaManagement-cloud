@@ -92,7 +92,7 @@ test('task cover survives database round trips', () => {
     expect(taskFromRow({ id: 1 }).coverUrl).toBeNull();
 });
 
-test('saving a task from the form does not clear its existing cover', () => {
+test('saving a task without editing its cover omits the existing URL from the update', () => {
     const edited = new Task('Event', new Date('2026-11-03T06:59:59Z'), 0, 1, 'Genshin Impact', 16);
     const row = taskToRow(edited);
     expect(row).not.toHaveProperty('cover_url');

@@ -38,15 +38,19 @@ function createGameRow(game) {
             >${game.pendingTasks || ''}</textarea>
         </td>
         <td>
-            <input class="input-centered spacing-left" id="currentStamina${game.id}" type="number" value="${game.currentStamina | ''}" />
-            <button class="spacing-left button-save" id="save-game-${game.id}"><span class="button-icon" aria-hidden="true">&#10003;</span> Save</button>
+            <div class="game-stamina-controls">
+                <input class="input-centered" id="currentStamina${game.id}" type="number" value="${game.currentStamina | ''}" />
+                <button class="button-save" id="save-game-${game.id}"><span class="button-icon" aria-hidden="true">&#10003;</span> Save</button>
+            </div>
         </td>
         <td>
             <span id="newMaxStaminaAt${game.id}" class="spacing-left red-text">${maxStaminaAt}<\span>
         </td>
-        <td>
-            <button class="spacing-left button-edit" id="edit-game-${game.id}"><span class="button-icon" aria-hidden="true">&#9998;</span> Edit</button>
-            <button class="spacing-left button-delete" id="delete-game-${game.id}"><span class="button-icon" aria-hidden="true">&#128465;</span> Delete</button>
+        <td class="list-action-cell">
+            <div class="list-actions">
+                <button class="button-edit" id="edit-game-${game.id}"><span class="button-icon" aria-hidden="true">&#9998;</span> Edit</button>
+                <button class="button-delete" id="delete-game-${game.id}"><span class="button-icon" aria-hidden="true">&#128465;</span> Delete</button>
+            </div>
         </td>
     `;
 

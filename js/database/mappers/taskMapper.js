@@ -22,7 +22,7 @@ export function taskToRow(task) {
         game_id: task.gameId ?? null,
         game_description: task.gameDescription,
         ...(task.startAt !== undefined ? { start_at: toIsoStringOrNull(task.startAt) } : {}),
-        // The task form does not edit covers; omitting the field preserves the saved URL.
+        // Omitting an unedited cover preserves it; null explicitly removes the URL.
         ...(task.coverUrl !== undefined ? { cover_url: task.coverUrl } : {}),
     };
 }
