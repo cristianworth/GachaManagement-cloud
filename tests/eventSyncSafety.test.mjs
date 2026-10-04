@@ -79,15 +79,15 @@ test('One failed game does not stop other games or conceal the failure', async t
         if (game.key === 'hsr') throw new Error('Source unavailable');
         return { gameKey: game.key };
     });
-    assert.deepEqual(calls, ['genshin', 'hsr', 'zzz']);
-    assert.deepEqual(results.map(row => row.ok), [true, false, true]);
+    assert.deepEqual(calls, ['genshin', 'hsr', 'zzz', 'wuwa', 'nte']);
+    assert.deepEqual(results.map(row => row.ok), [true, false, true, true, true]);
     assert.equal(results[1].error.message, 'Source unavailable');
 });
 
 test('CLI validates targets and propagates dry-run without activating planned sources', async () => {
     const calls = [];
     const sync = async (game, options) => calls.push([game.key, options]);
-    for (const args of [['--game=wuwa'], ['--game=nte'], ['--unknown'], ['--game=hsr', '--game=zzz']]) {
+    for (const args of [['--game=not-supported'], ['--unknown'], ['--game=hsr', '--game=zzz']]) {
         await assert.rejects(runSync(args, sync));
     }
     assert.deepEqual(calls, []);
@@ -96,7 +96,7 @@ test('CLI validates targets and propagates dry-run without activating planned so
 });
 
 test('The command-line entry point exits with failure for invalid or planned targets', () => {
-    for (const argument of ['--game=wuwa', '--unknown']) {
+    for (const argument of ['--game=not-supported', '--unknown']) {
         const result = spawnSync(process.execPath, [fileURLToPath(new URL('../scripts/syncEvents.js', import.meta.url)), argument], { encoding: 'utf8' });
         assert.equal(result.error, undefined);
         assert.equal(result.status, 1);

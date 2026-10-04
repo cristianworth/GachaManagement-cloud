@@ -1,4 +1,4 @@
--- Run after 2026-10-02-zzz-events.sql. All changes are rolled back.
+-- Run after 2026-10-04-nte-events.sql. All changes are rolled back.
 begin;
 set local role anon;
 do $$
@@ -6,9 +6,9 @@ declare
     v_game bigint; v_candidate bigint; v_task bigint; v_missing bigint;
     v_other bigint; v_abbreviation text; v_source text; v_deadline timestamptz := now() + interval '20 days';
 begin
-    foreach v_abbreviation in array array['GI', 'HSR', 'ZZZ'] loop
+    foreach v_abbreviation in array array['GI', 'HSR', 'ZZZ', 'WuWa', 'NTE'] loop
         select id into strict v_game from public.games where abbreviation = v_abbreviation;
-        v_source := case v_abbreviation when 'GI' then 'starrailassistant-genshin' when 'HSR' then 'starrailassistant-hsr' else 'starrailassistant-zzz' end;
+        v_source := case v_abbreviation when 'GI' then 'starrailassistant-genshin' when 'HSR' then 'starrailassistant-hsr' when 'ZZZ' then 'starrailassistant-zzz' when 'WuWa' then 'starrailassistant-wuwa' else 'starrailassistant-nte' end;
         select id into strict v_other from public.games where abbreviation = case when v_abbreviation = 'HSR' then 'GI' else 'HSR' end;
         insert into public.event_candidates (source, external_id, name, game_id, proposed_end_at)
         values (v_source, '__auto_test__', 'Automatic event', v_game, v_deadline)
@@ -122,4 +122,4 @@ begin
 end;
 $$;
 rollback;
-select 'PASS: GI/HSR/ZZZ automatic import, repeat sync, completion, manual deadline, restore, missing end, ignore, game isolation' as result;
+select 'PASS: GI/HSR/ZZZ/WuWa/NTE automatic import, repeat sync, completion, manual deadline, restore, missing end, ignore, game isolation' as result;

@@ -5,6 +5,8 @@ import { createHash } from 'node:crypto';
 import { EVENT_GAME_CATALOG, EVENT_GAMES, getCatalogGame, getEventGame } from '../js/events/eventGames.js';
 import { normalizeStarRailAssistantActivities as normalize, activityKey } from '../js/events/starRailAssistant.js';
 import { syncGameEvents } from '../scripts/eventSync.js';
+import { resolveWuwaTimes } from '../js/events/wuwa.js';
+import { resolveNteTimes } from '../js/events/nte.js';
 
 const manifest = JSON.parse(readFileSync(new URL('./fixtures/manifest.json', import.meta.url)));
 const expectations = {
@@ -14,6 +16,10 @@ const expectations = {
         name: 'Apocalyptic Shadow: Dominance of Oblivion', end: '2026-11-16T08:59:59.000Z' },
     zzz: { count: 10, skipped: 2, missingCovers: 6, future: 2,
         name: 'All-New Program', end: '2026-10-20T08:59:59.000Z' },
+    wuwa: { count: 10, skipped: 0, missingCovers: 8, future: 6,
+        name: 'Cubie Wars', end: '2026-11-11T16:59:59.000Z' },
+    nte: { count: 9, skipped: 0, missingCovers: 3, future: 3,
+        name: 'Circle Gifts', end: '2026-11-10T21:59:59.000Z' },
 };
 
 for (const game of EVENT_GAME_CATALOG) test(`${game.abbreviation} has a traceable real API fixture`, () => {
@@ -37,7 +43,9 @@ for (const game of EVENT_GAMES) test(`${game.abbreviation} normalizes its fixtur
     const now = Date.parse(meta.referenceTime);
     const expected = expectations[game.key];
     assert.ok(expected, 'An enabled game requires reviewed normalization expectations');
-    const { events, skipped } = normalize(calendar, now);
+    const resolveTimes = game.timePolicy === 'wuwa-america' ? resolveWuwaTimes
+        : game.timePolicy === 'nte-america' ? resolveNteTimes : undefined;
+    const { events, skipped } = normalize(calendar, now, { resolveTimes });
     assert.equal(events.length, expected.count);
     assert.equal(skipped, expected.skipped);
     assert.equal(events.filter(row => !row.coverUrl).length, expected.missingCovers);
@@ -57,11 +65,11 @@ for (const game of EVENT_GAMES) test(`${game.abbreviation} normalizes its fixtur
     assert.ok(result.candidates.every(row => row.source === game.source && !Object.hasOwn(row, 'game_id')));
 });
 
-test('Planned games are excluded from routes and sync until their policies and SQL are ready', async t => {
-    assert.deepEqual(EVENT_GAMES.map(game => game.key), ['genshin', 'hsr', 'zzz']);
-    t.mock.method(globalThis, 'fetch', () => { throw new Error('Planned games must not make requests'); });
-    for (const key of ['wuwa', 'nte']) {
+test('Unknown games are excluded from sync; active sources require reviewed policies and SQL', async t => {
+    assert.deepEqual(EVENT_GAMES.map(game => game.key), ['genshin', 'hsr', 'zzz', 'wuwa', 'nte']);
+    t.mock.method(globalThis, 'fetch', () => { throw new Error('Unknown games must not make requests'); });
+    for (const key of ['not-supported']) {
         assert.throws(() => getEventGame(key), /Unsupported event game/);
-        await assert.rejects(syncGameEvents(getCatalogGame(key)), /Unsupported event game/);
+        await assert.rejects(syncGameEvents({ key }), /Unsupported event game/);
     }
 });

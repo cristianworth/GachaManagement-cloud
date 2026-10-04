@@ -1,0 +1,38 @@
+{
+  "reviewedAt": "2026-10-03",
+  "version": "3.7",
+  "release": {
+    "announcementId": 5571,
+    "url": "https://wutheringwaves.kurogames.com/en/main/news/detail/5571",
+    "dataUrl": "https://hw-media-cdn-mingchao.kurogame.com/akiwebsite/website2.0/json/G152/en/article/5571.json",
+    "maintenanceEnd": "2026-09-30T11:00:00+08:00"
+  },
+  "events": [
+    { "name": "Cubie Wars", "start": "2026-09-30T11:00", "startBasis": "version-update", "end": "2026-11-11T11:59", "endBasis": "server-time" },
+    { "name": "Dreams in the Capsule", "start": "2026-09-30T11:00", "startBasis": "version-update", "end": "2026-11-11T03:59", "endBasis": "server-time" },
+    { "name": "Gifts of Waking Moon", "start": "2026-09-30T11:00", "startBasis": "version-update", "end": "2026-11-11T03:59", "endBasis": "server-time" },
+    { "name": "Artisan's Search", "start": "2026-10-08T04:00", "startBasis": "server-time", "end": "2026-10-26T03:59", "endBasis": "server-time" },
+    { "name": "Echo Erase", "start": "2026-10-22T10:00", "startBasis": "server-time", "end": "2026-11-09T03:59", "endBasis": "server-time" },
+    { "name": "Gifts of Singing Drizzle", "start": "2026-10-22T10:00", "startBasis": "server-time", "end": "2026-11-11T03:59", "endBasis": "server-time" },
+    { "name": "Beyond the Waves: Land of Xuanfang", "start": "2026-10-29T04:00", "startBasis": "server-time", "end": "2026-11-11T03:59", "endBasis": "server-time" }
+  ],
+  "userProvidedSchedules": [
+    { "name": "Moonlit Path", "startDate": "2026-09-30", "endDate": "2026-11-11",
+      "url": "https://game8.co/games/Wuthering-Waves/archives/578047", "providedAt": "2026-10-04",
+      "precision": "dates-only", "clockDecision": "Cristian accepted using the API America reset estimate; exact clock was not independently verified." }
+  ],
+  "recurringEditions": [
+    { "name": "Bountiful Crescendo", "start": "2026-02-19T04:00", "end": "2026-02-26T03:59", "basis": "server-time", "announcementId": 4264,
+      "url": "https://wutheringwaves.kurogames.com/en/main/news/detail/4264",
+      "dataUrl": "https://hw-media-cdn-mingchao.kurogame.com/akiwebsite/website2.0/json/G152/en/article/4264.json" },
+    { "name": "Bountiful Crescendo", "start": "2026-04-02T04:00", "end": "2026-04-09T03:59", "basis": "server-time", "announcementId": 4466,
+      "url": "https://wutheringwaves.kurogames.com/en/main/news/detail/4466",
+      "dataUrl": "https://hw-media-cdn-mingchao.kurogame.com/akiwebsite/website2.0/json/G152/en/article/4466.json" },
+    { "name": "Chord Cleansing", "start": "2025-12-17T04:00", "end": "2025-12-24T03:59", "basis": "server-time", "announcementId": 3774,
+      "url": "https://wutheringwaves.kurogames.com/en/main/news/detail/3774",
+      "dataUrl": "https://hw-media-cdn-mingchao.kurogame.com/akiwebsite/website2.0/json/G152/en/article/3774.json" },
+    { "name": "Chord Cleansing", "start": "2026-03-11T04:00", "end": "2026-03-18T03:59", "basis": "server-time", "announcementId": 4368,
+      "url": "https://wutheringwaves.kurogames.com/en/main/news/detail/4368",
+      "dataUrl": "https://hw-media-cdn-mingchao.kurogame.com/akiwebsite/website2.0/json/G152/en/article/4368.json" }
+  ]
+}

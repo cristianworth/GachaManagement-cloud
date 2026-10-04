@@ -23,7 +23,7 @@ for (const game of EVENT_GAMES) for (const hosted of [false, true]) test(`${game
     assert.equal(location.pathname, `${base}/events/${game.key}`);
     assert.equal(pages.find(page => page.dataset.page === 'eventReview').style.display, 'block');
     assert.equal(elements.get('eventReviewTitle').textContent, `Eventos encontrados: ${game.name}`);
-    assert.equal(Router.routes['/events/wuwa'], undefined);
-    assert.equal(Router.routes['/events/nte'], undefined);
+    assert.ok(Router.routes['/events/wuwa']);
+    assert.ok(Router.routes['/events/nte']);
     assert.equal(elements.get('eventReviewStatus').textContent, 'Nenhum evento precisa de revisão.');
 });

@@ -17,7 +17,7 @@ export function activityKey(name) {
     return name.normalize('NFKC').trim().replace(/\s+/g, ' ').toLocaleLowerCase('en-US');
 }
 
-export function normalizeStarRailAssistantActivities(calendar, now = Date.now()) {
+export function normalizeStarRailAssistantActivities(calendar, now = Date.now(), { resolveTimes } = {}) {
     if (!Array.isArray(calendar?.activities)) {
         throw new Error('StarRailAssistant response does not contain an activities array');
     }
@@ -34,25 +34,32 @@ export function normalizeStarRailAssistantActivities(calendar, now = Date.now())
 
         const sourceStartAt = toUtc(activity.startTime, ASIA_OFFSET);
         const sourceEndAt = toUtc(activity.endTime, ASIA_OFFSET);
-        if (sourceEndAt && Date.parse(sourceEndAt) + MAX_SERVER_DIFFERENCE_MS <= now) {
-            skipped++;
-            continue;
-        }
-
         const validRange = sourceStartAt && sourceEndAt && sourceStartAt < sourceEndAt;
         const serverTimeDeadline = validRange && activity.endTime.endsWith('T03:59:59');
+        const policy = resolveTimes?.(activity, calendar);
         // Treat reset boundaries as server time; the reviewer can still adjust the proposal.
         // Other deadlines still give the reviewer a usable starting value.
-        const proposedEndAt = serverTimeDeadline
+        const proposedEndAt = policy
+            ? validRange && policy.endOffset ? toUtc(activity.endTime, policy.endOffset) : null
+            : serverTimeDeadline
             ? toUtc(activity.endTime, '-05:00')
             : sourceEndAt;
         const coverUrl = typeof activity.cover === 'string' && activity.cover.startsWith('https://')
             ? activity.cover
             : null;
 
-        const proposedStartAt = validRange && activity.startTime.endsWith('T04:00:00')
+        const proposedStartAt = policy
+            ? validRange && policy.startOffset ? toUtc(activity.startTime, policy.startOffset) : null
+            : validRange && activity.startTime.endsWith('T04:00:00')
             ? toUtc(activity.startTime, '-05:00')
             : sourceStartAt;
+
+        const expiresAt = policy && proposedEndAt ? Date.parse(proposedEndAt)
+            : sourceEndAt ? Date.parse(sourceEndAt) + MAX_SERVER_DIFFERENCE_MS : null;
+        if (expiresAt !== null && expiresAt <= now) {
+            skipped++;
+            continue;
+        }
 
         events.push({
             name,
@@ -67,6 +74,7 @@ export function normalizeStarRailAssistantActivities(calendar, now = Date.now())
                 ? 'Data final ausente/inválida na fonte; informe o prazo manualmente.'
                 : !validRange
                     ? 'Data de início ausente/inválida na fonte; confira o prazo antes de aprovar.'
+                : policy ? policy.reviewReason ?? null
                 : !serverTimeDeadline
                     ? 'Prazo inicial usa o horário informado para Ásia; ajuste se o servidor América encerrar em outro horário.'
                     : null,

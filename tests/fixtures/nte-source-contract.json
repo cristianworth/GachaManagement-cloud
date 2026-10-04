@@ -1,0 +1,21 @@
+{
+  "reviewedAt": "2026-10-04",
+  "version": "1.4",
+  "source": "https://nte.perfectworld.com/en/article/news/gamenews/20260929/264409.html",
+  "americaResetSource": "https://game8.co/games/Neverness-to-Everness/archives/598313",
+  "americaOffset": "-05:00",
+  "dailyReset": "05:00",
+  "maintenanceEnd": "2026-09-30T11:00:00+08:00",
+  "precision": "minutes",
+  "events": [
+    { "name": "Circle Gifts", "start": "2026-09-30T11:00", "end": "2026-11-11T05:59", "startBasis": "version-update", "endBasis": "UTC+8" },
+    { "name": "Pukaland Travelogue", "start": "2026-09-30T11:00", "end": "2026-11-11T05:59", "startBasis": "version-update", "endBasis": "UTC+8" },
+    { "name": "Born to Race", "start": "2026-09-30T11:00", "end": "2026-11-11T05:59", "startBasis": "version-update", "endBasis": "UTC+8" },
+    { "name": "Everdriving", "start": "2026-09-30T11:00", "end": "2026-11-11T05:59", "startBasis": "version-update", "endBasis": "UTC+8" },
+    { "name": "Terminal Depths", "start": "2026-09-30T11:00", "end": "2026-11-11T05:59", "startBasis": "version-update", "endBasis": "UTC+8" },
+    { "name": "Circle Bounty", "start": "2026-09-30T11:00", "end": "2026-11-10T23:59", "startBasis": "version-update", "endBasis": "UTC+8" },
+    { "name": "Stamina Recharge", "start": "2026-10-05T05:00", "end": "2026-10-19T04:59", "startBasis": "server-time", "endBasis": "server-time" },
+    { "name": "Coal Lump's Treasure", "start": "2026-10-08T10:00", "end": "2026-11-11T05:59", "startBasis": "UTC+8", "endBasis": "UTC+8" },
+    { "name": "Pixel Surge", "start": "2026-10-19T05:00", "end": "2026-10-26T04:59", "startBasis": "server-time", "endBasis": "server-time" }
+  ]
+}

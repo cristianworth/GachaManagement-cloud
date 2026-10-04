@@ -8,6 +8,27 @@ O projeto segue o versionamento semântico (SemVer), no formato `MAJOR.MINOR.PAT
 - `MINOR`: nova funcionalidade compatível com a versão anterior.
 - `PATCH`: correção de bug ou melhoria pequena, sem nova funcionalidade relevante.
 
+## [1.4.0] - 2026-10-04
+
+### Adicionado
+
+- Importação e revisão de eventos do Wuthering Waves e Neverness to Everness, com os cinco jogos ativos na sincronização semanal.
+- Políticas explícitas por evento/campo para horários globais e do servidor América; horários de novas edições sem confirmação continuam na revisão.
+- Identidade por edição em WuWa/NTE: correções de períodos correspondentes preservam vínculos, conclusão, ignorados e prazos manuais; edições distintas começam sem estado herdado e associações ambíguas bloqueiam escrita.
+- Migrações compatíveis de WuWa/NTE e contratos independentes de evidência das fixtures, com testes de horários, expiração exata, rotas, interface, SQL, repetição e preservação dos dados.
+- Convenções locais para próximas sessões, incluindo Game8 como referência de datas/horários, procedência das evidências, fixtures congeladas e fluxo de validação antes da sincronização.
+
+### Melhorado
+
+- Revisão de WuWa/NTE oferece link para Game8 e distingue início desconhecido de horário confirmado.
+- Testes de integração exercitam a sincronização real contra PostgreSQL descartável, além de validar schema novo e sequência completa de migrações.
+- Moonlit Path usa a proposta de reset da API para América, aceita por Cristian; suas datas foram fornecidas pelo Game8, enquanto a hora exata permanece uma estimativa documentada.
+
+### Corrigido
+
+- Sincronização individual de outro jogo não executa a limpeza de tarefas vencidas do HSR.
+- Prazos globais confirmados expiram no instante correto, sem aguardar o deslocamento de 13 horas do reset americano.
+
 ## [1.3.1] - 2026-10-03
 
 ### Melhorado

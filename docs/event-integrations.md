@@ -2,7 +2,7 @@
 
 ## O que está pronto
 
-O fluxo continua simples: calendário da StarRailAssistant → normalização → candidatos → RPC transacional → tarefas → interface. Genshin, HSR e ZZZ estão ativos. WuWa e NTE estão no catálogo como `planned`: podem ter amostras capturadas, mas não entram nas rotas, na revisão nem na sincronização.
+O fluxo continua simples: calendário da StarRailAssistant → normalização → candidatos → RPC transacional → tarefas → interface. Genshin, HSR, ZZZ, WuWa e NTE estão ativos. Ativação exige política conferida e suporte SQL; uma amostra capturada sozinha não habilita o jogo.
 
 O catálogo está em `js/events/eventGames.js`. `EVENT_GAMES` é somente o subconjunto ativo; as rotas são derivadas dele. Não é necessário copiar a lista de jogos para o router. O banco continua validando fontes e siglas em SQL: os testes de contrato executam a importação para cada jogo ativo, tanto no schema novo quanto no banco migrado. Ativar um jogo sem atualizar o SQL faz a suíte falhar.
 
@@ -15,8 +15,8 @@ Isso prepara a integração de eventos; não implementa seleção inicial de jog
 | Genshin | `ys-en-US.json` | Normalização e dry-run testados |
 | HSR | `sr-en-US.json` | Normalização e dry-run testados |
 | ZZZ | `zzz-en-US.json` | Normalização e dry-run testados |
-| WuWa | `ww-en-US.json` | Contrato da resposta capturado; horários ainda não validados |
-| NTE | `nte-en-US.json` | Contrato da resposta capturado; horários/região ainda não validados |
+| WuWa | `ww-en-US.json` | Normalização América, edições, dry-run e importação testados |
+| NTE | `nte-en-US.json` | Normalização global/América, edições, dry-run e importação testados |
 
 `manifest.json` registra URL, idioma, captura, relógio de referência, hash SHA-256 e quantidade de atividades. ZZZ mantém a amostra anterior de 02/10/2026; as outras foram capturadas em 03/10/2026. São dados congelados de teste, não calendários usados pela aplicação em produção. O relógio fixo impede que o teste falhe daqui a um mês porque os eventos venceram.
 
@@ -47,9 +47,10 @@ Node 20 ou superior. O executor enumera os arquivos sem depender de expansão de
 |---|---|---|
 | Resposta real da API | `eventFixtures.test.mjs`, `zzzEvents.test.mjs` | Proveniência, nomes únicos na amostra, eventos atuais/futuros, capas opcionais, prazos com relógio fixo |
 | Normalização | `starRailAssistantGenshin.test.mjs`, `hsrEvents.test.mjs`, `eventSyncSafety.test.mjs` | Datas ausentes, datas impossíveis, fallback, reset América e instante exato de expiração |
+| WuWa/NTE por campo e edição | `wuwaEvents.test.mjs`, `wuwaSourceContract.test.mjs`, `nteEvents.test.mjs` | Evidência independente, clocks globais/servidor, estimativa expressamente aceita, desconhecidos para revisão e preservação de estado no PostgreSQL |
 | Sincronização REST | `autoEvents.test.mjs`, `genshinSync.test.mjs`, `eventSyncSafety.test.mjs` | Fonte/jogo corretos, preservar decisão de ignorar, dry-run sem banco, rejeitar respostas inválidas sem mutações, ausência na API apenas inativa candidatos |
 | CLI e rotas | `eventSyncSafety.test.mjs`, `eventRoutes.test.mjs` | Continuar os outros jogos após falha; validar argumentos; abrir revisão local e no GitHub Pages para todos os ativos |
-| PostgreSQL e migrações | `database.test.mjs` + quatro arquivos `.sql` | Importação repetida, conclusão preservada, correções manuais, restaurar API, ignorar, isolamento de jogos, limpeza HSR, recorrência e rollback |
+| PostgreSQL e migrações | `database.test.mjs` + cinco arquivos `.sql` | Importação repetida, conclusão preservada, correções manuais, restaurar API, ignorar, isolamento de jogos, limpeza HSR, recorrência e rollback |
 | HTML e formulários | `uiIntegration.test.mjs` | Campos e validação reais, URL manual, presets/Custom, edição importada bloqueada, erro de salvamento preserva entrada, filtros combinados e placeholders |
 | Lógica existente | `*.test.js` | Stamina, datas, mappers, filtros e renovação de ciclos vencidos |
 
@@ -59,24 +60,32 @@ Os testes de interface usam jsdom e um cliente Supabase simulado que rejeita ope
 
 O CI executa a suíte em Windows e Linux. O workflow semanal executa os testes antes da sincronização. Uma falha impede a etapa de escrita; isso não transforma toda a sincronização REST em uma transação única: uma falha de escrita após candidatos anteriores terem sido salvos pode deixar uma atualização parcial, reconciliada na próxima execução.
 
-## Próxima entrega: Wuthering Waves
+## Wuthering Waves: implementação
 
-1. Conferir `ww-en-US.json` e validar os horários de início/fim com uma fonte do jogo para o servidor acompanhado. A amostra inclui reset às 04:00/03:59:59, início às 10:00/11:00 e fim às 11:59:59. A semelhança com HoYo não basta para reutilizar a conversão.
-2. Tornar a política de horários explícita por jogo no normalizador, preservando o padrão validado de GI/HSR/ZZZ. Criar casos esperados para reset, horário fora do reset, prazo ausente/inconsistente e limite de expiração. Não usar um único deslocamento fixo para todos os horários sem evidência.
-3. Conferir a identidade das edições recorrentes. A amostra tem dez nomes distintos, mas isso não comprova que o mesmo nome não será reutilizado no calendário seguinte. Manter chaves atuais dos jogos existentes; se for necessário um novo contrato, planejar a migração dos vínculos/estados antes de mudar `external_id`.
-4. Adicionar a fonte `starrailassistant-wuwa`/sigla `WuWa` às funções SQL e criar uma migração compatível. Incluir a migração na ordem explícita de `tests/helpers/testDatabase.mjs`; um teste verifica que nenhum arquivo ficou fora dessa sequência. Adicionar a sigla ao teste transacional compartilhado de importação; conferir preservação de conclusão, prazo manual e ignorados.
-5. Acrescentar expectativas específicas em `eventFixtures.test.mjs` e trocar o status para `active`. Rotas, revisão e CLI passam a usar o registro automaticamente; testes REST, rotas e SQL acompanham os ativos. A lista esperada de ativos também precisa ser revisada conscientemente.
-6. Rodar `npm test`; depois, dry-run da fonte real. Confirmar um único jogo `WuWa` cadastrado. Aplicar e verificar a migração no ambiente de destino antes da primeira sincronização real; repetir a sincronização e conferir ausência de duplicatas.
+Investigação e fontes em [wuwa-validation.md](wuwa-validation.md); convenções para próximas sessões em [project-conventions.md](project-conventions.md). WuWa e NTE estão ativos no registro, CLI e revisão.
 
-## Última entrega: NTE
+- `js/events/wuwa.js` explicita a base por campo/edição: UTC−5 América e UTC+8 para inícios globais confirmados. Bountiful Crescendo/Chord Cleansing reaproveitam o padrão de reset validado em diversas edições. Horários desconhecidos não recebem prazo presumido e ficam em revisão.
+- Os dez eventos da fixture 3.7 são importáveis: nove com bases conferidas e Moonlit Path com estimativa de horário aceita por Cristian, mantendo as datas atuais fornecidas por ele. Os sete anúncios oficiais e os trechos atuais dos dois modos enviados por Cristian são registrados como evidências distintas.
+- Identidade inicial combina nome normalizado e início bruto interpretado da fonte; datas sem início usam o fim, e ausência dos dois gera chave de revisão. Reconciliação com a mesma ocorrência (início igual ou períodos sobrepostos) conserva a chave persistida. Períodos disjuntos criam edição independente; mudar a versão do calendário não muda a chave. Associação ambígua bloqueia antes das mutações.
+- Uma correção que move todo o período para fora do anterior e altera o início não pode ser distinguida de nova edição sem ID do provedor; revisar essa situação antes de sincronizar. Renomeação também não é associação automática. As chaves de GI/HSR/ZZZ não foram alteradas.
+- Schema e migração `2026-10-03-wuwa-events.sql` habilitam a fonte/sigla, preservando funções públicas, grants e security invoker. Testes cobrem instalação nova, upgrade, repetição da migração e dados existentes. A limpeza HSR só roda ao sincronizar HSR; sincronizar WuWa não remove tarefas dos outros jogos.
+- A suíte combina fixtures, horários esperados independentes, REST, rotas, DOM e PostgreSQL. Um teste executa o fluxo de sincronização usando o banco descartável para verificar correção de datas, conclusão, prazo manual, mudança da versão, ignorado e nova edição sem herdar estado.
 
-Repetir o mesmo fluxo após WuWa, aproveitando a política por jogo já construída. A amostra de NTE inclui eventos às 05:00/04:59:59 e vários prazos às 05:59:59, diferentes do reset hoje reconhecido. Validar também a correspondência entre calendário asiático e global; uma diferença de dias não se resolve apenas convertendo fuso. Até isso estar explícito, a fixture serve para investigação, sem habilitar importação.
+Para novas edições: confirmar no Game8, complementar a base global/servidor em anúncio oficial quando necessário, acrescentar evidência e política por campo e atualizar expectativas com relógio fixo. A captura da fixture continua explícita; não adicionar datas de produção aos testes automaticamente.
+
+Entrega conjunta 1.4.0: 213 testes passaram; migrações aplicadas no destino e contratos dos cinco jogos passaram como `anon` com rollback. Sincronizados dez eventos WuWa e nove NTE; repetir não criou candidatos/tarefas extras. SQL confirmou datas esperadas, ausência de revisão/duplicatas e preservação dos dados anteriores. Resultados e limitações completos nos documentos de validação de cada jogo.
+
+## Neverness to Everness: implementação
+
+Fontes e campos em [nte-validation.md](nte-validation.md). As notas oficiais globais 1.4 conferem os nove eventos da fixture e especificam UTC+8 ou horário do servidor. Game8 confirma América UTC−5 e reset às 05:00. `js/events/nte.js` aplica bases por campo somente às edições verificadas; fim global expira no instante global, sem acrescentar 13 horas. Novas edições ou horários alterados ficam em revisão.
+
+A integração reutiliza identidade por edição, revisão, CLI e testes compartilhados. `2026-10-04-nte-events.sql` amplia as funções públicas após WuWa, preservando grants e security invoker. `tests/nteEvents.test.mjs` cruza evidência oficial e fixture, verifica limites de expiração e executa sincronização com PostgreSQL, protegendo conclusão, prazo manual, ignorados e independência da próxima edição. O adaptador estrito em `tests/helpers/databaseFetch.mjs` é compartilhado com WuWa. A API pode omitir eventos presentes no jogo; sua integração não promete calendário completo.
 
 ## Sugestões anteriores: o que mudou e o que fica separado
 
 - **Já resolvido antes desta preparação:** falhas ao salvar mantêm os formulários; tarefas recorrentes vencidas avançam até o próximo ciclo futuro; imagens manuais e filtros estão implementados.
 - **Resolvido nesta preparação:** fixtures por jogo, relógio controlado, comando único, testes SQL/DOM reproduzíveis, rotas derivadas do registro e barreira de testes antes da sincronização.
-- **Prioridade alta para integrações:** política de horário por jogo e identidade de novas edições. Nomes reutilizados ainda podem herdar conclusão/ignorado da edição anterior. Não trocar a chave simplesmente para `nome + datas`: correções de prazo poderiam criar duplicatas.
+- **Prioridade alta para integrações:** política de horário por jogo e identidade de novas edições. WuWa/NTE já distinguem edições; GI/HSR/ZZZ conservam suas chaves atuais. Não trocar a chave simplesmente para `nome + datas`: correções de prazo poderiam criar duplicatas.
 - **Melhoria independente, complexidade média:** distinguir erro de leitura de lista vazia e propagar erros de conclusão/exclusão. Hoje alguns métodos de `taskDB.js`/`gameDB.js` capturam erros e retornam vazio/null ou apenas registram a falha. Alterar isso exige atualizar os consumidores e seus estados de erro.
 - **Melhoria independente, complexidade média:** weeklies iniciais por sigla e próximo reset, removendo IDs fixos/datas de 2025; tratar repetição do seed e preferência de não recriar tarefas removidas.
 - **Mudança de comportamento a revisar:** limpeza de vencidos continua restrita ao HSR. Generalizá-la exige decidir preservação/recuperação para todos os jogos e testar tarefas manuais e recorrentes. Ausência em resposta da API continua sem excluir tarefas.

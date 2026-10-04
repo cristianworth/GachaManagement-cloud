@@ -1,6 +1,6 @@
 # Próximas melhorias
 
-Preparação dos eventos atualizada em [docs/event-integrations.md](docs/event-integrations.md): GI/HSR/ZZZ ativos; fixtures, testes SQL/DOM e CI prontos. Próximas entregas: WuWa e depois NTE. Políticas de horário e identidade de novas edições precisam ser validadas antes da ativação.
+Eventos atualizados em [docs/event-integrations.md](docs/event-integrations.md): GI/HSR/ZZZ/WuWa/NTE ativos na versão 1.4.0; fixtures, testes SQL/DOM e CI prontos. WuWa/NTE distinguem horários e edições; Moonlit Path usa a estimativa aceita por Cristian. Convenções para próximas sessões em [docs/project-conventions.md](docs/project-conventions.md).
 
 Complexidade estimada para este projeto (HTML, CSS, JavaScript e Supabase): **baixa** = alteração localizada; **média** = envolve interface e lógica existente; **alta** = envolve várias partes do sistema, migração de dados ou decisões de produto. São estimativas relativas, não prazos.
 
@@ -72,7 +72,7 @@ Complexidade estimada para este projeto (HTML, CSS, JavaScript e Supabase): **ba
 
 ## 8. Importar eventos automaticamente pelo StarRailAssistant — MVP
 
-**Recorte implementado e validado até a versão 1.3:** importação automática dos calendários em inglês de Genshin/HSR/ZZZ, proteção de datas manuais, ação de ignorar e filtros por jogo, intervalo e conclusão. Preparação local inclui fixtures dos cinco jogos, testes de SQL/HTML e CI. Próxima integração: WuWa; por último, NTE. Fallback chinês, identidade entre edições de mesmo nome e limpeza geral ainda estão pendentes; os itens abaixo descrevem o MVP completo.
+**Recorte implementado na versão 1.4.0:** importação automática em inglês dos cinco jogos, proteção de datas manuais, ignorados, filtros, fixtures, testes SQL/HTML e CI. WuWa/NTE têm identidade por edição e política por campo validada. Fallback chinês, identidade por edição em GI/HSR/ZZZ e limpeza geral continuam separados; os itens abaixo descrevem o MVP completo.
 
 - [ ] Importar eventos atuais e futuros diretamente para a lista de tarefas quando existir uma data final utilizável. A revisão humana fica reservada aos eventos sem prazo utilizável nas fontes disponíveis.
 - [ ] Preferir os dados em `en-US`; completar o prazo com o registro chinês do mesmo evento quando necessário. Se o calendário inglês estiver indisponível, usar o chinês quando disponível. Registrar a origem do prazo e manter a edição manual.
@@ -88,7 +88,7 @@ Complexidade estimada para este projeto (HTML, CSS, JavaScript e Supabase): **ba
 
 - **Complexidade: média para automatizar o fluxo existente; alta para completar o fallback entre idiomas e cobrir os cinco jogos.** A expansão exige conferir os calendários de cada jogo e as peculiaridades de suas edições recorrentes.
 - **Ponto a resolver antes do fallback por evento:** o contrato atual da API não fornece ID por atividade. Nomes e capas podem mudar entre idiomas; vários eventos podem compartilhar exatamente o início e o fim. Definir uma associação explícita entre os registros, com aliases por jogo quando necessário, e persistir a identidade escolhida. Não unir por posição da lista ou somente por datas. Usar o calendário chinês inteiro quando o inglês falha não resolve sozinho um evento sem prazo dentro de uma lista inglesa parcialmente preenchida.
-- **Horários:** idioma não identifica servidor. Manter as conversões já conhecidas para América e aceitar o prazo original da fonte como fallback, com sua origem visível. Para NTE, o calendário asiático pode diferir em dias do global; aceitar essa limitação no MVP e avaliar outra fonte depois.
+- **Horários:** idioma não identifica servidor. Manter as conversões já conhecidas para América e aceitar o prazo original da fonte como fallback, com sua origem visível. WuWa/NTE usam bases explícitas por campo e edição; novas edições sem confirmação ficam em revisão. O NTE atual foi conferido nos anúncios globais 1.4; não extrapolar essa correspondência para versões futuras.
 - **Dados existentes:** comentar as tarefas iniciais não remove registros já salvos. Manter a retirada manual dos duplicados antigos, conforme combinado; não fazer uma exclusão automática ampla das tarefas atuais.
 - **Concluído quando:** eventos com prazo utilizável aparecem sem aprovação prévia, somente os sem prazo vão para revisão, repetir a sincronização não duplica nem desfaz decisões do usuário e as weeklies continuam independentes.
 

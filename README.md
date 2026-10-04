@@ -4,7 +4,7 @@ As melhorias planejadas e suas estimativas de complexidade estão em [TODO.md](T
 
 O **Gacha Management** é uma aplicação projetada para ajudar jogadores de **gacha games** a gerenciar sua **resina/stamina** e acompanhar **tarefas recorrentes** nos jogos. Ele oferece ferramentas para rastrear a regeneração da stamina, organizar atividades programadas e facilitar o planejamento dentro dos jogos.
 
-Versão atual: **1.3.1**. Consulte o [CHANGELOG](CHANGELOG.md) para ver as alterações de cada versão e as regras de versionamento utilizadas.
+Versão atual: **1.4.0**. Consulte o [CHANGELOG](CHANGELOG.md) para ver as alterações de cada versão e as regras de versionamento utilizadas.
 
 ![Resin Management](img/demo/resin-management-demo-01.png)
 
@@ -25,9 +25,9 @@ Versão atual: **1.3.1**. Consulte o [CHANGELOG](CHANGELOG.md) para ver as alter
   - **Evento sem repetição**
 - Permite visualizar todas as tarefas em um **calendário simples**, evitando que você esqueça **eventos importantes**.
 
-### Eventos do Genshin, HSR e ZZZ
+### Eventos do Genshin, HSR, ZZZ, WuWa e NTE
 
-Uma rotina semanal consulta o calendário em inglês da [StarRailAssistant](https://starrailassistant.top/reference/public-api/) e importa automaticamente eventos atuais e próximos de Genshin, HSR e ZZZ com prazo final utilizável. A lista de atividades pode ser filtrada por jogo. **Revisar eventos** mostra as pendências de prazo, separadas por jogo: informe o fim, crie ou vincule uma tarefa do mesmo jogo, ou ignore. A gravação da tarefa e do vínculo é transacional. Login e seletores também podem aparecer; use **Ignorar** na lista para removê-los e impedir que voltem na próxima sincronização. Weeklies e tarefas manuais mantêm a ação de excluir.
+Uma rotina semanal consulta o calendário em inglês da [StarRailAssistant](https://starrailassistant.top/reference/public-api/) e importa automaticamente eventos atuais e próximos de Genshin, HSR, ZZZ, WuWa e NTE com prazo final utilizável. WuWa/NTE também exigem base de horário validada; edições sem confirmação ficam para revisão. A lista de atividades pode ser filtrada por jogo. **Revisar eventos** mostra as pendências de prazo, separadas por jogo: informe o fim, crie ou vincule uma tarefa do mesmo jogo, ou ignore. A gravação da tarefa e do vínculo é transacional. Login e seletores também podem aparecer; use **Ignorar** na lista para removê-los e impedir que voltem na próxima sincronização. Weeklies e tarefas manuais mantêm a ação de excluir.
 
 Uma nova data da fonte atualiza tarefas controladas pela API sem desfazer sua conclusão. Editar o prazo de um evento importado protege essa data contra sincronizações; a lista mostra **Prazo ajustado manualmente** e **Usar prazo da API** para devolver o controle à fonte. Candidatos ausentes da fonte saem da revisão, mas suas tarefas não são excluídas por essa ausência. A busca complementar em chinês e os demais jogos ficam para a próxima etapa.
 
@@ -35,7 +35,7 @@ Cada edição dos modos do HSR usa o nome completo fornecido pela API como ident
 
 O calendário não informa o fuso junto às datas. As datas de Genshin, HSR e ZZZ são interpretadas como horário do servidor Ásia. Para HSR e ZZZ, a conversão é uma sugestão pela regra de reset do servidor, não uma garantia informada pela API. Se o fim recebido é 03:59:59 nesse servidor, a tela propõe o prazo do servidor América (+13 horas no instante UTC). Para outros horários, o instante do servidor Ásia preenche o prazo inicial; o usuário pode ajustá-lo. Se houver data final válida mesmo sem início, ela também preenche o prazo. Um fim ausente ou inválido ainda exige preenchimento manual. A revisão exibe a capa fornecida pela API e o tempo restante para o prazo escolhido. A cobertura pode variar entre idiomas, pois eles usam fontes diferentes; confira periodicamente se o endpoint `en-US` inclui os eventos relevantes.
 
-Para habilitar o piloto em um banco já existente, primeiro confira o backup de `games` e `tasks` e então execute [`db/migrations/2026-09-29-genshin-events.sql`](db/migrations/2026-09-29-genshin-events.sql) no SQL Editor do Supabase. Se essa migração já foi aplicada antes da inclusão das capas, execute também [`db/migrations/2026-09-30-event-cover.sql`](db/migrations/2026-09-30-event-cover.sql). A migração inicial adiciona `event_candidates` e a função de aprovação sem alterar as tabelas e policies existentes; a segunda apenas adiciona `cover_url`. Execute `node scripts/previewStarRailAssistantGenshin.js` para comparar a fonte com candidatos e tarefas sem gravar nada, `node scripts/syncGenshinEvents.js --dry-run` para inspecionar os candidatos e `node scripts/syncGenshinEvents.js` para sincronizá-los. Na primeira execução, a rotina reaproveita candidatos correspondentes da fonte anterior, preservando tarefas aprovadas, e desativa os que não aparecem na StarRailAssistant. A sincronização semanal está em [`.github/workflows/sync-genshin-events.yml`](.github/workflows/sync-genshin-events.yml) e passa a rodar às segundas-feiras, 12:00 UTC, quando o workflow estiver na branch padrão do repositório. Também pode ser acionada manualmente pelo GitHub Actions. O workflow consulta os três jogos via `node scripts/syncEvents.js`. A rotina usa a URL e a chave **pública** já configuradas no aplicativo; `SUPABASE_URL` e `SUPABASE_PUBLISHABLE_KEY` podem sobrescrevê-las no ambiente.
+Para habilitar o piloto em um banco já existente, primeiro confira o backup de `games` e `tasks` e então execute [`db/migrations/2026-09-29-genshin-events.sql`](db/migrations/2026-09-29-genshin-events.sql) no SQL Editor do Supabase. Se essa migração já foi aplicada antes da inclusão das capas, execute também [`db/migrations/2026-09-30-event-cover.sql`](db/migrations/2026-09-30-event-cover.sql). A migração inicial adiciona `event_candidates` e a função de aprovação sem alterar as tabelas e policies existentes; a segunda apenas adiciona `cover_url`. Execute `node scripts/previewStarRailAssistantGenshin.js` para comparar a fonte com candidatos e tarefas sem gravar nada, `node scripts/syncGenshinEvents.js --dry-run` para inspecionar os candidatos e `node scripts/syncGenshinEvents.js` para sincronizá-los. Na primeira execução, a rotina reaproveita candidatos correspondentes da fonte anterior, preservando tarefas aprovadas, e desativa os que não aparecem na StarRailAssistant. A sincronização semanal está em [`.github/workflows/sync-genshin-events.yml`](.github/workflows/sync-genshin-events.yml) e passa a rodar às segundas-feiras, 12:00 UTC, quando o workflow estiver na branch padrão do repositório. Também pode ser acionada manualmente pelo GitHub Actions. O workflow consulta os cinco jogos ativos via `node scripts/syncEvents.js`. A rotina usa a URL e a chave **pública** já configuradas no aplicativo; `SUPABASE_URL` e `SUPABASE_PUBLISHABLE_KEY` podem sobrescrevê-las no ambiente.
 
 ![Gacha Schedule](img/demo/gacha-schedule-demo-02.png)
 
@@ -55,12 +55,18 @@ Para habilitar HSR e a revisão por jogo em um banco existente, execute [`db/mig
 
 Depois, execute [`db/migrations/2026-10-02-auto-events.sql`](db/migrations/2026-10-02-auto-events.sql) para habilitar a importação automática e a proteção de prazos manuais. A migração não importa nem exclui tarefas; a primeira execução de `node scripts/syncEvents.js` importa os candidatos elegíveis já encontrados. As validações transacionais estão em [`tests/autoEvents.sql`](tests/autoEvents.sql) e usam rollback.
 
-Para habilitar ZZZ, execute [`db/migrations/2026-10-02-zzz-events.sql`](db/migrations/2026-10-02-zzz-events.sql) depois da migração de importação automática. Ela amplia as funções existentes para a fonte ZZZ, mantendo permissões e proteção dos prazos. Cadastre um único jogo com sigla `ZZZ` antes de sincronizar. Os testes transacionais de GI/HSR/ZZZ estão em [`tests/zzzEvents.sql`](tests/zzzEvents.sql) e usam rollback.
+Para habilitar WuWa em um banco existente, execute [`db/migrations/2026-10-03-wuwa-events.sql`](db/migrations/2026-10-03-wuwa-events.sql) depois das migrações de ZZZ e de intervalos. Ela amplia as funções de importação, preservando dados, permissões e decisões. É necessário um único jogo com sigla `WuWa`. Use `node scripts/syncEvents.js --game=wuwa --dry-run` para a prévia e retire `--dry-run` para sincronizar.
+
+WuWa América usa UTC−5 fixo: reset às 04:00 do servidor / 06:00 de Brasília. A política distingue início global da atualização e horários do servidor por campo. Nove eventos da amostra 3.7 têm bases confirmadas; Moonlit Path usa a estimativa da API aceita por Cristian para 30/09–11/11/2026, com hora final ainda não verificada independentemente. Edições futuras sem evidência também ficam para revisão. Cada nova edição recebe uma identidade própria; correções de períodos sobrepostos reutilizam a identidade persistida, mantendo conclusão, ignorados e prazos manuais. Períodos ambíguos bloqueiam escrita. Os testes em [`tests/wuwaEvents.test.mjs`](tests/wuwaEvents.test.mjs) atravessam normalização, sincronização e PostgreSQL; [`tests/wuwaEvents.sql`](tests/wuwaEvents.sql) verifica os contratos com rollback.
+
+Para habilitar NTE, execute [`db/migrations/2026-10-04-nte-events.sql`](db/migrations/2026-10-04-nte-events.sql) após a migração WuWa. Cadastre um único jogo com sigla `NTE`; use `node scripts/syncEvents.js --game=nte --dry-run` para consultar e retire `--dry-run` para sincronizar. NTE América tem reset às 05:00 UTC−5 / 07:00 Brasília. As notas globais 1.4 distinguem horários fixos UTC+8 de horários do servidor; os nove eventos da amostra foram conferidos por campo. Edições sem confirmação ficam em revisão. Reaplique migrações sempre na ordem, pois definições antigas de funções podem substituir as mais recentes.
+
+Para habilitar ZZZ, execute [`db/migrations/2026-10-02-zzz-events.sql`](db/migrations/2026-10-02-zzz-events.sql) depois da migração de importação automática. Ela amplia as funções existentes para a fonte ZZZ, mantendo permissões e proteção dos prazos. Cadastre um único jogo com sigla `ZZZ` antes de sincronizar. Os testes transacionais compartilhados estão em [`tests/zzzEvents.sql`](tests/zzzEvents.sql); após a migração NTE, eles verificam os cinco jogos ativos e usam rollback.
 
 ```bash
 # Inspecionar ZZZ sem gravar
 node scripts/syncEvents.js --game=zzz --dry-run
-# Carga inicial e sincronização dos três jogos
+# Carga inicial e sincronização dos cinco jogos ativos
 node scripts/syncEvents.js
 # Sincronizar somente ZZZ
 node scripts/syncEvents.js --game=zzz
@@ -129,4 +135,6 @@ npm test
 npm run test:db
 ```
 
-As amostras reais dos cinco jogos ficam em `tests/fixtures/`, com origem e relógio de referência em `manifest.json`. WuWa e NTE continuam planejados, sem sincronização habilitada. Veja o [mapa de testes e roteiro das próximas integrações](docs/event-integrations.md) para comandos separados, atualização de fixtures, limites da validação e decisões de horário/identidade.
+As [convenções do projeto](docs/project-conventions.md) registram fontes, horários, estado, testes e o fluxo de entrega para próximas sessões.
+
+As amostras reais dos cinco jogos ficam em `tests/fixtures/`, com origem e relógio de referência em `manifest.json`. WuWa está habilitado com política de horários da América e identidade por edição. NTE está habilitado com política por campo e identidade por edição; veja [sua validação](docs/nte-validation.md). Veja o [mapa de testes e roteiro das próximas integrações](docs/event-integrations.md) para comandos separados, atualização de fixtures, limites da validação e decisões de horário/identidade.

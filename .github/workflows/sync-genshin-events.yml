@@ -21,5 +21,5 @@ jobs:
       - run: npm ci
       - name: Verify offline contracts before touching event data
         run: npm test
-      - name: Import Genshin, HSR and ZZZ events and keep deadline exceptions for review
+      - name: Import Genshin, HSR, ZZZ, WuWa and NTE events and keep deadline exceptions for review
         run: node scripts/syncEvents.js

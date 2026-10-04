@@ -35,11 +35,12 @@ function makeCandidateCard(candidate, existingTasks, game) {
     card.appendChild(createEventCover(candidate.cover_url, 'event-candidate-cover'));
     appendText(card, 'h3', candidate.name);
     appendText(card, 'p', 'Fonte: StarRailAssistant');
-    const startAt = candidate.proposed_start_at ?? candidate.source_start_at;
-    const phase = !startAt ? 'Início não informado'
+    const startAt = game.timePolicy ? candidate.proposed_start_at
+        : candidate.proposed_start_at ?? candidate.source_start_at;
+    const phase = !startAt ? 'Início não confirmado'
         : Date.parse(startAt) > Date.now() ? 'Próximo evento' : 'Evento em andamento';
     appendText(card, 'p', `${phase} — início: ${displayDate(startAt)}`);
-    appendText(card, 'p', `Fim recebido da API: ${displayDate(candidate.source_end_at, 'Asia/Shanghai')} (servidor Ásia)`);
+    appendText(card, 'p', `Fim recebido da API: ${displayDate(candidate.source_end_at, 'Asia/Shanghai')} (${game.timePolicy ? 'horário bruto da fonte' : 'servidor Ásia'})`);
     appendText(card, 'p', `Prazo sugerido no seu horário: ${displayDate(candidate.proposed_end_at)}`);
     if (candidate.review_reason) appendText(card, 'p', candidate.review_reason, 'event-review-warning');
 
@@ -49,6 +50,12 @@ function makeCandidateCard(candidate, existingTasks, game) {
     source.rel = 'noopener noreferrer';
     source.textContent = 'Ver resposta da fonte';
     card.appendChild(source);
+    if (game.referenceUrl) {
+        const reference = appendText(card, 'a', 'Conferir datas no Game8');
+        reference.href = game.referenceUrl;
+        reference.target = '_blank';
+        reference.rel = 'noopener noreferrer';
+    }
 
     const deadlineLabel = appendText(card, 'label', 'Prazo final correto no horário do seu dispositivo:');
     const deadlineInput = document.createElement('input');

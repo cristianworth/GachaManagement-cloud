@@ -21,8 +21,10 @@ for (const game of EVENT_GAMES) test(`${game.abbreviation} sync delegates task w
         }
         else if (url.pathname.endsWith('/games')) result = [{ id: 1 }];
         else if (url.pathname.endsWith('/event_candidates') && !options.method) result = [
-            { id: 1, source: game.source, external_id: 'imported', status: 'approved', is_active: true },
-            { id: 2, source: game.source, external_id: 'ignored', status: 'ignored', is_active: true },
+            { id: 1, source: game.source, external_id: 'imported', name: 'Imported',
+                source_start_at: '2098-12-31T20:00:00Z', source_end_at: '2099-01-31T19:59:59Z', status: 'approved', is_active: true },
+            { id: 2, source: game.source, external_id: 'ignored', name: 'Ignored',
+                source_start_at: '2098-12-31T20:00:00Z', source_end_at: '2099-01-31T19:59:59Z', status: 'ignored', is_active: true },
         ];
         else if (url.pathname.endsWith('/rpc/import_event_candidates')) result = { imported: 1, review: 1 };
         else if (url.pathname.endsWith('/rpc/cleanup_expired_hsr_events')) result = 0;
@@ -42,6 +44,8 @@ for (const game of EVENT_GAMES) test(`${game.abbreviation} sync delegates task w
     const imports = requests.filter(request => request.path.endsWith('/rpc/import_event_candidates'));
     assert.equal(imports.length, 1);
     assert.deepEqual(imports[0].body, { p_source: game.source });
+    assert.equal(requests.filter(request => request.path.endsWith('/rpc/cleanup_expired_hsr_events')).length,
+        game.key === 'hsr' ? 1 : 0, 'Syncing one game must not clean tasks belonging to another');
     assert.ok(!requests.some(request => request.path.endsWith('/tasks')));
 });
 

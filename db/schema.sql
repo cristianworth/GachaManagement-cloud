@@ -158,7 +158,9 @@ begin
 
     if (v_candidate.source in ('starrailassistant-genshin', 'ennead-genshin-calendar') and v_abbreviation <> 'GI')
        or (v_candidate.source = 'starrailassistant-hsr' and v_abbreviation <> 'HSR')
-       or (v_candidate.source = 'starrailassistant-zzz' and v_abbreviation <> 'ZZZ') then
+       or (v_candidate.source = 'starrailassistant-zzz' and v_abbreviation <> 'ZZZ')
+       or (v_candidate.source = 'starrailassistant-wuwa' and v_abbreviation <> 'WuWa')
+       or (v_candidate.source = 'starrailassistant-nte' and v_abbreviation <> 'NTE') then
         raise exception 'O jogo do candidato não corresponde à fonte.';
     end if;
 
@@ -315,7 +317,9 @@ begin
     select abbreviation into v_abbreviation from public.games where id = c.game_id;
     if not ((c.source = 'starrailassistant-genshin' and v_abbreviation = 'GI')
          or (c.source = 'starrailassistant-hsr' and v_abbreviation = 'HSR')
-         or (c.source = 'starrailassistant-zzz' and v_abbreviation = 'ZZZ')) then
+         or (c.source = 'starrailassistant-zzz' and v_abbreviation = 'ZZZ')
+         or (c.source = 'starrailassistant-wuwa' and v_abbreviation = 'WuWa')
+         or (c.source = 'starrailassistant-nte' and v_abbreviation = 'NTE')) then
         raise exception 'O jogo do candidato não corresponde à fonte.';
     end if;
     if v_abbreviation is null then raise exception 'Jogo não cadastrado.'; end if;
@@ -335,7 +339,9 @@ begin
     if c.proposed_end_at is null or (c.proposed_start_at is not null and c.proposed_end_at <= c.proposed_start_at) then
         if p_force_api then raise exception 'A fonte não possui um prazo utilizável.'; end if;
         update public.event_candidates set status = 'pending',
-            review_reason = 'Prazo final ausente ou inconsistente na fonte; informe o prazo manualmente.' where id = c.id;
+            review_reason = case when c.source in ('starrailassistant-wuwa', 'starrailassistant-nte') then coalesce(c.review_reason,
+                'Prazo final ausente ou inconsistente na fonte; informe o prazo manualmente.')
+                else 'Prazo final ausente ou inconsistente na fonte; informe o prazo manualmente.' end where id = c.id;
         return 'review';
     end if;
     if c.proposed_end_at <= now() then
@@ -356,7 +362,7 @@ returns jsonb language plpgsql security invoker set search_path = public as $$
 declare v_id bigint; v_result text; v_counts jsonb := '{}'::jsonb;
 begin
     for v_id in select id from public.event_candidates
-        where source in ('starrailassistant-genshin', 'starrailassistant-hsr', 'starrailassistant-zzz')
+        where source in ('starrailassistant-genshin', 'starrailassistant-hsr', 'starrailassistant-zzz', 'starrailassistant-wuwa', 'starrailassistant-nte')
           and (p_source is null or source = p_source) and is_active and status <> 'ignored'
         order by id
     loop

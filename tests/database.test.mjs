@@ -26,7 +26,7 @@ for (const migrated of [false, true]) test(`${migrated ? 'Upgraded' : 'Fresh'} d
         assert.equal(row.is_done, true);
         assert.equal(row.expiration_date.toISOString(), '2025-01-06T09:00:00.000Z');
     }
-    for (const file of ['hsrEvents.sql', 'autoEvents.sql', 'zzzEvents.sql', 'taskRepeatDays.sql']) {
+    for (const file of ['hsrEvents.sql', 'autoEvents.sql', 'zzzEvents.sql', 'taskRepeatDays.sql', 'wuwaEvents.sql']) {
         await t.test(file, async () => {
             const before = await snapshot(db);
             await db.exec(await readProjectFile(`tests/${file}`));
@@ -68,6 +68,33 @@ for (const migrated of [false, true]) test(`${migrated ? 'Upgraded' : 'Fresh'} d
     await t.test('Repeat-days migration is safe to rerun', async () => {
         const before = await snapshot(db);
         await db.exec(await readProjectFile('db/migrations/2026-10-03-task-repeat-days.sql'));
+        assert.deepEqual(await snapshot(db), before);
+    });
+    await t.test('WuWa migration preserves linked completion and manual edits when rerun', async () => {
+        await db.exec(`insert into public.event_candidates (source, external_id, name, game_id, proposed_end_at)
+            select 'starrailassistant-wuwa', 'migration-preservation', 'Preserved edition', id, now() + interval '20 days'
+            from public.games where abbreviation = 'WuWa';
+            select public.import_event_candidates('starrailassistant-wuwa');
+            update public.tasks set is_done = true, expiration_date = expiration_date + interval '1 day'
+            where id in (select task_id from public.event_candidates where external_id = 'migration-preservation');`);
+        const before = await snapshot(db);
+        await db.exec(await readProjectFile('db/migrations/2026-10-03-wuwa-events.sql'));
+        // Reapply later function definitions in delivery order; an older migration replaces them.
+        await db.exec(await readProjectFile('db/migrations/2026-10-04-nte-events.sql'));
+        assert.deepEqual(await snapshot(db), before);
+    });
+    await t.test('NTE migration is safe to rerun with completed and ignored editions', async () => {
+        await db.exec(`insert into public.event_candidates (source, external_id, name, game_id, proposed_end_at)
+            select 'starrailassistant-nte', 'nte-migration-preservation', 'NTE preserved edition', id, now() + interval '20 days'
+            from public.games where abbreviation='NTE';
+            select public.import_event_candidates('starrailassistant-nte');
+            update public.tasks set is_done=true, expiration_date=expiration_date + interval '1 day'
+            where id in (select task_id from public.event_candidates where external_id='nte-migration-preservation');
+            insert into public.event_candidates (source, external_id, name, game_id, status)
+            select 'starrailassistant-nte', 'nte-ignored-migration', 'NTE ignored edition', id, 'ignored'
+            from public.games where abbreviation='NTE';`);
+        const before = await snapshot(db);
+        await db.exec(await readProjectFile('db/migrations/2026-10-04-nte-events.sql'));
         assert.deepEqual(await snapshot(db), before);
     });
 });

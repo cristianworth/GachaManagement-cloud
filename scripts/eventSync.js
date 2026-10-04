@@ -1,5 +1,7 @@
 import { getEventGame } from '../js/events/eventGames.js';
 import { activityKey, normalizeStarRailAssistantActivities } from '../js/events/starRailAssistant.js';
+import { resolveWuwaTimes } from '../js/events/wuwa.js';
+import { resolveNteTimes } from '../js/events/nte.js';
 import { SUPABASE_URL, SUPABASE_ANON_KEY } from '../js/config/supabase.config.js';
 
 export const LEGACY_GENSHIN_EVENT_SOURCE = 'ennead-genshin-calendar';
@@ -54,16 +56,42 @@ export function candidateFromActivity(activity, game = getEventGame('genshin'), 
     return {
         source: game.source,
         ...(gameId !== undefined ? { game_id: gameId } : {}),
-        external_id: activityKey(activity.name),
+        external_id: game.identity === 'edition'
+            ? `${activityKey(activity.name)}::${activity.sourceStartAt ?? activity.sourceEndAt ?? 'undated'}`
+            : activityKey(activity.name),
         name: activity.name,
         type_name: null,
         source_start_at: activity.sourceStartAt,
-        proposed_start_at: activity.proposedStartAt ?? activity.sourceStartAt,
+        proposed_start_at: Object.hasOwn(activity, 'proposedStartAt') ? activity.proposedStartAt : activity.sourceStartAt,
         source_end_at: activity.sourceEndAt,
         proposed_end_at: activity.proposedEndAt,
         cover_url: activity.coverUrl,
         review_reason: activity.reviewReason,
     };
+}
+
+// Reuse persisted edition keys when deadlines change. Disjoint periods create a new edition.
+export function assignEditionKeys(candidates, existing) {
+    for (const candidate of candidates) {
+        const start = Date.parse(candidate.source_start_at);
+        const end = Date.parse(candidate.source_end_at);
+        if (candidates.some(row => row !== candidate && row.source === candidate.source &&
+            activityKey(row.name) === activityKey(candidate.name) &&
+            start < Date.parse(row.source_end_at) && Date.parse(row.source_start_at) < end)) {
+            throw new Error('Calendar contains repeated activity names or ambiguous editions; refusing overlapping occurrences.');
+        }
+        const matches = existing.filter(row => row.source === candidate.source && activityKey(row.name) === activityKey(candidate.name))
+            .filter(row => row.external_id === candidate.external_id ||
+                (candidate.source_start_at && sameInstant(row.source_start_at, candidate.source_start_at)) ||
+                (!candidate.source_start_at && candidate.source_end_at && sameInstant(row.source_end_at, candidate.source_end_at)) ||
+                (start < Date.parse(row.source_end_at) && Date.parse(row.source_start_at) < end));
+        if (matches.length > 1) throw new Error(`Ambiguous edition for ${candidate.name}; refusing to change existing decisions.`);
+        if (matches.length === 1) candidate.external_id = matches[0].external_id;
+    }
+    if (new Set(candidates.map(row => row.external_id)).size !== candidates.length) {
+        throw new Error('Calendar contains repeated activity names or ambiguous editions; cannot assign stable candidate keys.');
+    }
+    return candidates;
 }
 
 function sameInstant(left, right) {
@@ -130,7 +158,9 @@ export async function syncGameEvents(game, { dryRun = false, now = Date.now() } 
     getEventGame(game.key);
     if (!Number.isFinite(now)) throw new Error('Sync time must be a finite timestamp.');
     const calendar = await fetchCalendar(game);
-    const { events, skipped } = normalizeStarRailAssistantActivities(calendar, now);
+    const resolveTimes = game.timePolicy === 'wuwa-america' ? resolveWuwaTimes
+        : game.timePolicy === 'nte-america' ? resolveNteTimes : undefined;
+    const { events, skipped } = normalizeStarRailAssistantActivities(calendar, now, { resolveTimes });
     if (!events.length) throw new Error('Calendar has no current events; refusing to hide existing candidates.');
     let gameId;
     if (!dryRun) {
@@ -142,6 +172,7 @@ export async function syncGameEvents(game, { dryRun = false, now = Date.now() } 
         gameId = rows[0].id;
     }
     const candidates = events.map(activity => candidateFromActivity(activity, game, gameId));
+    if (game.identity === 'edition') assignEditionKeys(candidates, []);
     if (new Set(candidates.map(candidate => candidate.external_id)).size !== candidates.length) {
         throw new Error('Calendar contains repeated activity names; cannot assign stable candidate keys.');
     }
@@ -154,6 +185,7 @@ export async function syncGameEvents(game, { dryRun = false, now = Date.now() } 
     }
 
     const existing = await fetchExistingCandidates(game);
+    if (game.identity === 'edition') assignEditionKeys(candidates, existing);
     const current = new Map(existing
         .filter(row => row.source === game.source)
         .map(row => [row.external_id, row]));
@@ -178,10 +210,11 @@ export async function syncGameEvents(game, { dryRun = false, now = Date.now() } 
     const importResponse = await databaseRequest(databaseUrl('rpc/import_event_candidates'), {
         method: 'POST', body: JSON.stringify({ p_source: game.source }),
     });
-    const response = await databaseRequest(databaseUrl('rpc/cleanup_expired_hsr_events'), {
-        method: 'POST', body: '{}',
-    });
-    const summary = { ...counts, skipped, tasks: await importResponse.json(), expiredTasksRemoved: await response.json() };
+    const expiredTasksRemoved = game.key === 'hsr'
+        ? await (await databaseRequest(databaseUrl('rpc/cleanup_expired_hsr_events'), {
+            method: 'POST', body: '{}',
+        })).json() : 0;
+    const summary = { ...counts, skipped, tasks: await importResponse.json(), expiredTasksRemoved };
     console.log(game.name, summary);
     return { gameKey: game.key, dryRun: false, ...summary };
 }
