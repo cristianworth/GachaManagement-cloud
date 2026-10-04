@@ -37,7 +37,7 @@ Este documento registra decisões verificadas do projeto e preferências de Cris
 - `tests/fixtures/wuwa-source-contract.json` e `nte-source-contract.json` registram a evidência independente dos anúncios e trechos fornecidos. Não confundir essa evidência com a resposta bruta da API.
 - Jest protege lógica existente; Node testa API/REST/CLI/rotas; PGlite executa SQL real como `anon` com RLS em instalação nova e upgrade completo; jsdom executa HTML/módulos reais com cliente estrito simulado.
 - Testar comportamento: conversão/expiração exata, erro sem mutação, preservação de estado, isolamento entre jogos, idempotência, migração e rollback. Contagem de cobertura por si só não é objetivo.
-- `npm ci` instala versões do lock; `npm test` executa tudo. Para investigação: `npm run test:jest`, `npm run test:node`, `npm run test:db`. CI testa Windows e Linux; sincronização semanal exige testes aprovados.
+- `npm ci` instala versões do lock; `npm test` executa tudo. Para investigação: `npm run test:jest`, `npm run test:node`, `npm run test:db`. CI testa Windows e Linux; sincronização diária às 07h30 de Brasília (10h30 UTC) exige testes aprovados e roda no GitHub Actions, independentemente do computador local.
 - Testes locais não validam permissões reais de PostgREST, concorrência entre conexões ou CSS renderizado. Verificar o destino e a interface quando relevante.
 
 ## Entrega e sincronização

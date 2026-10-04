@@ -59,7 +59,7 @@ Os testes SQL usam PGlite, um PostgreSQL descartável em memória, e carregam os
 
 Os testes de interface usam jsdom e um cliente Supabase simulado que rejeita operações inesperadas. Executam os módulos e o HTML reais, mas não renderizam CSS. Não substituem a inspeção visual no navegador, testes de concorrência com múltiplas conexões, nem a verificação final do PostgREST e das permissões reais do projeto Supabase. A captura de fixtures requer rede; a suíte normal não precisa de credenciais ou conexão ao banco real.
 
-O CI executa a suíte em Windows e Linux. O workflow semanal executa os testes antes da sincronização. Uma falha impede a etapa de escrita; isso não transforma toda a sincronização REST em uma transação única: uma falha de escrita após candidatos anteriores terem sido salvos pode deixar uma atualização parcial, reconciliada na próxima execução.
+O CI executa a suíte em Windows e Linux. O workflow diário, agendado para 07h30 de Brasília (10h30 UTC), executa os testes antes da sincronização. Uma falha impede a etapa de escrita; isso não transforma toda a sincronização REST em uma transação única: uma falha de escrita após candidatos anteriores terem sido salvos pode deixar uma atualização parcial, reconciliada na próxima execução.
 
 ## Wuthering Waves: implementação
 

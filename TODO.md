@@ -1,5 +1,7 @@
 # Próximas melhorias
 
+Prioridades reordenadas em [docs/roadmap-priorities.md](docs/roadmap-priorities.md). Sincronização diária e criação inicial das weeklies ficam fora dessa tier list porque são a próxima entrega reservada; contexto de continuação em [docs/handoff-daily-sync-weeklies.md](docs/handoff-daily-sync-weeklies.md).
+
 Eventos atualizados em [docs/event-integrations.md](docs/event-integrations.md): GI/HSR/ZZZ/WuWa/NTE ativos na versão 1.4.0; fixtures, testes SQL/DOM e CI prontos. WuWa/NTE distinguem horários e edições; Moonlit Path usa a estimativa aceita por Cristian. Convenções para próximas sessões em [docs/project-conventions.md](docs/project-conventions.md).
 
 Complexidade estimada para este projeto (HTML, CSS, JavaScript e Supabase): **baixa** = alteração localizada; **média** = envolve interface e lógica existente; **alta** = envolve várias partes do sistema, migração de dados ou decisões de produto. São estimativas relativas, não prazos.
@@ -79,7 +81,7 @@ Complexidade estimada para este projeto (HTML, CSS, JavaScript e Supabase): **ba
 - [ ] Usar capa quando disponível e placeholder quando estiver ausente ou não carregar. A falta de capa ou de data inicial não impede a importação de um evento com prazo final utilizável.
 - [ ] Manter o motor de sincronização, a tabela de candidatos e a gravação de tarefas no projeto atual. A tabela de candidatos continua registrando a origem, o vínculo com a tarefa e as decisões de ignorar; a tela de revisão mostra apenas as pendências de prazo.
 - [ ] Validar a mudança primeiro nos jogos já integrados, Genshin e HSR, e depois habilitar WuWa, ZZZ e NTE no mesmo fluxo. O MVP usa os cinco jogos atuais, sem tela inicial de seleção. Endfield fica preparado para uma expansão posterior, salvo mudança explícita de escopo.
-- [ ] Fazer uma sincronização inicial dos eventos atuais/futuros e reaproveitar o workflow semanal existente. A aplicação lê as tarefas salvas no Supabase; abrir a página não precisa disparar uma importação completa.
+- [x] Fazer uma sincronização inicial dos eventos atuais/futuros e reaproveitar o workflow existente, agora diário às 07h30 de Brasília (10h30 UTC). A aplicação lê as tarefas salvas no Supabase; abrir a página não precisa disparar uma importação completa.
 - [ ] Criar ou atualizar cada edição sem duplicar tarefas em novas execuções. Preservar a conclusão da mesma edição e as decisões de ignorar. Uma edição futura de um modo recorrente deve ter sua própria identidade e estado.
 - [ ] Implementar a proteção dos prazos ajustados manualmente. **Decisão aprovada:** atualizar automaticamente o prazo controlado pela API, mas preservar uma correção manual até o usuário optar por voltar à data da fonte.
 - [ ] Generalizar a limpeza de edições importadas vencidas para os jogos habilitados, preservando tarefas manuais e weeklies. Não excluir tarefas apenas porque um evento sumiu de uma resposta parcial da API.
@@ -116,7 +118,7 @@ Complexidade estimada para este projeto (HTML, CSS, JavaScript e Supabase): **ba
 ## 11. Identificar eventos recém-adicionados — prioridade baixa
 
 - [ ] Mostrar uma indicação discreta como **Recém-adicionado**, baseada na primeira importação da edição para a lista de atividades.
-- [ ] Definir por quanto tempo o indicador aparece. Uma atualização de prazo/capa ou uma nova consulta semanal não deve tornar o mesmo evento novo novamente.
+- [ ] Definir por quanto tempo o indicador aparece. Uma atualização de prazo/capa ou uma nova sincronização não deve tornar o mesmo evento novo novamente.
 - **Complexidade: baixa a média.** Precisa registrar quando a tarefa foi importada; `last_seen_at` do candidato representa sincronização e não serve como data de entrada na lista.
 
 ## 12. Paginar a lista de atividades

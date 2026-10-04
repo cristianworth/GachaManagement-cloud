@@ -40,4 +40,4 @@ Adicionar a fonte/sigla às funções públicas do schema e à migração increm
 - SQL independente confirmou os nove inícios/prazos esperados. Zero duplicatas de vínculo e zero fixtures temporárias após os testes.
 - Hashes dos jogos, tarefas manuais/outros jogos, candidatos de outras fontes e nove tarefas WuWa já existentes permaneceram iguais. A única tarefa acrescentada ao WuWa foi Moonlit Path com a estimativa aceita por Cristian.
 
-Manutenção: `node scripts/syncEvents.js --game=nte --dry-run`; retire `--dry-run` para escrever. `npm start` serve a interface local. A sincronização semanal inclui os cinco jogos depois dos testes aprovados.
+Manutenção: `node scripts/syncEvents.js --game=nte --dry-run`; retire `--dry-run` para escrever. `npm start` serve a interface local. A sincronização diária às 07h30 de Brasília (10h30 UTC) inclui os cinco jogos depois dos testes aprovados.

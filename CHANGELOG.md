@@ -12,6 +12,8 @@ O projeto segue o versionamento semântico (SemVer), no formato `MAJOR.MINOR.PAT
 
 ### Melhorado
 
+- Sincronização dos cinco jogos agendada diariamente às 07h30 de Brasília (10h30 UTC), após os resets de WuWa e NTE na América.
+- Prioridades do planejamento e handoff de sincronização/weeklies documentados, incluindo validação manual antes de commitar a próxima entrega.
 - Carregamento compartilhado nas listas de tarefas e jogos, formulários e ações, mantendo o indicador visível até operações encadeadas terminarem.
 - Mensagens de confirmação e falha específicas por operação, com opção de tentar novamente a leitura das listas e preservação dos dados preenchidos.
 - Testes de interface cobrem operações pendentes, falhas de leitura/gravação, recuperação e prevenção de envio duplicado.
