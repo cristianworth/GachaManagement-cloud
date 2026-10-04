@@ -3,6 +3,8 @@ import { handleAddGame } from './gameUI.js';
 import { handleAddTask } from './taskUI.js';
 import Router from '../utils/router.js';
 import RefreshTypeEnum from '../enums/RefreshTypeEnum.js';
+import { withLoading } from './loadingState.js';
+import { setFeedback } from './feedback.js';
 
 export function initializeGameForm() {
     const gameForm = document.getElementById("game-form");
@@ -131,12 +133,20 @@ function handleDateSelector(hasDateSelector) {
 
 async function submitForm(statusId, save, route) {
     const status = document.getElementById(statusId);
-    status.hidden = true;
+    const submit = status.closest('form').querySelector('button[type="submit"]');
+    if (submit.disabled) return;
+    const task = statusId === 'taskFormStatus';
+    submit.disabled = true;
+    setFeedback(statusId);
     try {
-        await save();
-        Router.navigateTo(route);
+        await withLoading(task ? 'Salvando tarefa...' : 'Salvando jogo...', async () => {
+            await save();
+            await Router.navigateTo(route, { successMessage: task ? 'Tarefa salva.' : 'Jogo salvo.' });
+        });
     } catch (error) {
-        status.textContent = error.message ?? 'Could not save. Please try again.';
-        status.hidden = false;
+        console.error('Failed to save form:', error);
+        setFeedback(statusId, `Não foi possível salvar ${task ? 'a tarefa' : 'o jogo'}. Seus dados foram mantidos no formulário. Tente novamente.`, 'error');
+    } finally {
+        submit.disabled = false;
     }
 }

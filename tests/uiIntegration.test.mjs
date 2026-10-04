@@ -70,7 +70,8 @@ test('Real forms and task lists preserve user data and integration controls', as
         assert.equal(row.refresh_type, 8);
         assert.equal(row.game_id, 4);
         assert.equal(element('taskDescription').value, '');
-        await waitFor(() => element('gameScheduleBody').rows.length === 1);
+        await tasks.displayAllTasks();
+        assert.equal(element('gameScheduleBody').rows.length, 1);
     });
 
     await t.test('Imported editing locks image, game and recurrence and preserves completion', async () => {
@@ -101,7 +102,7 @@ test('Real forms and task lists preserve user data and integration controls', as
         const navigations = navigation.length;
         element('task-form').dispatchEvent(new dom.window.Event('submit', { cancelable: true }));
         await waitFor(() => !element('taskFormStatus').hidden);
-        assert.equal(element('taskFormStatus').textContent, 'Database unavailable');
+        assert.match(element('taskFormStatus').textContent, /Não foi possível salvar a tarefa/);
         assert.equal(element('taskDescription').value, 'Keep this title');
         assert.equal(element('taskCoverUrl').value, 'https://example.com/keep.png');
         assert.equal(element('taskRepeatDays').value, '7');
@@ -131,7 +132,7 @@ test('Real forms and task lists preserve user data and integration controls', as
         const navigations = navigation.length;
         element('game-form').dispatchEvent(new dom.window.Event('submit', { cancelable: true }));
         await waitFor(() => !element('gameFormStatus').hidden);
-        assert.equal(element('gameFormStatus').textContent, 'Could not save game');
+        assert.match(element('gameFormStatus').textContent, /Não foi possível salvar o jogo/);
         assert.equal(element('gameDescription').value, 'Keep game');
         assert.equal(element('gameImageUrl').value, 'https://example.com/keep-game.png');
         assert.equal(navigation.length, navigations);

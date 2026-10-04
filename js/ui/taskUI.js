@@ -9,13 +9,38 @@ import { resetTaskForm, setDateSelector, setTaskFormMessage, setTaskRecurrence }
 import RefreshTypeEnum from '../enums/RefreshTypeEnum.js';
 import Router from '../utils/router.js';
 import { filterTasks } from '../utils/taskFilters.js';
+import { withLoading } from './loadingState.js';
+import { setFeedback } from './feedback.js';
 
 let loadedTasks = [];
 let filterInitialized = false;
 
-export async function displayAllTasks() {
-    await cleanupExpiredHsrEvents();
-    const [tasks, games] = await Promise.all([fetchAllTasks(), fetchAllGames()]);
+export async function displayAllTasks({ successMessage = '' } = {}) {
+    return withLoading('Carregando tarefas...', async () => {
+        const retry = document.getElementById('taskListRetry');
+        if (retry) {
+            retry.hidden = true;
+            retry.onclick = () => displayAllTasks();
+        }
+        setFeedback('taskListMessage');
+        try {
+            await cleanupExpiredHsrEvents();
+            const [tasks, games] = await Promise.all([fetchAllTasks(), fetchAllGames()]);
+            updateTaskList(tasks, games);
+            setFeedback('taskListMessage', successMessage);
+            return true;
+        } catch (error) {
+            console.error('Failed to load task list:', error);
+            setFeedback('taskListMessage', successMessage
+                ? `${successMessage} Porém, não foi possível atualizar a lista. Use Tentar novamente para recarregar os dados.`
+                : 'Não foi possível carregar as tarefas. Os dados exibidos podem estar desatualizados. Tente novamente.', 'error');
+            if (retry) retry.hidden = false;
+            return false;
+        }
+    });
+}
+
+function updateTaskList(tasks, games) {
     loadedTasks = tasks;
     const filter = document.getElementById('taskGameFilter');
     const selectedGame = filter.value;
@@ -111,61 +136,98 @@ function addTaskEventListeners(task) {
     }
 
     if (checkbox) 
-        checkbox.addEventListener("change", () => handleTaskCompletion(task.id, checkbox.checked))
+        checkbox.addEventListener("change", () => handleTaskCompletion(task, checkbox))
  
     if (editButton)
         editButton.addEventListener("click", () => handleTaskEdit(task.id))
 
     if (deleteButton) 
         deleteButton.addEventListener("click", () => handleDelete(task));
-    if (restoreButton) restoreButton.addEventListener('click', async () => {
-        restoreButton.disabled = true;
-        try {
-            await restoreEventApiDeadline(task.eventCandidateId);
-            await displayAllTasks();
-        } catch (error) {
-            document.getElementById('taskListStatus').textContent = error.message;
-            restoreButton.disabled = false;
-        }
+    if (restoreButton) restoreButton.addEventListener('click', () => runTaskAction(task, {
+        loadingMessage: 'Restaurando prazo da API...',
+        successMessage: 'Prazo da API restaurado.',
+        errorMessage: 'Não foi possível restaurar o prazo. Confira se a fonte possui uma data válida e tente novamente.',
+        save: () => restoreEventApiDeadline(task.eventCandidateId),
+    }));
+}
+
+async function runTaskAction(task, { loadingMessage, successMessage, errorMessage, save, onSaved, onError }) {
+    const controls = [...document.getElementById(`task-checkbox-${task.id}`).closest('tr').querySelectorAll('input, button')];
+    const disabledStates = controls.map(control => control.disabled);
+    controls.forEach(control => { control.disabled = true; });
+    setFeedback('taskListMessage');
+    try {
+        return await withLoading(loadingMessage, async () => {
+            try {
+                await save();
+            } catch (error) {
+                console.error('Failed to change task:', error);
+                onError?.();
+                setFeedback('taskListMessage', errorMessage, 'error');
+                return false;
+            }
+            onSaved?.();
+            return displayAllTasks({ successMessage });
+        });
+    } finally {
+        controls.forEach((control, index) => { control.disabled = disabledStates[index]; });
+    }
+}
+
+async function handleTaskCompletion(task, checkbox) {
+    const isDone = checkbox.checked;
+    await runTaskAction(task, {
+        loadingMessage: 'Salvando conclusão...',
+        successMessage: isDone ? 'Tarefa concluída.' : 'Tarefa reaberta.',
+        errorMessage: 'Não foi possível salvar a conclusão. A seleção anterior foi restaurada. Tente novamente.',
+        save: () => completeTask(task.id, isDone),
+        onSaved: () => { task.isDone = isDone; renderTaskList(); },
+        onError: () => { checkbox.checked = task.isDone; },
     });
 }
 
-async function handleTaskCompletion(taskId, value) {
-    await completeTask(taskId, value);
-    await displayAllTasks();
-}    
-
 async function handleTaskEdit (taskId) {
-    Router.navigateTo('/tasks/create');
+    try {
+        await withLoading('Carregando tarefa...', async () => {
+            const task = await fetchTaskById(taskId);
+            if (!task) throw new Error('Task not found.');
+            Router.navigateTo('/tasks/create');
+            resetTaskForm();
+            document.getElementById("taskId").value = task.id;
+            document.getElementById("taskGameId").value = task.gameId;
+            setTaskFormMessage();
 
-    const task = await fetchTaskById(taskId);
-    if (task) {
-        document.getElementById("taskId").value = task.id;
-        document.getElementById("taskGameId").value = task.gameId;
-        setTaskFormMessage();
+            document.getElementById("taskDescription").value = task.description;
+            document.getElementById('taskCoverUrl').value = task.coverUrl ?? '';
+            document.getElementById('taskCoverUrl').disabled = Boolean(task.eventCandidateId);
+            document.getElementById("expirationDay").value = 0;
+            document.getElementById("expirationHour").value = 0;
 
-        document.getElementById("taskDescription").value = task.description;
-        document.getElementById('taskCoverUrl').value = task.coverUrl ?? '';
-        document.getElementById('taskCoverUrl').disabled = Boolean(task.eventCandidateId);
-        document.getElementById("expirationDay").value = 0;
-        document.getElementById("expirationHour").value = 0;
-
-        setDateSelector(true);
-        document.getElementById("expirationDate").value = task.expirationDate
-            ? `${formatDateForInput(task.expirationDate)}:${String(task.expirationDate.getSeconds()).padStart(2, '0')}` : '';
-        setTaskRecurrence(RefreshTypeEnum.getRepeatDays(task), Boolean(task.eventCandidateId));
-        document.getElementById('taskGameId').disabled = Boolean(task.eventCandidateId);
+            setDateSelector(true);
+            document.getElementById("expirationDate").value = task.expirationDate
+                ? `${formatDateForInput(task.expirationDate)}:${String(task.expirationDate.getSeconds()).padStart(2, '0')}` : '';
+            setTaskRecurrence(RefreshTypeEnum.getRepeatDays(task), Boolean(task.eventCandidateId));
+            document.getElementById('taskGameId').disabled = Boolean(task.eventCandidateId);
+        });
+    } catch (error) {
+        console.error('Failed to open task:', error);
+        setFeedback('taskListMessage', 'Não foi possível abrir a tarefa. Recarregue a lista e tente novamente.', 'error');
     }
 }    
 
 async function handleDelete(task) {
-    try {
-        if (task.eventCandidateId) await ignoreImportedTask(task.id);
-        else await deleteTaskById(task.id);
-        await displayAllTasks();
-    } catch (error) {
-        document.getElementById('taskListStatus').textContent = error.message;
-    }
+    const imported = Boolean(task.eventCandidateId);
+    await runTaskAction(task, {
+        loadingMessage: imported ? 'Ignorando evento...' : 'Excluindo tarefa...',
+        successMessage: imported ? 'Evento ignorado. Ele não será recriado pela sincronização.' : 'Tarefa excluída.',
+        errorMessage: imported ? 'Não foi possível ignorar o evento. Ele continua na lista. Tente novamente.'
+            : 'Não foi possível excluir a tarefa. Ela continua na lista. Tente novamente.',
+        save: () => imported ? ignoreImportedTask(task.id) : deleteTaskById(task.id),
+        onSaved: () => {
+            loadedTasks = loadedTasks.filter(row => row.id !== task.id);
+            renderTaskList();
+        },
+    });
 }
 
 export async function handleAddTask() {
@@ -213,7 +275,6 @@ export async function handleAddTask() {
         await addTask(task);
     }
 
-    displayAllTasks();
     resetTaskForm();
 }
 

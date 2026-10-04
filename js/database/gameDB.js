@@ -45,6 +45,7 @@ export async function deleteGameById(gameId) {
         if (error) throw error;
     } catch (error) {
         console.error(`Failed to delete game with ID ${gameId}:`, error);
+        throw error;
     }
 }
 
@@ -57,7 +58,7 @@ export async function fetchAllGames() {
         return (data ?? []).map(gameFromRow);
     } catch (error) {
         console.error('Erro ao buscar todos os jogos:', error);
-        return [];
+        throw error;
     }
 }
 
@@ -68,7 +69,7 @@ export async function fetchGameById(id) {
         return gameFromRow(data);
     } catch (error) {
         console.error('Erro ao buscar o jogo pelo ID:', error);
-        return null;
+        throw error;
     }
 }
 
@@ -85,6 +86,7 @@ export async function populateInitialGames() {
         }
     } catch (error) {
         console.error('Error populating initial games data:', error);
+        throw error;
     }
 }
 
@@ -95,6 +97,6 @@ export async function hasAnyGame() {
         return (data ?? []).length > 0;
     } catch (error) {
         console.error('Error checking if any game exists:', error);
-        return false;
+        throw error;
     }
 }

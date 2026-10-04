@@ -50,7 +50,7 @@
         <section>
             <h1 class="main-title">
                 <a href="https://cristianworth.github.io/GachaManagement-cloud/" target="_blank">
-                    Gacha Management <span class="version-badge">v1.4.0</span>
+                    Gacha Management <span class="version-badge">v1.4.1</span>
                 </a>
                 <br>
                 <a href="https://github.com/cristianworth/GachaManagement-cloud/tree/main" target="_blank">Dev Repo</a>
@@ -58,6 +58,8 @@
 
             <button id="createGameBtn" class="button-add"><span class="button-icon" aria-hidden="true">+</span> Create New Game</button>
             <button id="viewTasksBtn" class="button-neutral"><span class="button-icon" aria-hidden="true">&#9776;</span> View Tasks</button>
+            <p id="gameListMessage" class="operation-feedback" role="status" hidden></p>
+            <button id="gameListRetry" class="button-neutral" type="button" hidden>Tentar novamente</button>
             
             <div class="table-container">
                 <table id="gameList">
@@ -105,7 +107,7 @@
                 <label for="staminaPerMinute">Stamina p/ Minute:</label>
                 <input id="staminaPerMinute" value="6" type="text" required/>
                 
-                <p id="gameFormStatus" role="alert" hidden></p>
+                <p id="gameFormStatus" class="operation-feedback" role="alert" hidden></p>
                 <button id="submitGameForm" class="button-save" type="submit"><span class="button-icon" aria-hidden="true">&#10003;</span> Save / Update</button>
             </form>
         </section>
@@ -130,6 +132,8 @@
                 <span id="taskListStatus" role="status" aria-live="polite"></span>
             </div>
 
+            <p id="taskListMessage" class="operation-feedback" role="status" hidden></p>
+            <button id="taskListRetry" class="button-neutral" type="button" hidden>Tentar novamente</button>
             <div class="table-container">
                 <table id="gameSchedule">
                 <thead>
@@ -218,7 +222,7 @@
                     <small id="taskRepeatDaysHint">Choose a preset or enter a whole number of days. Monthly means every 30 days.</small>
                 </div>
                 
-                <p id="taskFormStatus" role="alert" hidden></p>
+                <p id="taskFormStatus" class="operation-feedback" role="alert" hidden></p>
                 <button id="submitTaskForm" class="button-save" type="submit"><span class="button-icon" aria-hidden="true">&#10003;</span> Save / Update</button>
             </form>
         </section>

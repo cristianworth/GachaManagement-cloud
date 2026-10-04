@@ -48,6 +48,7 @@ export async function deleteTaskById(taskId) {
         if (error) throw error;
     } catch (error) {
         console.error(`Failed to delete task with ID ${taskId}:`, error);
+        throw error;
     }
 }
 
@@ -60,7 +61,7 @@ export async function fetchAllTasks() {
         return (data ?? []).map(taskFromRow);
     } catch (error) {
         console.error('Erro ao buscar todas as tarefas:', error);
-        return [];
+        throw error;
     }
 }
 
@@ -71,7 +72,7 @@ export async function fetchTaskById(id) {
         return taskFromRow(data);
     } catch (error) {
         console.error('Erro ao buscar a tarefa pelo ID:', error);
-        return null;
+        throw error;
     }
 }
 
@@ -82,7 +83,7 @@ export async function fetchTasksByGame(gameId) {
         return (data ?? []).map(taskFromRow);
     } catch (error) {
         console.error('Erro ao buscar tarefas do jogo:', error);
-        return [];
+        throw error;
     }
 }
 
@@ -92,6 +93,7 @@ export async function completeTask(taskId, isDone) {
         if (error) throw error;
     } catch (error) {
         console.error('Failed to update task:', error);
+        throw error;
     }
 }
 
@@ -108,6 +110,7 @@ export async function populateInitialTasks() {
         }
     } catch (error) {
         console.error('Error populating initial tasks data:', error);
+        throw error;
     }
 }
 
@@ -118,7 +121,7 @@ export async function hasAnyTask() {
         return (data ?? []).length > 0;
     } catch (error) {
         console.error('Error checking if any task exists:', error);
-        return false;
+        throw error;
     }
 }
 
@@ -132,6 +135,6 @@ export async function fetchAllOverdueTasks() {
         return (data ?? []).map(taskFromRow);
     } catch (error) {
         console.error('Erro ao buscar tarefas expiradas:', error);
-        return [];
+        throw error;
     }
 }

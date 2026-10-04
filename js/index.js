@@ -5,6 +5,7 @@ import { isSupabaseConfigured } from './config/supabase.config.js';
 import { initializeGameForm, initializeTaskForm } from './ui/formHandler.js';
 import { populateGameDropDown, populateRefreshTypeDropDown } from './ui/dropdownHandler.js';
 import { initializeNumberInputValidation } from './ui/inputValidation.js';
+import { withLoading } from './ui/loadingState.js';
 
 document.addEventListener('DOMContentLoaded', async function () {
   if (!isSupabaseConfigured()) {
@@ -12,38 +13,25 @@ document.addEventListener('DOMContentLoaded', async function () {
     return;
   }
 
-  setLoadingState(true, 'Loading...');
-
   try {
-    // Garante que o banco esteja semeado/atualizado antes da primeira renderização.
-    await withTimeout(initializeDatabase());
+    await withLoading('Carregando...', async () => {
+        // Garante que o banco esteja semeado/atualizado antes da primeira renderização.
+        await withTimeout(initializeDatabase());
 
-    // Aguarda a primeira rota e seus dados antes de liberar a tela.
-    await withTimeout(Router.init());
+        // Aguarda a primeira rota e seus dados antes de liberar a tela.
+        await withTimeout(Router.init());
 
-    initializeGameForm();
-    initializeTaskForm();
-    populateGameDropDown();
-    populateRefreshTypeDropDown();
-    initializeNumberInputValidation();
+        initializeGameForm();
+        initializeTaskForm();
+        await populateGameDropDown();
+        populateRefreshTypeDropDown();
+        initializeNumberInputValidation();
+    });
   } catch (error) {
     console.error('Falha ao carregar a aplicação:', error);
     showLoadingError();
-  } finally {
-    setLoadingState(false);
   }
 });
-
-function setLoadingState(isLoading, message) {
-  const loadingOverlay = document.getElementById('loadingOverlay');
-  const loadingMessage = loadingOverlay.querySelector('.loading-message');
-
-  if (message) {
-    loadingMessage.textContent = message;
-  }
-
-  loadingOverlay.hidden = !isLoading;
-}
 
 function withTimeout(promise, timeout = 15000) {
   return Promise.race([

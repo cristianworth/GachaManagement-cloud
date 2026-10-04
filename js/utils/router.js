@@ -30,13 +30,13 @@ class Router {
     await this.route();
   }
 
-  static navigateTo(path) {
+  static navigateTo(path, options = {}) {
     const fullPath = `${this.BASE_PATH}${path}`;
     history.pushState({}, '', fullPath);
-    this.route();
+    return this.route(options);
   }
 
-  static async route() {
+  static async route(options = {}) {
     const eventReview = await import('../ui/eventReviewUI.js');
     eventReview.stopEventReviewTimer();
     const path = this.getCurrentPath();
@@ -49,10 +49,10 @@ class Router {
     // Load data when navigating to specific views
     switch(view) {
       case 'games':
-        await import('../ui/gameUI.js').then(module => module.displayAllGames());
+        await import('../ui/gameUI.js').then(module => module.displayAllGames(options));
         break;
       case 'taskList':
-        await import('../ui/taskUI.js').then(module => module.displayAllTasks());
+        await import('../ui/taskUI.js').then(module => module.displayAllTasks(options));
         await eventReview.displayEventReviewCount();
         break;
       case 'eventGames':

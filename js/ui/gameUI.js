@@ -6,9 +6,34 @@ import { resetGameForm, setGameFormMessage } from './formHandler.js';
 import { getRandomColor } from '../utils/colorUtils.js';
 import Router from '../utils/router.js';
 import { createGameIcon } from './eventCover.js';
+import { withLoading } from './loadingState.js';
+import { setFeedback } from './feedback.js';
 
-export async function displayAllGames() {
-    const games = await fetchAllGames();
+export async function displayAllGames({ successMessage = '' } = {}) {
+    return withLoading('Carregando jogos...', async () => {
+        const retry = document.getElementById('gameListRetry');
+        if (retry) {
+            retry.hidden = true;
+            retry.onclick = () => displayAllGames();
+        }
+        setFeedback('gameListMessage');
+        try {
+            const games = await fetchAllGames();
+            renderGameList(games);
+            setFeedback('gameListMessage', successMessage || (games.length ? '' : 'Nenhum jogo cadastrado.'));
+            return true;
+        } catch (error) {
+            console.error('Failed to load game list:', error);
+            setFeedback('gameListMessage', successMessage
+                ? `${successMessage} Porém, não foi possível atualizar a lista. Use Tentar novamente para recarregar os dados.`
+                : 'Não foi possível carregar os jogos. Os dados exibidos podem estar desatualizados. Tente novamente.', 'error');
+            if (retry) retry.hidden = false;
+            return false;
+        }
+    });
+}
+
+function renderGameList(games) {
     const gameListBody = document.getElementById("gameListBody");
     gameListBody.innerHTML = ''; // clear data
 
@@ -98,55 +123,81 @@ function handleBulletPoint(event) {
 }
 
 async function handleGameSave(gameId) {
-    setLoadingState(true);
-
-    try {
-        let game = await fetchGameById(gameId);
-        const currentStamina = parseInt(document.getElementById(`currentStamina${game.id}`).value, 10);
-        const pendingTask = document.getElementById(`pendingTask${gameId}`).value;
-
-        if (!isNaN(currentStamina)) {
+    const currentStamina = parseInt(document.getElementById(`currentStamina${gameId}`).value, 10);
+    if (Number.isNaN(currentStamina)) {
+        setFeedback('gameListMessage', 'Informe um número válido para a stamina antes de salvar.', 'error');
+        return;
+    }
+    await runGameAction(gameId, {
+        loadingMessage: 'Salvando jogo...', successMessage: 'Stamina e anotações salvas.',
+        errorMessage: 'Não foi possível salvar o jogo. Sua stamina e suas anotações foram mantidas na tela. Tente novamente.',
+        save: async () => {
+            const game = await fetchGameById(gameId);
+            if (!game) throw new Error('Game not found.');
+            const pendingTask = document.getElementById(`pendingTask${gameId}`).value;
             game.currentStamina = currentStamina;
             game.pendingTasks = pendingTask;
             game.dateMaxStamina = calculateMaxStaminaDate(game);
             game.maxStaminaAt = formatDateToDayHour(game.dateMaxStamina);
             
             await updateGame(game);
-            await displayAllGames();
-        } else {
-            alert("Please enter a valid number for stamina.");
-        }
-    } catch (error) {
-        alert(error.message ?? 'Could not save this game.');
+        },
+    });
+}
+
+async function runGameAction(gameId, { loadingMessage, successMessage, errorMessage, save }) {
+    const row = document.getElementById(`delete-game-${gameId}`).closest('tr');
+    const buttons = [...row.querySelectorAll('button')];
+    const disabledStates = buttons.map(button => button.disabled);
+    buttons.forEach(button => { button.disabled = true; });
+    setFeedback('gameListMessage');
+    try {
+        await withLoading(loadingMessage, async () => {
+            try {
+                await save();
+            } catch (error) {
+                console.error('Failed to change game:', error);
+                setFeedback('gameListMessage', errorMessage, 'error');
+                return;
+            }
+            await displayAllGames({ successMessage });
+        });
     } finally {
-        setLoadingState(false);
+        buttons.forEach((button, index) => { button.disabled = disabledStates[index]; });
     }
 }
 
-function setLoadingState(isLoading) {
-    const loadingOverlay = document.getElementById("loadingOverlay");
-    loadingOverlay.hidden = !isLoading;
-}
-
 async function handleGameEdit(gameId) {
-    Router.navigateTo('/games/create');
-
-    const game = await fetchGameById(gameId);
-    if (game) {
-        document.getElementById("gameId").value = game.id;
-        setGameFormMessage();
+    try {
+        await withLoading('Carregando jogo...', async () => {
+            const game = await fetchGameById(gameId);
+            if (!game) throw new Error('Game not found.');
+            Router.navigateTo('/games/create');
+            resetGameForm();
+            document.getElementById("gameId").value = game.id;
+            setGameFormMessage();
         
-        document.getElementById("gameDescription").value = game.description;
-        document.getElementById("abbreviation").value = game.abbreviation;
-        document.getElementById('gameImageUrl').value = game.img?.startsWith('https://') ? game.img : '';
-        document.getElementById("capStamina").value = game.capStamina;
-        document.getElementById("staminaPerMinute").value = game.staminaPerMinute;
+            document.getElementById("gameDescription").value = game.description;
+            document.getElementById("abbreviation").value = game.abbreviation;
+            document.getElementById('gameImageUrl').value = game.img?.startsWith('https://') ? game.img : '';
+            document.getElementById("capStamina").value = game.capStamina;
+            document.getElementById("staminaPerMinute").value = game.staminaPerMinute;
+        });
+    } catch (error) {
+        console.error('Failed to open game:', error);
+        setFeedback('gameListMessage', 'Não foi possível abrir o jogo. Recarregue a lista e tente novamente.', 'error');
     }
 }
 
 async function handleDelete(gameId) {
-    await deleteGameById(gameId);
-    await displayAllGames();
+    await runGameAction(gameId, {
+        loadingMessage: 'Excluindo jogo...', successMessage: 'Jogo excluído.',
+        errorMessage: 'Não foi possível excluir o jogo. Ele continua na lista. Tente novamente.',
+        save: async () => {
+            await deleteGameById(gameId);
+            document.getElementById(`delete-game-${gameId}`).closest('tr').remove();
+        },
+    });
 }
 
 export async function handleAddGame() {
@@ -179,6 +230,5 @@ export async function handleAddGame() {
         await addGame(game);
     }
 
-    displayAllGames();
     resetGameForm();
 }

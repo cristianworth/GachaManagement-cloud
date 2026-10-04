@@ -8,6 +8,21 @@ O projeto segue o versionamento semântico (SemVer), no formato `MAJOR.MINOR.PAT
 - `MINOR`: nova funcionalidade compatível com a versão anterior.
 - `PATCH`: correção de bug ou melhoria pequena, sem nova funcionalidade relevante.
 
+## [1.4.1] - 2026-10-04
+
+### Melhorado
+
+- Carregamento compartilhado nas listas de tarefas e jogos, formulários e ações, mantendo o indicador visível até operações encadeadas terminarem.
+- Mensagens de confirmação e falha específicas por operação, com opção de tentar novamente a leitura das listas e preservação dos dados preenchidos.
+- Testes de interface cobrem operações pendentes, falhas de leitura/gravação, recuperação e prevenção de envio duplicado.
+
+### Corrigido
+
+- Falhas do banco são propagadas para a interface, sem serem interpretadas como listas vazias nem dispararem a população inicial após uma consulta malsucedida.
+- Conclusão, exclusão e decisão de ignorar não aparentam sucesso quando a gravação falha; controles são reabilitados e o estado anterior é preservado.
+- Uma gravação concluída seguida de falha ao atualizar a lista informa que os dados foram salvos; tentar novamente apenas recarrega a lista, sem repetir a gravação.
+- Formulários e ações bloqueiam envios repetidos enquanto a operação está em andamento.
+
 ## [1.4.0] - 2026-10-04
 
 ### Adicionado
