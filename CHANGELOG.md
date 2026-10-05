@@ -8,6 +8,22 @@ O projeto segue o versionamento semântico (SemVer), no formato `MAJOR.MINOR.PAT
 - `MINOR`: nova funcionalidade compatível com a versão anterior.
 - `PATCH`: correção de bug ou melhoria pequena, sem nova funcionalidade relevante.
 
+## [Não lançado]
+
+Entrega em partes, aguardando revisão de Cristian. Versão publicada continua 1.5.0; sugestão para o conjunto: 1.6.0.
+
+### Adicionado — modelo e contratos de perfis (partes 1–2)
+
+- Estrutura SQL para CRAN, Demo e Convidado, com catálogo/capas compartilhados e progresso/decisões por perfil.
+- RPCs transacionais para seleção, jogos, tarefas, conclusão, revisão e lotes semanais; validação de ator/jogo e proteção contra recriação.
+- Testes SQL como `anon` em instalação nova/upgrade, incluindo estado independente, prazos manuais, imagens, ignorados, resina, lotes e reset.
+- Interface e login ainda não incluídos. Não aplicar isoladamente no banco publicado; roteiro em `docs/profiles-phases.md`.
+
+### Corrigido — revisão das partes 1–2
+
+- Descoberta do Jest restrita à pasta oficial `tests`, impedindo que cópias locais incompletas quebrem o comando padrão.
+- Limpeza antiga do HSR conserva a tarefa compartilhada enquanto houver perfil com prazo futuro/indefinido ou recorrência, incluindo jogos ocultos e tarefas pessoais vinculadas. Exclusão individual dos vencidos nos cinco jogos permanece na parte 4.
+
 ## [1.5.0] - 2026-10-05
 
 ### Adicionado

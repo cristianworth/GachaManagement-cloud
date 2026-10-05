@@ -1,4 +1,5 @@
 export default {
+  roots: ['<rootDir>/tests'],
   transform: {
     "^.+\\.js$": "babel-jest",  // Use Babel to transform JS files
   },

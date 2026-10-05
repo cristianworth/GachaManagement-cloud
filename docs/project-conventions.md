@@ -27,6 +27,7 @@ Este documento registra decisões verificadas do projeto e preferências de Cris
 - Não mudar as chaves já utilizadas por GI/HSR/ZZZ incidentalmente. WuWa/NTE identificam edições diferentes do mesmo nome; correção de prazo de uma edição deve reutilizar a identidade persistida.
 - Uma nova edição começa sem conclusão ou decisão herdada da anterior. Correspondência ambígua deve interromper a escrita e pedir investigação, não escolher silenciosamente uma tarefa.
 - Tarefas recorrentes manuais continuam separadas dos eventos importados. Limpeza automática de vencidos permanece restrita ao contrato existente do HSR.
+- A entrega de perfis em revisão (`docs/profiles-phases.md`) protege os estados pessoais na limpeza antiga do HSR já na parte 2. A política final autorizada para a parte 4 é excluir permanentemente importados vencidos nos cinco jogos (GI/HSR/ZZZ/WuWa/NTE), respeitando o prazo e a recorrência de cada perfil. Ela ainda não está ativa.
 
 ## Testes e fixtures
 
