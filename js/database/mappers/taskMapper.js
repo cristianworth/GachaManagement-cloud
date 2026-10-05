@@ -48,6 +48,8 @@ export function taskFromRow(row) {
         startAt: row.start_at ? new Date(row.start_at) : null,
         eventCandidateId: row.event_candidates?.[0]?.id ?? null,
         eventDeadlineManual: row.event_deadline_manual ?? false,
+        weeklyDefinitionKey: row.weekly_batch_items?.definition_key
+            ?? row.weekly_batch_items?.[0]?.definition_key ?? null,
         game: row.game ? gameFromRow(row.game) : undefined,
     };
 }

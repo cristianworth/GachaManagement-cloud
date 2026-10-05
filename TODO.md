@@ -96,11 +96,13 @@ Complexidade estimada para este projeto (HTML, CSS, JavaScript e Supabase): **ba
 
 ## 9. Manter somente weeklies na população inicial
 
-- [ ] Substituir a lista de eventos fixos por definições de atividades semanais separadas dos dados vindos da API.
-- [ ] Resolver o jogo pela abreviação cadastrada, sem depender de IDs numéricos fixos, e calcular o próximo vencimento pela regra de reset semanal em vez de usar datas de 2025.
-- [ ] Permitir criar o lote de weeklies de um jogo sem repetir atividades já existentes. A operação deve funcionar mesmo quando a tabela já tiver tarefas de outros jogos.
-- [ ] Preservar a recorrência das weeklies e impedir que a limpeza de eventos importados as exclua.
-- **Complexidade: média.** Hoje `populateInitialTasks` só roda quando a tabela inteira está vazia. A criação por jogo exige identificar o lote de origem e tratar repetição, datas e vínculos corretamente.
+**Implementado na versão 1.5.0:** catálogo de seis tarefas (Simulated Universe semanal por preferência explícita de Cristian), migração incremental, criação transacional por sigla e botão por jogo. Fontes, decisões e cenários em [docs/weekly-batches.md](docs/weekly-batches.md). Aplicação da migração e validação da interface, PostgREST e concorrência no destino permanecem etapas de implantação.
+
+- [x] Substituir a lista de eventos fixos por definições de atividades semanais separadas dos dados vindos da API.
+- [x] Resolver o jogo pela abreviação cadastrada, sem depender de IDs numéricos fixos, e calcular o próximo vencimento pela regra de reset semanal em vez de usar datas de 2025.
+- [x] Permitir criar o lote de weeklies de um jogo sem repetir atividades já existentes. A operação deve funcionar mesmo quando a tabela já tiver tarefas de outros jogos.
+- [x] Preservar a recorrência das weeklies e impedir que a limpeza de eventos importados as exclua.
+- **Complexidade: média.** A implementação substitui a antiga dependência da tabela vazia por decisões persistidas por jogo. Cada lote inicial é registrado uma única vez, preservando tarefas existentes e exclusões posteriores; futuras adições ao catálogo exigirão uma decisão própria de atualização.
 - **Concluído quando:** a população inicial cria apenas weeklies, com prazos atuais e jogos corretos, e executar novamente não duplica nem restaura atividades que o usuário decidiu remover.
 - **Futuro:** na seleção de jogos, oferecer a opção de criar o lote semanal. A preferência do usuário sobre esse lote deve ser persistida para que a abertura da aplicação não o recrie automaticamente.
 

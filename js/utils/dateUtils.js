@@ -29,13 +29,14 @@ export function getExpirationDate(expirationDay, expirationHour) {
     return currentDate;
 }
 
-export function getNextRecurringDeadline(previousDate, days, now = new Date()) {
+export function getNextRecurringDeadline(previousDate, days, now = new Date(), { utc = false } = {}) {
     if (!Number.isInteger(days) || days < 1) throw new Error('Invalid repeat interval.');
     const next = new Date(previousDate);
     if (Number.isNaN(next.getTime())) throw new Error('Invalid recurring deadline.');
-    // Advance from the original deadline to preserve the cycle and local reset time.
+    // Manual/legacy cycles keep their local time; managed America weeklies use UTC.
     while (next <= now) {
-        next.setDate(next.getDate() + days);
+        if (utc) next.setUTCDate(next.getUTCDate() + days);
+        else next.setDate(next.getDate() + days);
         if (Number.isNaN(next.getTime())) throw new Error('Repeat interval exceeds the supported date range.');
     }
     return next;

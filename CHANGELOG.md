@@ -8,6 +8,22 @@ O projeto segue o versionamento semântico (SemVer), no formato `MAJOR.MINOR.PAT
 - `MINOR`: nova funcionalidade compatível com a versão anterior.
 - `PATCH`: correção de bug ou melhoria pequena, sem nova funcionalidade relevante.
 
+## [1.5.0] - 2026-10-05
+
+### Adicionado
+
+- Catálogo inicial de weeklies separado dos eventos da API e da classe `Task`: HSR (Echo of War e Simulated Universe), WuWa (Weekly Boss e Fantasies of the Thousand Gateways) e ZZZ (Hollow Zero e Notorious Hunt). Simulated Universe usa acompanhamento de sete dias por preferência explícita de Cristian.
+- Criação inicial por jogo na lista de tarefas, com lote persistido e operação transacional. Bancos existentes exigem ação explícita; repetir o lote não duplica nem restaura atividades removidas.
+- Migração `2026-10-04-weekly-batches.sql`, com estado dos lotes, identidades das definições, RLS e funções públicas; instalação nova e upgrade completo cobertos por testes offline.
+- Roteiro de implantação e validação, incluindo preservação de homônimos, falhas, exclusão, fuso horário e teste de duas abas no destino.
+
+### Corrigido
+
+- População inicial resolve jogos pela sigla cadastrada e funciona com tarefas de outros jogos presentes, sem depender de IDs fixos ou datas de 2025.
+- Primeiro vencimento usa o próximo reset estritamente futuro de segunda às 06h de Brasília, com relógio do banco. Novas weeklies gerenciadas renovam em UTC; ciclos manuais, legados e personalizados mantêm seu comportamento.
+- Tarefas existentes são preservadas sem assumir origem pelo nome: conclusão, imagens, prazos, recorrência e vínculos dos eventos permanecem intactos na criação dos lotes.
+- Reset completo inclui candidatos e estado dos lotes em uma única transação; falhas são propagadas e impedem a reinicialização. A recriação dos dados iniciais ocorre após a limpeza e informa falhas sem anunciar sucesso.
+
 ## [1.4.1] - 2026-10-04
 
 ### Melhorado

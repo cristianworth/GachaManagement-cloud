@@ -29,3 +29,17 @@ test('renewal uses saved custom days, retains legacy cycles and leaves events un
     expect(updateTask).toHaveBeenCalledTimes(2);
     expect(displayAllTasks).toHaveBeenCalledTimes(1);
 });
+
+test('managed weekly renewal retains identity, cover and manually chosen time through missed cycles', async () => {
+    jest.useFakeTimers();
+    jest.setSystemTime(new Date('2026-11-16T15:30:00Z'));
+    const weekly = { id: 4, refreshType: 2, repeatDays: 7, weeklyDefinitionKey: 'weekly-boss',
+        expirationDate: new Date('2026-10-26T15:30:00Z'), isDone: true, coverUrl: 'https://example.com/weekly.jpg' };
+    fetchAllOverdueTasks.mockResolvedValueOnce([weekly]);
+    await updateExpiratedTasksRoutine();
+    expect(weekly.expirationDate.toISOString()).toBe('2026-11-23T15:30:00.000Z');
+    expect(weekly.isDone).toBe(false);
+    expect(weekly.coverUrl).toBe('https://example.com/weekly.jpg');
+    expect(weekly.weeklyDefinitionKey).toBe('weekly-boss');
+    expect(updateTask).toHaveBeenCalledWith(weekly);
+});

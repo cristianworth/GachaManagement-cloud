@@ -113,3 +113,13 @@ test('repeat days survive mapping and legacy intervals are preserved', () => {
     expect(taskFromRow({ refresh_type: 6, repeat_days: 30 }).repeatDays).toBe(30);
     expect(taskFromRow({ refresh_type: 0 }).repeatDays).toBeNull();
 });
+
+test.each([
+    { definition_key: 'weekly-boss' },
+    [{ definition_key: 'weekly-boss' }],
+])('weekly identity supports PostgREST object and array embeddings', weekly_batch_items => {
+    const task = taskFromRow({ id: 19, refresh_type: 2, weekly_batch_items });
+    expect(task.weeklyDefinitionKey).toBe('weekly-boss');
+    expect(taskToRow(task)).not.toHaveProperty('weekly_batch_items');
+    expect(taskToRow(task)).not.toHaveProperty('weeklyDefinitionKey');
+});

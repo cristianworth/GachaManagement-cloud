@@ -4,7 +4,7 @@
 // rotina que renova tarefas expiradas. A conexão em si vive em supabaseClient.js.
 
 import { cleanupExpiredHsrEvents } from './eventCandidateDB.js';
-import { getClient, Tables } from './supabaseClient.js';
+import { getClient } from './supabaseClient.js';
 import { populateInitialGames } from './gameDB.js';
 import { updateTask, populateInitialTasks, fetchAllOverdueTasks } from './taskDB.js';
 import { displayAllTasks } from '../ui/taskUI.js';
@@ -23,18 +23,18 @@ export async function initializeDatabase() {
 }
 
 /**
- * Limpa todas as tarefas e jogos e recria os dados iniciais. Tarefas são
- * apagadas antes dos jogos por causa da chave estrangeira.
+ * Explicitly resets all application data, including weekly decisions, in one
+ * transaction. Initial data is recreated only after the reset succeeds.
  */
 export async function clearDatabase() {
     try {
-        const client = getClient();
-        await client.from(Tables.TASKS).delete().gt('id', 0);
-        await client.from(Tables.GAMES).delete().gt('id', 0);
+        const { error } = await getClient().rpc('reset_application_data');
+        if (error) throw error;
         await initializeDatabase();
         console.log('Banco de dados resetado com sucesso!');
     } catch (error) {
         console.error('Erro ao resetar o banco de dados:', error);
+        throw error;
     }
 }
 
@@ -53,7 +53,9 @@ export async function updateExpiratedTasksRoutine() {
         if (!daysToRefresh) continue;
 
         const previousDate = new Date(task.expirationDate);
-        task.expirationDate = getNextRecurringDeadline(previousDate, daysToRefresh);
+        task.expirationDate = getNextRecurringDeadline(previousDate, daysToRefresh, new Date(), {
+            utc: Boolean(task.weeklyDefinitionKey) && task.refreshType === 2 && daysToRefresh === 7,
+        });
         task.isDone = false;
 
         console.log(

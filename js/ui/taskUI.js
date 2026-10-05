@@ -3,7 +3,8 @@ import { createEventCover } from './eventCover.js';
 import { cleanupExpiredHsrEvents, ignoreImportedTask, restoreEventApiDeadline } from '../database/eventCandidateDB.js';
 import { fetchAllGames } from '../database/gameDB.js';
 import { Task } from '../data/Task.js';
-import { fetchAllTasks, completeTask, fetchTaskById, addTask, updateTask, deleteTaskById } from '../database/taskDB.js';
+import { fetchAllTasks, completeTask, fetchTaskById, addTask, updateTask, deleteTaskById, createWeeklyTasksForGame } from '../database/taskDB.js';
+import { WEEKLY_BATCHES } from '../data/weeklyTasks.js';
 import { formatDateForDisplay, formatDateForInput, getExpirationDate } from '../utils/dateUtils.js';
 import { resetTaskForm, setDateSelector, setTaskFormMessage, setTaskRecurrence } from './formHandler.js'
 import RefreshTypeEnum from '../enums/RefreshTypeEnum.js';
@@ -14,6 +15,9 @@ import { setFeedback } from './feedback.js';
 
 let loadedTasks = [];
 let filterInitialized = false;
+let loadedGames = [];
+let creatingWeeklies = false;
+let weeklyGameDataLoaded = false;
 
 export async function displayAllTasks({ successMessage = '' } = {}) {
     return withLoading('Carregando tarefas...', async () => {
@@ -30,6 +34,8 @@ export async function displayAllTasks({ successMessage = '' } = {}) {
             setFeedback('taskListMessage', successMessage);
             return true;
         } catch (error) {
+            weeklyGameDataLoaded = false;
+            document.getElementById('createWeekliesBtn').disabled = true;
             console.error('Failed to load task list:', error);
             setFeedback('taskListMessage', successMessage
                 ? `${successMessage} Porém, não foi possível atualizar a lista. Use Tentar novamente para recarregar os dados.`
@@ -42,6 +48,8 @@ export async function displayAllTasks({ successMessage = '' } = {}) {
 
 function updateTaskList(tasks, games) {
     loadedTasks = tasks;
+    loadedGames = games;
+    weeklyGameDataLoaded = true;
     const filter = document.getElementById('taskGameFilter');
     const selectedGame = filter.value;
     filter.replaceChildren(new Option('All games', ''));
@@ -56,6 +64,7 @@ function updateTaskList(tasks, games) {
         filter.addEventListener('change', renderTaskList);
         refreshFilter.addEventListener('change', renderTaskList);
         document.getElementById('taskHideCompleted').addEventListener('change', renderTaskList);
+        document.getElementById('createWeekliesBtn').addEventListener('click', handleCreateWeeklies);
         filterInitialized = true;
     }
     renderTaskList();
@@ -63,6 +72,9 @@ function updateTaskList(tasks, games) {
 
 function renderTaskList() {
     const gameId = document.getElementById('taskGameFilter').value;
+    const game = loadedGames.find(game => String(game.id) === gameId);
+    document.getElementById('createWeekliesBtn').disabled = creatingWeeklies || !weeklyGameDataLoaded
+        || !WEEKLY_BATCHES.some(batch => batch.abbreviation === game?.abbreviation);
     const refreshType = document.getElementById('taskRefreshTypeFilter').value;
     const hideCompleted = document.getElementById('taskHideCompleted').checked;
     const tasks = filterTasks(loadedTasks, { gameId, interval: refreshType, hideCompleted });
@@ -149,6 +161,31 @@ function addTaskEventListeners(task) {
         errorMessage: 'Não foi possível restaurar o prazo. Confira se a fonte possui uma data válida e tente novamente.',
         save: () => restoreEventApiDeadline(task.eventCandidateId),
     }));
+}
+
+async function handleCreateWeeklies() {
+    if (creatingWeeklies) return;
+    const game = loadedGames.find(game => String(game.id) === document.getElementById('taskGameFilter').value);
+    if (!game) return;
+    creatingWeeklies = true;
+    const button = document.getElementById('createWeekliesBtn');
+    button.disabled = true;
+    setFeedback('taskListMessage');
+    try {
+        await withLoading('Criando weeklies...', async () => {
+            const result = await createWeeklyTasksForGame(game.abbreviation);
+            const message = result.created || result.preserved
+                ? `Lote inicial registrado: ${result.created} criada(s), ${result.preserved} existente(s) preservada(s) com seus dados e repetição atuais.`
+                : 'Lote inicial já registrado. A criação é única por jogo; nenhuma tarefa foi recriada.';
+            await displayAllTasks({ successMessage: message });
+        });
+    } catch (error) {
+        console.error('Failed to create weekly batch:', error);
+        setFeedback('taskListMessage', 'Não foi possível criar as weeklies. As tarefas existentes foram preservadas. Tente novamente.', 'error');
+    } finally {
+        creatingWeeklies = false;
+        renderTaskList();
+    }
 }
 
 async function runTaskAction(task, { loadingMessage, successMessage, errorMessage, save, onSaved, onError }) {

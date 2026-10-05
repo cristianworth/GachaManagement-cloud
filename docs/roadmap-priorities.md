@@ -2,7 +2,7 @@
 
 Revisado com Cristian em 04/10/2026. Esta lista é uma recomendação de ordem, não autorização para implementar todos os itens. O detalhamento e os critérios existentes continuam em [TODO.md](../TODO.md).
 
-**Fora desta tier list:** sincronização diária após os resets e correção da criação inicial das weeklies. Cristian reservou essas duas tarefas para a próxima entrega, em outro chat. Estado e roteiro em [handoff-daily-sync-weeklies.md](handoff-daily-sync-weeklies.md); retirada da lista não significa que ambas estejam entregues.
+**Fora desta tier list:** sincronização diária após os resets, publicada na versão 1.4.1, e criação inicial das weeklies, implementada na versão 1.5.0. A migração e a validação das weeklies no Supabase de destino permanecem etapas de implantação; roteiro em [weekly-batches.md](weekly-batches.md). O [handoff-daily-sync-weeklies.md](handoff-daily-sync-weeklies.md) conserva o contexto histórico. A ordem dos tiers abaixo permanece a recomendação revisada com Cristian em 04/10/2026.
 
 S = próximo investimento prioritário após essa entrega; A = alto retorno; B = depende das bases anteriores ou de necessidade concreta; C = acabamento ou melhoria a adiar. A ordem dentro de cada tier também indica preferência. Complexidade é relativa ao projeto, não uma estimativa de prazo.
 

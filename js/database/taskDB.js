@@ -6,10 +6,11 @@
 
 import { getClient, Tables } from './supabaseClient.js';
 import { taskToRow, taskFromRow } from './mappers/taskMapper.js';
-import { allTasks } from '../data/Task.js';
+import { WEEKLY_BATCHES } from '../data/weeklyTasks.js';
+import { fetchAllGames } from './gameDB.js';
 
 // `game:games(*)` embute a linha do jogo relacionado em cada tarefa.
-const SELECT_WITH_GAME = '*, game:games(*), event_candidates(id,source)';
+const SELECT_WITH_GAME = '*, game:games(*), event_candidates(id,source), weekly_batch_items(definition_key)';
 
 function tasks() {
     return getClient().from(Tables.TASKS);
@@ -97,20 +98,39 @@ export async function completeTask(taskId, isDone) {
     }
 }
 
-export async function populateInitialTasks() {
-    // Semeia as tarefas padrão apenas na primeira execução (banco vazio).
-    try {
-        if (await hasAnyTask()) {
-            return;
-        }
+function resolveWeeklyGame(games, abbreviation) {
+    const matches = games.filter(game => game.abbreviation === abbreviation);
+    if (matches.length > 1) throw new Error(`Sigla de jogo ambígua: ${abbreviation}.`);
+    return matches[0];
+}
 
-        console.log('No tasks found. Populating initial data...');
-        for (const task of allTasks) {
-            await addTask(task);
-        }
-    } catch (error) {
-        console.error('Error populating initial tasks data:', error);
-        throw error;
+async function createWeeklyBatch(batch, game, explicit, now) {
+    const { data, error } = await getClient().rpc('create_weekly_batch', {
+        p_abbreviation: batch.abbreviation,
+        p_game_id: game.id,
+        p_definitions: batch.definitions,
+        p_explicit: explicit,
+        // Production uses the database clock; tests can inject a fixed instant.
+        ...(now !== undefined ? { p_now: new Date(now).toISOString() } : {}),
+    });
+    if (error) throw error;
+    return data;
+}
+
+export async function createWeeklyTasksForGame(abbreviation, { now } = {}) {
+    const batch = WEEKLY_BATCHES.find(batch => batch.abbreviation === abbreviation);
+    if (!batch) throw new Error('Jogo sem lote semanal disponível.');
+    const game = resolveWeeklyGame(await fetchAllGames(), abbreviation);
+    if (!game) throw new Error(`Jogo não cadastrado: ${abbreviation}.`);
+    return createWeeklyBatch(batch, game, true, now);
+}
+
+export async function populateInitialTasks({ now } = {}) {
+    const games = await fetchAllGames();
+    // Validate every enabled abbreviation before any write, even in an empty task table.
+    const batches = WEEKLY_BATCHES.map(batch => ({ batch, game: resolveWeeklyGame(games, batch.abbreviation) }));
+    for (const { batch, game } of batches) {
+        if (game) await createWeeklyBatch(batch, game, false, now);
     }
 }
 

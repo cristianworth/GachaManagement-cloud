@@ -4,7 +4,7 @@ As melhorias planejadas e suas estimativas de complexidade estão em [TODO.md](T
 
 O **Gacha Management** é uma aplicação projetada para ajudar jogadores de **gacha games** a gerenciar sua **resina/stamina** e acompanhar **tarefas recorrentes** nos jogos. Ele oferece ferramentas para rastrear a regeneração da stamina, organizar atividades programadas e facilitar o planejamento dentro dos jogos.
 
-Versão atual: **1.4.1**. Consulte o [CHANGELOG](CHANGELOG.md) para ver as alterações de cada versão e as regras de versionamento utilizadas.
+Versão atual: **1.5.0**. Consulte o [CHANGELOG](CHANGELOG.md) para ver as alterações de cada versão e as regras de versionamento utilizadas.
 
 ![Resin Management](img/demo/resin-management-demo-01.png)
 
@@ -42,6 +42,10 @@ Para habilitar o piloto em um banco já existente, primeiro confira o backup de 
 As capas dos eventos aprovados ficam salvas como URL em `tasks.cover_url` e aparecem como miniaturas ao lado do nome na lista de tarefas. Para bancos existentes, execute [`db/migrations/2026-10-01-task-cover.sql`](db/migrations/2026-10-01-task-cover.sql) depois das migrações do piloto: ela atualiza a função de aprovação e preenche capas dos eventos já aprovados, preservando imagens existentes. Tarefas manuais permitem informar uma URL HTTPS no cadastro e na edição; deixar o campo vazio remove a URL. Nas tarefas importadas, esse campo mostra a capa da fonte e fica desabilitado. Tarefas sem imagem e links indisponíveis exibem o mesmo placeholder, mantendo o alinhamento das descrições.
 
 O cadastro de jogos também aceita uma URL HTTPS em `games.img`. Ao editar um jogo com ícone interno, deixe o campo vazio para mantê-lo. Apagar uma URL personalizada volta ao ícone padrão. Imagens indisponíveis usam esse ícone, e editar o cadastro preserva stamina, tarefas pendentes e cor.
+
+### Criação inicial de weeklies
+
+Os novos lotes usam a sigla cadastrada e o próximo reset da América: segunda às 06:00 de Brasília. HSR cria Echo of War e Simulated Universe (semanal por preferência de Cristian); WuWa cria Weekly Boss e Fantasies of the Thousand Gateways; ZZZ cria Hollow Zero e Notorious Hunt. Tarefas existentes mantêm seus dados. Em bancos existentes, aplique [`db/migrations/2026-10-04-weekly-batches.sql`](db/migrations/2026-10-04-weekly-batches.sql) após NTE; o boot preserva a decisão de não completar lotes automaticamente. Na lista de tarefas, selecione o jogo e use **Criar lote inicial de weeklies deste jogo** para registrar o lote uma vez. Repetição não duplica nem restaura itens excluídos. Catálogo, fontes, regras de preservação e roteiro de teste em [`docs/weekly-batches.md`](docs/weekly-batches.md).
 
 ### Intervalos de repetição e tarefas concluídas
 

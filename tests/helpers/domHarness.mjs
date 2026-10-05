@@ -7,7 +7,7 @@ export function createDomHarness() {
     const originals = Object.fromEntries(['window', 'document', 'history', 'Option'].map(key => [key, globalThis[key]]));
     for (const key of Object.keys(originals)) globalThis[key] = dom.window[key];
     const state = { games: [], tasks: [], candidates: [], writes: [], error: null, readError: null,
-        beforeQuery: null, queryError: null, rpcErrors: {} };
+        beforeQuery: null, queryError: null, rpcErrors: {}, rpcCalls: [], rpcResults: {} };
     const client = {
         from(table) {
             if (!['games', 'tasks', 'event_candidates'].includes(table)) throw new Error(`Unexpected table ${table}`);
@@ -60,13 +60,15 @@ export function createDomHarness() {
             return query;
         },
         async rpc(name, payload) {
-            if (!['cleanup_expired_hsr_events', 'ignore_imported_task', 'sync_event_candidate'].includes(name)) throw new Error(`Unexpected RPC ${name}`);
+            if (!['cleanup_expired_hsr_events', 'ignore_imported_task', 'sync_event_candidate', 'create_weekly_batch'].includes(name)) throw new Error(`Unexpected RPC ${name}`);
+            state.rpcCalls.push({ name, payload });
             await state.beforeQuery?.({ operation: 'rpc', name, payload });
             if (state.rpcErrors[name]) return { data: null, error: new Error(state.rpcErrors[name]) };
             if (name === 'ignore_imported_task') {
                 state.tasks = state.tasks.filter(row => row.id !== payload.p_task_id);
             }
-            return { data: 0, error: null };
+            return { data: state.rpcResults[name] ?? (name === 'create_weekly_batch'
+                ? { status: 'created', created: 0, preserved: 0 } : 0), error: null };
         },
     };
     dom.window.supabase = { createClient: () => client };

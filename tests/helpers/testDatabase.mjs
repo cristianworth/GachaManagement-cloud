@@ -5,6 +5,7 @@ export const migrations = [
     '2026-09-29-genshin-events.sql', '2026-09-30-event-cover.sql', '2026-10-01-task-cover.sql',
     '2026-10-02-hsr-events.sql', '2026-10-02-auto-events.sql', '2026-10-02-zzz-events.sql',
     '2026-10-03-task-repeat-days.sql', '2026-10-03-wuwa-events.sql', '2026-10-04-nte-events.sql',
+    '2026-10-04-weekly-batches.sql',
 ];
 export const readProjectFile = path => readFile(new URL(`../../${path}`, import.meta.url), 'utf8');
 
