@@ -100,7 +100,7 @@ function createTaskRow(task) {
         <td>
             <input type="checkbox" id="task-checkbox-${task.id}" ${task.isDone ? "checked" : ""}>
         </td>
-        <td>${task.gameDescription}</td>
+        <td class="task-game-description"></td>
         <td class="task-description"></td>
         <td>${RefreshTypeEnum.describe(task)}</td>
         <td>${formatDateForDisplay(task.expirationDate)}</td>
@@ -114,6 +114,7 @@ function createTaskRow(task) {
     `;
 
     const summary = document.createElement('div');
+    row.querySelector('.task-game-description').textContent = task.gameDescription;
     summary.className = 'task-summary';
     summary.appendChild(createEventCover(task.coverUrl, 'task-cover'));
     const description = document.createElement('span');
@@ -228,7 +229,7 @@ async function handleTaskEdit (taskId) {
         await withLoading('Carregando tarefa...', async () => {
             const task = await fetchTaskById(taskId);
             if (!task) throw new Error('Task not found.');
-            Router.navigateTo('/tasks/create');
+            await Router.navigateTo('/tasks/create');
             resetTaskForm();
             document.getElementById("taskId").value = task.id;
             document.getElementById("taskGameId").value = task.gameId;

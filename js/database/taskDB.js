@@ -1,25 +1,15 @@
 // js/database/taskDB.js
 //
-// Repositório de tarefas. Mantém a mesma API pública de antes, agora persistindo
-// no Supabase. O jogo relacionado é trazido junto via embedding do Supabase
-// (evitando o N+1 de buscar cada jogo individualmente).
+// The public repository API uses profile RPCs, which return tasks with their games.
 
-import { getClient, Tables } from './supabaseClient.js';
 import { taskToRow, taskFromRow } from './mappers/taskMapper.js';
 import { WEEKLY_BATCHES } from '../data/weeklyTasks.js';
 import { fetchAllGames } from './gameDB.js';
-
-// `game:games(*)` embute a linha do jogo relacionado em cada tarefa.
-const SELECT_WITH_GAME = '*, game:games(*), event_candidates(id,source), weekly_batch_items(definition_key)';
-
-function tasks() {
-    return getClient().from(Tables.TASKS);
-}
+import { profileRpc } from './profileDB.js';
 
 export async function addTask(task) {
     try {
-        const { data, error } = await tasks().insert(taskToRow(task)).select().single();
-        if (error) throw error;
+        const data = await profileRpc('save_profile_task', { p_task: taskToRow(task) });
         console.log('New Task added:', data);
         return taskFromRow(data);
     } catch (error) {
@@ -35,8 +25,7 @@ export async function updateTask(task) {
     }
 
     try {
-        const { error } = await tasks().update(taskToRow(task)).eq('id', task.id);
-        if (error) throw error;
+        await profileRpc('save_profile_task', { p_task_id: task.id, p_task: taskToRow(task) });
     } catch (error) {
         console.error('Erro ao atualizar a tarefa:', error);
         throw error;
@@ -45,8 +34,7 @@ export async function updateTask(task) {
 
 export async function deleteTaskById(taskId) {
     try {
-        const { error } = await tasks().delete().eq('id', taskId);
-        if (error) throw error;
+        await profileRpc('remove_profile_task', { p_task_id: taskId });
     } catch (error) {
         console.error(`Failed to delete task with ID ${taskId}:`, error);
         throw error;
@@ -55,10 +43,7 @@ export async function deleteTaskById(taskId) {
 
 export async function fetchAllTasks() {
     try {
-        const { data, error } = await tasks()
-            .select(SELECT_WITH_GAME)
-            .order('expiration_date', { ascending: true });
-        if (error) throw error;
+        const data = await profileRpc('list_profile_tasks');
         return (data ?? []).map(taskFromRow);
     } catch (error) {
         console.error('Erro ao buscar todas as tarefas:', error);
@@ -68,9 +53,7 @@ export async function fetchAllTasks() {
 
 export async function fetchTaskById(id) {
     try {
-        const { data, error } = await tasks().select(SELECT_WITH_GAME).eq('id', id).maybeSingle();
-        if (error) throw error;
-        return taskFromRow(data);
+        return (await fetchAllTasks()).find(task => task.id === Number(id)) ?? null;
     } catch (error) {
         console.error('Erro ao buscar a tarefa pelo ID:', error);
         throw error;
@@ -79,9 +62,7 @@ export async function fetchTaskById(id) {
 
 export async function fetchTasksByGame(gameId) {
     try {
-        const { data, error } = await tasks().select(SELECT_WITH_GAME).eq('game_id', gameId);
-        if (error) throw error;
-        return (data ?? []).map(taskFromRow);
+        return (await fetchAllTasks()).filter(task => task.gameId === Number(gameId));
     } catch (error) {
         console.error('Erro ao buscar tarefas do jogo:', error);
         throw error;
@@ -90,8 +71,7 @@ export async function fetchTasksByGame(gameId) {
 
 export async function completeTask(taskId, isDone) {
     try {
-        const { error } = await tasks().update({ is_done: isDone }).eq('id', taskId);
-        if (error) throw error;
+        await profileRpc('complete_profile_task', { p_task_id: taskId, p_is_done: isDone });
     } catch (error) {
         console.error('Failed to update task:', error);
         throw error;
@@ -105,7 +85,7 @@ function resolveWeeklyGame(games, abbreviation) {
 }
 
 async function createWeeklyBatch(batch, game, explicit, now) {
-    const { data, error } = await getClient().rpc('create_weekly_batch', {
+    return profileRpc('create_profile_weekly_batch', {
         p_abbreviation: batch.abbreviation,
         p_game_id: game.id,
         p_definitions: batch.definitions,
@@ -113,8 +93,6 @@ async function createWeeklyBatch(batch, game, explicit, now) {
         // Production uses the database clock; tests can inject a fixed instant.
         ...(now !== undefined ? { p_now: new Date(now).toISOString() } : {}),
     });
-    if (error) throw error;
-    return data;
 }
 
 export async function createWeeklyTasksForGame(abbreviation, { now } = {}) {
@@ -125,20 +103,18 @@ export async function createWeeklyTasksForGame(abbreviation, { now } = {}) {
     return createWeeklyBatch(batch, game, true, now);
 }
 
-export async function populateInitialTasks({ now } = {}) {
+export async function populateInitialTasks({ now, explicit = false } = {}) {
     const games = await fetchAllGames();
     // Validate every enabled abbreviation before any write, even in an empty task table.
     const batches = WEEKLY_BATCHES.map(batch => ({ batch, game: resolveWeeklyGame(games, batch.abbreviation) }));
     for (const { batch, game } of batches) {
-        if (game) await createWeeklyBatch(batch, game, false, now);
+        if (game) await createWeeklyBatch(batch, game, explicit, now);
     }
 }
 
 export async function hasAnyTask() {
     try {
-        const { data, error } = await tasks().select('id').limit(1);
-        if (error) throw error;
-        return (data ?? []).length > 0;
+        return (await fetchAllTasks()).length > 0;
     } catch (error) {
         console.error('Error checking if any task exists:', error);
         throw error;
@@ -148,11 +124,7 @@ export async function hasAnyTask() {
 export async function fetchAllOverdueTasks() {
     try {
         const now = new Date();
-        const { data, error } = await tasks()
-            .select(SELECT_WITH_GAME)
-            .lte('expiration_date', now.toISOString());
-        if (error) throw error;
-        return (data ?? []).map(taskFromRow);
+        return (await fetchAllTasks()).filter(task => task.expirationDate && task.expirationDate <= now);
     } catch (error) {
         console.error('Erro ao buscar tarefas expiradas:', error);
         throw error;

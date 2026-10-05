@@ -8,21 +8,35 @@ O projeto segue o versionamento semântico (SemVer), no formato `MAJOR.MINOR.PAT
 - `MINOR`: nova funcionalidade compatível com a versão anterior.
 - `PATCH`: correção de bug ou melhoria pequena, sem nova funcionalidade relevante.
 
-## [Não lançado]
+## [1.6.0] - 2026-10-05
 
-Entrega em partes, aguardando revisão de Cristian. Versão publicada continua 1.5.0; sugestão para o conjunto: 1.6.0.
+Perfis e seleção de jogos (partes 1–3), validados localmente por Cristian, com commit, push e versão autorizados. A parte 4 de identidade/limpeza de eventos permanece pendente; aplicação das migrações e validação do Supabase de destino são etapas separadas.
 
 ### Adicionado — modelo e contratos de perfis (partes 1–2)
 
 - Estrutura SQL para CRAN, Demo e Convidado, com catálogo/capas compartilhados e progresso/decisões por perfil.
 - RPCs transacionais para seleção, jogos, tarefas, conclusão, revisão e lotes semanais; validação de ator/jogo e proteção contra recriação.
 - Testes SQL como `anon` em instalação nova/upgrade, incluindo estado independente, prazos manuais, imagens, ignorados, resina, lotes e reset.
-- Interface e login ainda não incluídos. Não aplicar isoladamente no banco publicado; roteiro em `docs/profiles-phases.md`.
+- Migrações do modelo e contratos acompanham a interface desta versão. Login/convite permanecem fora do escopo; implantação e próximos passos em `docs/profiles-phases.md`.
 
 ### Corrigido — revisão das partes 1–2
 
 - Descoberta do Jest restrita à pasta oficial `tests`, impedindo que cópias locais incompletas quebrem o comando padrão.
 - Limpeza antiga do HSR conserva a tarefa compartilhada enquanto houver perfil com prazo futuro/indefinido ou recorrência, incluindo jogos ocultos e tarefas pessoais vinculadas. Exclusão individual dos vencidos nos cinco jogos permanece na parte 4.
+
+### Adicionado — interface de perfis (parte 3)
+
+- Entrada e troca entre CRAN, Demo e Convidado; seleção de jogos controla Games, Tasks, formulários e revisão. Perfis permanecem públicos, sem login ou convite.
+- Oferta opcional do lote inicial de weeklies por perfil/jogo; ocultar e selecionar novamente conserva progresso, decisões e remoções.
+- Prévia local com `npm run preview:profiles`, usando frontend real e PostgreSQL descartável, sem acessar o Supabase ou APIs externas.
+- Testes DOM com SQL real para seleção, revisão pessoal, weeklies, ocultação, falhas, envio duplicado e recuperação após gravação parcial.
+
+### Corrigido — interface de perfis
+
+- Perfil ativo mantido por página: mudar a preferência em outra aba não redireciona leituras/gravações da aba anterior. Operações pendentes conservam o perfil capturado.
+- Dropdown de jogos atualizado ao abrir formulário, preservando seleção válida sem duplicar opções; descrições pessoais são renderizadas como texto.
+- Revisão permite ignorar um candidato já aprovado em outro perfil mesmo sem tarefa pessoal vinculada, conservando a decisão do outro perfil.
+- Base de recursos na raiz para hospedagem local, permitindo recarregar rotas da prévia sem procurar JS/CSS dentro de `/profile/`.
 
 ## [1.5.0] - 2026-10-05
 

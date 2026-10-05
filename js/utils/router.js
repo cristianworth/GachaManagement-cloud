@@ -16,6 +16,7 @@ class Router {
     '/tasks': 'taskList',
     '/tasks/create': 'createTask',
     '/events': 'eventGames',
+    '/profile/games': 'profileGames',
     ...Object.fromEntries(EVENT_GAMES.map(game => [`/events/${game.key}`, 'eventReview']))
   };
 
@@ -48,6 +49,12 @@ class Router {
 
     // Load data when navigating to specific views
     switch(view) {
+      case 'profileGames':
+        await import('../ui/profileUI.js').then(module => module.displayProfileGames());
+        break;
+      case 'createTask':
+        await import('../ui/dropdownHandler.js').then(module => module.populateGameDropDown());
+        break;
       case 'games':
         await import('../ui/gameUI.js').then(module => module.displayAllGames(options));
         break;

@@ -14,7 +14,13 @@ for (const game of EVENT_GAMES) for (const hosted of [false, true]) test(`${game
     const query = { select() { return this; }, eq() { return this; }, or() { return this; },
         order() { return Promise.resolve({ data: [], error: null }); } };
     globalThis.window = { location, addEventListener() {},
-        supabase: { createClient: () => ({ from: () => query }) } };
+        localStorage: { getItem: () => 'cran' },
+        supabase: { createClient: () => ({ from: () => query,
+            rpc: async (name, params) => {
+                assert.equal(name, 'list_profile_candidates');
+                assert.equal(params.p_profile_id, 'cran');
+                return { data: [], error: null };
+            } }) } };
     globalThis.document = { getElementById: id => elements.get(id),
         querySelector: () => null, querySelectorAll: () => pages };
     globalThis.history = { replaceState: (_state, _title, path) => { location.pathname = path; } };

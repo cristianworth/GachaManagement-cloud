@@ -4,12 +4,12 @@ import {
     fetchPendingEventCandidates,
     fetchEventReviewCounts,
     ignoreEventCandidate,
-    ignoreImportedTask,
 } from '../database/eventCandidateDB.js';
 import { formatDateForInput, formatTimeUntil } from '../utils/dateUtils.js';
 import Router from '../utils/router.js';
 import { EVENT_GAMES, getEventGame } from '../events/eventGames.js';
 import { createEventCover } from './eventCover.js';
+import { fetchAllGames } from '../database/gameDB.js';
 
 
 function appendText(parent, tag, value, className) {
@@ -133,8 +133,7 @@ function makeCandidateCard(candidate, existingTasks, game) {
         }
         await approveEventCandidate(candidate.id, deadline.toISOString(), taskSelect.value ? Number(taskSelect.value) : null);
     }));
-    ignoreButton.addEventListener('click', () => act(() => candidate.task_id
-        ? ignoreImportedTask(candidate.task_id) : ignoreEventCandidate(candidate.id)));
+    ignoreButton.addEventListener('click', () => act(() => ignoreEventCandidate(candidate.id)));
     return { card, updateRemainingTime };
 }
 
@@ -162,7 +161,8 @@ export async function displayEventGames() {
     message.textContent = 'Carregando...';
     try {
         const counts = await fetchEventReviewCounts();
-        for (const game of EVENT_GAMES) {
+        const games = await fetchAllGames();
+        for (const game of EVENT_GAMES.filter(source => games.some(game => game.abbreviation === source.abbreviation))) {
             const button = appendText(list, 'button', `${game.name} — ${counts[game.key]} para revisar`, 'button-neutral');
             button.type = 'button';
             button.addEventListener('click', () => Router.navigateTo(`/events/${game.key}`));

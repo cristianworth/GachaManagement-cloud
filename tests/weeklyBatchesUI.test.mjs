@@ -12,7 +12,7 @@ test('Weekly batch UI and repository protect user choices and recover from error
     const tasks = await import('../js/ui/taskUI.js');
     const repository = await import('../js/database/taskDB.js');
     const el = id => document.getElementById(id);
-    const createCalls = () => state.rpcCalls.filter(call => call.name === 'create_weekly_batch');
+    const createCalls = () => state.rpcCalls.filter(call => call.name === 'create_profile_weekly_batch');
     const changeGame = id => {
         el('taskGameFilter').value = String(id);
         el('taskGameFilter').dispatchEvent(new dom.window.Event('change'));
@@ -73,8 +73,8 @@ test('Weekly batch UI and repository protect user choices and recover from error
     await t.test('Double click sends one explicit batch and reports preserved tasks', async () => {
         let release;
         const gate = new Promise(resolve => { release = resolve; });
-        state.beforeQuery = ({ name }) => name === 'create_weekly_batch' ? gate : undefined;
-        state.rpcResults.create_weekly_batch = { status: 'created', created: 1, preserved: 1 };
+        state.beforeQuery = ({ name }) => name === 'create_profile_weekly_batch' ? gate : undefined;
+        state.rpcResults.create_profile_weekly_batch = { status: 'created', created: 1, preserved: 1 };
         const before = createCalls().length;
         el('createWeekliesBtn').click(); el('createWeekliesBtn').click();
         assert.equal(el('createWeekliesBtn').disabled, true);
@@ -93,7 +93,7 @@ test('Weekly batch UI and repository protect user choices and recover from error
     });
 
     await t.test('RPC failure retains filters/tasks and allows retry without stale loading', async () => {
-        state.rpcErrors.create_weekly_batch = 'Batch failed';
+        state.rpcErrors.create_profile_weekly_batch = 'Batch failed';
         const rows = structuredClone(state.tasks);
         el('createWeekliesBtn').click();
         await waitFor(() => el('loadingOverlay').hidden);
@@ -103,14 +103,14 @@ test('Weekly batch UI and repository protect user choices and recover from error
         assert.equal(el('taskListMessage').getAttribute('role'), 'alert');
         assert.match(el('taskListMessage').textContent, /existentes foram preservadas/);
         state.rpcErrors = {};
-        state.rpcResults.create_weekly_batch = { status: 'created', created: 0, preserved: 0 };
+        state.rpcResults.create_profile_weekly_batch = { status: 'created', created: 0, preserved: 0 };
         el('createWeekliesBtn').click();
         await waitFor(() => el('loadingOverlay').hidden);
         assert.match(el('taskListMessage').textContent, /criação é única por jogo; nenhuma tarefa foi recriada/);
     });
 
     await t.test('Saved batch with failed refresh reports saved status; list retry never creates again', async () => {
-        state.beforeQuery = ({ name }) => { if (name === 'create_weekly_batch') state.readError = 'Refresh failed'; };
+        state.beforeQuery = ({ name }) => { if (name === 'create_profile_weekly_batch') state.readError = 'Refresh failed'; };
         el('createWeekliesBtn').click();
         await waitFor(() => el('loadingOverlay').hidden);
         assert.match(el('taskListMessage').textContent, /Lote inicial já registrado.*não foi possível atualizar/);

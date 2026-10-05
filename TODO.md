@@ -25,14 +25,16 @@ Complexidade estimada para este projeto (HTML, CSS, JavaScript e Supabase): **ba
 - **Entregue em 1.3.0:** cadastro/edição com URL HTTPS, preservação de ícone interno e placeholder para falhas. Cobertura com HTML real em `uiIntegration.test.mjs`.
 - **Concluído quando:** é possível cadastrar ou editar um jogo com imagem externa sem fazer upload, e uma URL vazia ou imagem indisponível não deixa um ícone quebrado na lista.
 
-## 3. Separar os dados em dois perfis fixos
+## 3. Separar os dados em perfis fixos
 
-- [ ] Criar uma tela simples de entrada com apenas dois perfis predefinidos, sem opção de cadastro.
-- [ ] Associar os jogos e as tarefas ao perfil correspondente e mostrar somente os dados do perfil selecionado.
-- [ ] Fazer backup e associar os registros já existentes ao perfil principal antes de aplicar os filtros. Conferir a quantidade de jogos e tarefas antes e depois da mudança.
+**Implementado na versão 1.6.0, validado localmente por Cristian:** três perfis: CRAN, Demo e Convidado. A migração conserva o estado principal no CRAN; Demo/Convidado começam vazios. Contratos, limite público e testes em [docs/profiles-phases.md](docs/profiles-phases.md).
+
+- [x] Criar uma tela simples de entrada com perfis predefinidos, sem opção de cadastro.
+- [x] Associar progresso/decisões ao perfil e mostrar somente seus jogos selecionados e tarefas, mantendo catálogo/capas compartilhados.
+- [x] Associar os registros existentes ao perfil principal na migração e testar instalação nova/upgrade. A interface foi validada localmente; aplicação das migrações e validação do Supabase de destino permanecem pendentes.
 - **Complexidade: média.** Envolve uma tela, filtros nas consultas e gravações e uma migração cuidadosa dos dados atuais; não exige implementar cadastro de usuários.
 - **Concluído quando:** cada perfil mostra seus próprios jogos e tarefas no navegador e no celular; criar, editar ou excluir em um perfil não altera a lista do outro; os dados existentes continuam acessíveis no perfil principal.
-- **Limite da solução:** essa entrada serve para organizar os dados, não para proteger a privacidade. Sem autenticação real, qualquer visitante pode escolher qualquer um dos dois perfis; senhas ou PINs escritos no JavaScript também não protegeriam o banco. Se a privacidade se tornar necessária, adicionar autenticação e políticas RLS por usuário em uma etapa separada.
+- **Limite da solução:** essa entrada serve para organizar os dados, não para proteger a privacidade. Sem autenticação real, qualquer visitante pode escolher qualquer um dos três perfis; senhas ou PINs escritos no JavaScript também não protegeriam o banco. A futura tela de login deverá adicionar autenticação e políticas RLS por usuário em uma etapa separada.
 
 ## 4. Atualizar favicon e ícones de botões
 
@@ -107,6 +109,8 @@ Complexidade estimada para este projeto (HTML, CSS, JavaScript e Supabase): **ba
 - **Futuro:** na seleção de jogos, oferecer a opção de criar o lote semanal. A preferência do usuário sobre esse lote deve ser persistida para que a abertura da aplicação não o recrie automaticamente.
 
 ## 10. Catálogo de jogos e seleção inicial — depois do MVP
+
+**Base entregue em 1.6.0, validada localmente:** seleção por perfil do catálogo existente, filtros e oferta opcional de weeklies. Catálogo completo da API, variantes regionais e autenticação ficam para entregas posteriores.
 
 - [ ] Evoluir o registro central de integração com chave da API, idiomas disponíveis e regras específicas por jogo, reaproveitando `eventGames.js`.
 - [ ] Separar os jogos disponíveis no catálogo dos jogos que o usuário acompanha. Incluir o catálogo completo suportado pela API, distinguindo variantes regionais quando existirem.

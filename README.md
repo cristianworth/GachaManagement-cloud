@@ -4,7 +4,11 @@ As melhorias planejadas e suas estimativas de complexidade estão em [TODO.md](T
 
 O **Gacha Management** é uma aplicação projetada para ajudar jogadores de **gacha games** a gerenciar sua **resina/stamina** e acompanhar **tarefas recorrentes** nos jogos. Ele oferece ferramentas para rastrear a regeneração da stamina, organizar atividades programadas e facilitar o planejamento dentro dos jogos.
 
-Versão atual: **1.5.0**. Consulte o [CHANGELOG](CHANGELOG.md) para ver as alterações de cada versão e as regras de versionamento utilizadas.
+Versão atual: **1.6.0**. Consulte o [CHANGELOG](CHANGELOG.md) para ver as alterações de cada versão e as regras de versionamento utilizadas.
+
+**Perfis da versão 1.6.0, validados localmente:** CRAN, Demo e Convidado, seleção de jogos e progresso pessoal. Perfis são públicos, sem autenticação. Aplicar modelo e contratos antes de usar este frontend no destino. Roteiro em [docs/profiles-phases.md](docs/profiles-phases.md).
+
+Para testar visualmente sem alterar o Supabase, execute `npm run preview:profiles` e abra `http://127.0.0.1:5501`. A prévia usa o frontend e SQL reais em banco descartável; os dados somem ao encerrar o servidor. Não valida o PostgREST real nem consulta os calendários remotos.
 
 ![Resin Management](img/demo/resin-management-demo-01.png)
 

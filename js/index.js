@@ -6,6 +6,8 @@ import { initializeGameForm, initializeTaskForm } from './ui/formHandler.js';
 import { populateGameDropDown, populateRefreshTypeDropDown } from './ui/dropdownHandler.js';
 import { initializeNumberInputValidation } from './ui/inputValidation.js';
 import { withLoading } from './ui/loadingState.js';
+import { initializeProfiles } from './ui/profileUI.js';
+import { populateInitialGames } from './database/gameDB.js';
 
 document.addEventListener('DOMContentLoaded', async function () {
   if (!isSupabaseConfigured()) {
@@ -15,6 +17,8 @@ document.addEventListener('DOMContentLoaded', async function () {
 
   try {
     await withLoading('Carregando...', async () => {
+        await withTimeout(populateInitialGames());
+        if (!await withTimeout(initializeProfiles())) return;
         // Garante que o banco esteja semeado/atualizado antes da primeira renderização.
         await withTimeout(initializeDatabase());
 

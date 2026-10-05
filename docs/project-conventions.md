@@ -50,3 +50,7 @@ Este documento registra decisões verificadas do projeto e preferências de Cris
 5. Sincronizar, repetir e conferir ausência de duplicatas, revisão e preservação dos outros jogos. Registrar números reais e qualquer pendência.
 
 Antes de commit/merge, ler `CHANGELOG.md`, sugerir versão e consultar Cristian quando ainda não houver autorização no mesmo escopo. Não incrementar a cada commit da mesma entrega. Commit, push e nova versão dependem do pedido vigente.
+
+## Perfis (versão 1.6.0)
+
+CRAN, Demo e Convidado são perfis públicos, sem autenticação. Catálogo e capas são compartilhados; progresso, resina, recorrência e decisões usam tabelas por perfil e RPCs públicas. A seleção controla Games, Tasks, dropdowns e revisão. Cada página conserva seu perfil ativo mesmo quando outra aba muda a preferência salva. Login futuro exige ator autenticado no servidor e RLS próprios; a preferência do navegador não protege acesso. Roteiro e prévia local em [profiles-phases.md](profiles-phases.md).

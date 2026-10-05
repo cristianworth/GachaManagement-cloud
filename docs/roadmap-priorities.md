@@ -8,7 +8,7 @@ S = próximo investimento prioritário após essa entrega; A = alto retorno; B =
 
 | Tier | Ordem | Melhoria | Por que esta posição | Complexidade / dependências |
 | --- | --- | --- | --- | --- |
-| **S** | 1 | Dois perfis fixos com jogos, tarefas e progresso separados | Prepara o uso por duas pessoas sem misturar conclusão, resina e escolhas. Migrar os dados atuais para o perfil principal antes de filtrar. | Média/alta: banco, consultas, gravações e interface. TODO 3. |
+| **S** | 1 | Três perfis fixos com seleção e progresso separados | Entregues em 1.6.0 e validados localmente por Cristian. Implantação no destino pendente; parte da seleção do tier B foi antecipada. | Média/alta. TODO 3; roteiro em [profiles-phases.md](profiles-phases.md). |
 | **S** | 2 | Identidade por edição em GI/HSR/ZZZ e política de eventos vencidos | Completa a consistência já trabalhada em WuWa/NTE: corrigir a mesma edição preserva decisões; uma edição nova começa com estado próprio. Resolver identidade antes de generalizar limpeza. | Média/alta: migração e testes de reconciliação. TODO 8. |
 | **A** | 1 | Resina estimada agora e botão para atualizar a estimativa | Melhora a consulta diária com dados já disponíveis; prepara alertas sem exigir outra integração. Uma atualização visual não deve sobrescrever o valor informado pelo usuário. | Média. TODO 1 e 1.1. |
 | **A** | 2 | Testes de navegador no CI e publicação condicionada aos testes | Os testes atuais protegem lógica, SQL e DOM, mas não o CSS renderizado. Poucos fluxos em navegador real podem proteger carregamento, filtros, botões e formulários. Avaliar a configuração atual do Pages antes de definir o bloqueio da publicação. | Média. Complementa o CI existente; não substituir a suíte por testes lentos. |
@@ -24,8 +24,8 @@ S = próximo investimento prioritário após essa entrega; A = alto retorno; B =
 ## Decisões e limites
 
 - Perfis fixos organizam dados; não são autenticação nem proteção de privacidade. Se privacidade se tornar requisito, planejar autenticação e RLS por usuário.
-- Cristian confirmou que a mesma tarefa deve compartilhar a imagem entre usuários. Hoje a URL está em `tasks.cover_url`. Ao implementar perfis, a recomendação é compartilhar o catálogo do evento e sua capa, separando progresso e decisões por perfil; esse modelo ainda não está implementado.
-- Para vencidos, avaliar ocultação/arquivamento antes de exclusão permanente. Isso é proposta para decisão de produto, não mudança aprovada do contrato atual do HSR.
+- Cristian confirmou que a mesma tarefa deve compartilhar a imagem entre perfis. O modelo e os contratos foram commitados em `5e718fc`; a interface foi validada localmente e integra a versão 1.6.0. A URL continua em `tasks.cover_url`, com progresso e decisões separados por perfil.
+- Cristian escolheu exclusão permanente dos importados vencidos nos cinco jogos (GI/HSR/ZZZ/WuWa/NTE), preservando prazos pessoais futuros e recorrência. A parte 2 protege a limpeza antiga do HSR; a política completa e a identidade por edição de GI/HSR/ZZZ entram na parte 4.
 - Não há evidência aqui de um defeito atual de identidade em GI/HSR/ZZZ. A prioridade é completar os contratos de edição e prevenir regressões, preservando vínculos e chaves existentes.
 - Se o uso por uma segunda pessoa for adiado, resina estimada pode preceder os perfis como entrega menor. Se o volume crescer muito, paginação pode subir de tier.
 - As mudanças desta lista devem preservar JavaScript/HTML/CSS sem framework e seguir [project-conventions.md](project-conventions.md).

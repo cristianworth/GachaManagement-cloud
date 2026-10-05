@@ -16,6 +16,8 @@
             if (repo) {
                 document.write(`<base href="/${repo}/" />`);
             }
+        } else {
+            document.write('<base href="/" />');
         }
     </script>
     
@@ -45,12 +47,35 @@
         </div>
     </div>
 
+    <section id="profileEntry" hidden>
+        <h1>Escolha um perfil</h1>
+        <p>CRAN, Demo e Convidado têm progresso e jogos separados. Estes perfis são públicos e ainda não possuem login ou senha.</p>
+        <div id="profileChoices"></div>
+    </section>
+    <nav id="profileBar" class="profile-bar" hidden aria-label="Perfil atual">
+        <strong>Perfil: <span id="activeProfileName"></span></strong>
+        <button id="switchProfileBtn" class="button-neutral" type="button">Trocar perfil</button>
+        <button id="selectGamesBtn" class="button-neutral" type="button">Selecionar jogos</button>
+    </nav>
+    <div data-page="profileGames" style="display:none">
+        <section>
+            <h1>Jogos deste perfil</h1>
+            <p>Games, Tasks e revisão de eventos exibem somente os jogos selecionados. Desmarcar um jogo preserva o progresso para quando ele for selecionado novamente.</p>
+            <div id="profileGameChoices" class="profile-game-choices"></div>
+            <label class="profile-weekly-option"><input id="includeProfileWeeklies" type="checkbox" checked> Criar lote inicial de weeklies dos jogos selecionados (HSR, WuWa e ZZZ)</label>
+            <p>Lotes já criados não são refeitos. Se desmarcar esta opção, as weeklies ausentes só serão criadas quando você pedir.</p>
+            <p id="profileGamesStatus" class="operation-feedback" role="status" hidden></p>
+            <button id="saveProfileGamesBtn" class="button-save" type="button" disabled>Salvar seleção</button>
+            <button id="cancelProfileGamesBtn" class="button-neutral" type="button">Voltar</button>
+        </section>
+    </div>
+
     <!-- Games List Page -->
-    <div data-page="games">
+    <div data-page="games" style="display:none">
         <section>
             <h1 class="main-title">
                 <a href="https://cristianworth.github.io/GachaManagement-cloud/" target="_blank">
-                    Gacha Management <span class="version-badge">v1.5.0</span>
+                    Gacha Management <span class="version-badge">v1.6.0</span>
                 </a>
                 <br>
                 <a href="https://github.com/cristianworth/GachaManagement-cloud/tree/main" target="_blank">Dev Repo</a>
@@ -133,7 +158,7 @@
             </div>
 
             <button id="createWeekliesBtn" class="button-add" type="button" disabled>Criar lote inicial de weeklies deste jogo</button>
-            <p>Selecione HSR, WuWa ou ZZZ. A criação é única por jogo. Atividades com o mesmo nome são mantidas com seus dados e repetição atuais; atividades removidas de um lote registrado não são restauradas.</p>
+            <p>Selecione HSR, WuWa ou ZZZ. A criação é única por jogo e perfil. Atividades com o mesmo nome são mantidas com seus dados e repetição atuais; atividades removidas de um lote registrado não são restauradas.</p>
             <p id="taskListMessage" class="operation-feedback" role="status" hidden></p>
             <button id="taskListRetry" class="button-neutral" type="button" hidden>Tentar novamente</button>
             <div class="table-container">

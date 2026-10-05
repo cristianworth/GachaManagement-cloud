@@ -5,6 +5,8 @@ import RefreshTypeEnum from '../enums/RefreshTypeEnum.js';
 export async function populateGameDropDown() {
     let games = await fetchAllGames();
     const selectGame = document.getElementById("taskGameId");
+    const selectedId = selectGame.value;
+    selectGame.replaceChildren();
 
     games.forEach(game => {
         let option = document.createElement("option");
@@ -12,6 +14,7 @@ export async function populateGameDropDown() {
         option.textContent = game.description;
         selectGame.appendChild(option);
     });
+    if ([...selectGame.options].some(option => option.value === selectedId)) selectGame.value = selectedId;
 }
 
 export function populateRefreshTypeDropDown() {

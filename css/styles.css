@@ -539,3 +539,10 @@ textarea::placeholder {
 .task-filters { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin: 20px 0; }
 .task-filters select { max-width: 100%; padding: 8px; }
 .task-deadline-note { display: block; margin-top: 6px; }
+/* Profile controls also remain usable on narrow screens. */
+.profile-bar { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; padding: 16px; }
+.profile-bar[hidden] { display: none; }
+.profile-game-choices { display: grid; gap: 12px; margin: 20px 0; }
+.profile-game-choices label { display: flex; align-items: center; gap: 12px; }
+.profile-game-choices input { width: auto; }
+.profile-weekly-option input { width: auto; }

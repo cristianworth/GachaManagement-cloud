@@ -20,7 +20,7 @@ export async function displayAllGames({ successMessage = '' } = {}) {
         try {
             const games = await fetchAllGames();
             renderGameList(games);
-            setFeedback('gameListMessage', successMessage || (games.length ? '' : 'Nenhum jogo cadastrado.'));
+            setFeedback('gameListMessage', successMessage || (games.length ? '' : 'Nenhum jogo selecionado. Use Selecionar jogos para começar.'));
             return true;
         } catch (error) {
             console.error('Failed to load game list:', error);
@@ -50,7 +50,7 @@ function createGameRow(game) {
 
     row.innerHTML = `
         <td class="game-icon-cell"></td>
-        <td>${game.description}</td>
+        <td class="game-description"></td>
         <td>
             <textarea
                 id="pendingTask${game.id}"
@@ -58,8 +58,7 @@ function createGameRow(game) {
                 rows="4"
                 spellcheck="true"
                 placeholder="• Exemplo de tarefa&#10;• Outra tarefa"
-                aria-label="Tarefas pendentes de ${game.description}"
-            >${game.pendingTasks || ''}</textarea>
+            ></textarea>
         </td>
         <td>
             <div class="game-stamina-controls">
@@ -79,6 +78,10 @@ function createGameRow(game) {
     `;
 
     row.querySelector('.game-icon-cell').appendChild(createGameIcon(game.img, game.description));
+    row.querySelector('.game-description').textContent = game.description;
+    row.querySelector('.pending-task-editor').setAttribute('aria-label', `Tarefas pendentes de ${game.description}`);
+    row.querySelector('.pending-task-editor').value = game.pendingTasks || '';
+    row.querySelector('.button-delete').textContent = 'Ocultar jogo';
     return row;
 }
 
@@ -191,8 +194,8 @@ async function handleGameEdit(gameId) {
 
 async function handleDelete(gameId) {
     await runGameAction(gameId, {
-        loadingMessage: 'Excluindo jogo...', successMessage: 'Jogo excluído.',
-        errorMessage: 'Não foi possível excluir o jogo. Ele continua na lista. Tente novamente.',
+        loadingMessage: 'Ocultando jogo...', successMessage: 'Jogo ocultado neste perfil. Você pode selecioná-lo novamente.',
+        errorMessage: 'Não foi possível ocultar o jogo. Ele continua na lista. Tente novamente.',
         save: async () => {
             await deleteGameById(gameId);
             document.getElementById(`delete-game-${gameId}`).closest('tr').remove();

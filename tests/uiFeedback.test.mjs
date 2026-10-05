@@ -203,12 +203,12 @@ test('Lists report loading and failures without losing saved state or drafts', a
         assert.match(gameMessage(), /salvas/);
     });
 
-    await t.test('Failed game deletion retains the row and releases loading', async () => {
+    await t.test('Failed game hiding retains the row and releases loading', async () => {
         await seed(); state.error = 'Delete denied'; element('delete-game-4').click();
         await waitFor(() => overlay().hidden);
         assert.equal(state.games.length, 1);
         assert.equal(element('gameListBody').rows.length, 1);
-        assert.match(gameMessage(), /Não foi possível excluir/);
+        assert.match(gameMessage(), /Não foi possível ocultar/);
         assert.equal(element('delete-game-4').disabled, false);
     });
 
