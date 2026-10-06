@@ -1,7 +1,7 @@
 // js\ui\gameUI.js
 import { Game } from '../data/Game.js';
 import { fetchGameById, fetchAllGames, updateGame, addGame, deleteGameById } from '../database/gameDB.js';
-import { calculateMaxStaminaDate, formatDateToDayHour } from '../utils/dateUtils.js';
+import { calculateMaxStaminaDate, estimateCurrentStamina, formatDateToDayHour } from '../utils/dateUtils.js';
 import { resetGameForm, setGameFormMessage } from './formHandler.js';
 import { getRandomColor } from '../utils/colorUtils.js';
 import Router from '../utils/router.js';
@@ -46,7 +46,6 @@ function renderGameList(games) {
 
 function createGameRow(game) {
     let row = document.createElement("tr");
-    const maxStaminaAt = formatDateToDayHour(game.dateMaxStamina);
 
     row.innerHTML = `
         <td class="game-icon-cell"></td>
@@ -67,7 +66,12 @@ function createGameRow(game) {
             </div>
         </td>
         <td>
-            <span id="newMaxStaminaAt${game.id}" class="spacing-left red-text">${maxStaminaAt}<\span>
+            <div class="game-stamina-estimate">
+                <output id="estimatedStamina${game.id}" aria-live="polite"></output>
+                <span id="newMaxStaminaAt${game.id}" class="red-text"></span>
+                <small id="staminaEstimateTime${game.id}"></small>
+                <button type="button" class="button-neutral" id="refresh-stamina-${game.id}">Atualizar estimativa</button>
+            </div>
         </td>
         <td class="list-action-cell">
             <div class="list-actions">
@@ -82,7 +86,20 @@ function createGameRow(game) {
     row.querySelector('.pending-task-editor').setAttribute('aria-label', `Tarefas pendentes de ${game.description}`);
     row.querySelector('.pending-task-editor').value = game.pendingTasks || '';
     row.querySelector('.button-delete').textContent = 'Ocultar jogo';
+    row.querySelector(`#refresh-stamina-${game.id}`).setAttribute('aria-label', `Atualizar estimativa de resina de ${game.description}`);
+    updateStaminaEstimate(row, game);
     return row;
+}
+
+function updateStaminaEstimate(row, game, now = new Date()) {
+    const estimate = estimateCurrentStamina(game, now);
+    row.querySelector(`#estimatedStamina${game.id}`).textContent = estimate === null
+        ? 'Estimativa indisponível. Salve a resina e confira o cadastro.'
+        : `Resina estimada agora: ${estimate}/${Number(game.capStamina)}`;
+    row.querySelector(`#newMaxStaminaAt${game.id}`).textContent = estimate === null
+        ? 'Sem previsão válida.' : formatDateToDayHour(game.dateMaxStamina, now);
+    row.querySelector(`#staminaEstimateTime${game.id}`).textContent = estimate === null
+        ? '' : `Calculada às ${now.toLocaleTimeString('pt-BR')}`;
 }
 
 export function addGameEventListeners(game) {
@@ -90,6 +107,10 @@ export function addGameEventListeners(game) {
     const editGame = document.getElementById(`edit-game-${game.id}`);
     const deleteGame = document.getElementById(`delete-game-${game.id}`);
     const pendingTaskEditor = document.getElementById(`pendingTask${game.id}`);
+    const refreshStamina = document.getElementById(`refresh-stamina-${game.id}`);
+
+    if (refreshStamina)
+        refreshStamina.addEventListener('click', () => updateStaminaEstimate(refreshStamina.closest('tr'), game));
 
     if (saveGame)
         saveGame.addEventListener("click", () => handleGameSave(game.id));

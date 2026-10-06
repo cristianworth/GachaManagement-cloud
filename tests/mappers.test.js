@@ -47,6 +47,12 @@ test('gameFromRow reconstrói o objeto de domínio com dateMaxStamina como Date'
     expect(game.dateMaxStamina.toISOString()).toBe(iso);
 });
 
+test('missing stamina forecasts stay absent instead of becoming the current time', () => {
+    const game = gameFromRow({ id: 3, cap_stamina: 240, max_stamina_at: 'Old label', date_max_stamina: null });
+    expect(game.dateMaxStamina).toBeNull();
+    expect(gameToRow(game).date_max_stamina).toBeNull();
+});
+
 test('taskToRow/taskFromRow são simétricos nos campos principais', () => {
     const date = new Date(2025, 2, 16, 6);
     const row = taskToRow({

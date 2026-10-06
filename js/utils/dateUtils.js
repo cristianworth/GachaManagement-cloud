@@ -1,6 +1,5 @@
  // js\utils\dateUtils.js
- export function formatDateToDayHour(date) {
-    const today = new Date();
+ export function formatDateToDayHour(date, today = new Date()) {
     const diffMs = date - today;
     const diffHours = Math.ceil(diffMs / (1000 * 60 * 60)); // milissegundos para horas
 
@@ -19,6 +18,20 @@ export function calculateMaxStaminaDate(game) {
     forecastDate.setMinutes(forecastDate.getMinutes() + howManyMinutesUntilCapped);
 
     return forecastDate;
+}
+
+export function estimateCurrentStamina(game, now = new Date()) {
+    const cap = Number(game.capStamina);
+    // Despite its legacy name, staminaPerMinute stores minutes per regenerated unit.
+    const minutesPerUnit = Number(game.staminaPerMinute);
+    // New games have a placeholder deadline; saving stamina also sets this forecast label.
+    if (!game.maxStaminaAt || !game.dateMaxStamina || !Number.isFinite(cap) || cap <= 0
+        || !Number.isFinite(minutesPerUnit) || minutesPerUnit <= 0) return null;
+    const deadline = new Date(game.dateMaxStamina).getTime();
+    const instant = new Date(now).getTime();
+    if (!Number.isFinite(deadline) || !Number.isFinite(instant)) return null;
+    const remainingUnits = Math.max(0, deadline - instant) / (minutesPerUnit * 60_000);
+    return Math.floor(Math.max(0, Math.min(cap, cap - remainingUnits)));
 }
 
 export function getExpirationDate(expirationDay, expirationHour) {

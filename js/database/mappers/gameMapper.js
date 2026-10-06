@@ -47,7 +47,7 @@ export function gameFromRow(row) {
         staminaPerMinute: row.stamina_per_minute,
         currentStamina: row.current_stamina ?? 0,
         maxStaminaAt: row.max_stamina_at ?? '',
-        dateMaxStamina: row.date_max_stamina ? new Date(row.date_max_stamina) : new Date(),
+        dateMaxStamina: row.date_max_stamina ? new Date(row.date_max_stamina) : null,
         pendingTasks: row.pending_tasks ?? '',
         color: row.color,
     };

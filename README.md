@@ -4,13 +4,15 @@ As melhorias planejadas e suas estimativas de complexidade estão em [TODO.md](T
 
 O **Gacha Management** é uma aplicação projetada para ajudar jogadores de **gacha games** a gerenciar sua **resina/stamina** e acompanhar **tarefas recorrentes** nos jogos. Ele oferece ferramentas para rastrear a regeneração da stamina, organizar atividades programadas e facilitar o planejamento dentro dos jogos.
 
-Versão atual: **1.7.0**. Consulte o [CHANGELOG](CHANGELOG.md) para ver as alterações de cada versão e as regras de versionamento utilizadas.
+Versão atual: **1.8.0**. Consulte o [CHANGELOG](CHANGELOG.md) para ver as alterações de cada versão e as regras de versionamento utilizadas.
 
 **Perfis da versão 1.6.0, validados localmente:** CRAN, Demo e Convidado, seleção de jogos e progresso pessoal. Perfis são públicos, sem autenticação. Aplicar modelo e contratos antes de usar este frontend no destino. Roteiro em [docs/profiles-phases.md](docs/profiles-phases.md).
 
 **Eventos da versão 1.7.0:** identidade por edição em GI/HSR/ZZZ e exclusão por perfil dos importados vencidos nos cinco jogos. Prévia sintética, reinstalação do live e verificações manuais restantes em [docs/event-editions-expiry.md](docs/event-editions-expiry.md).
 
 Para testar visualmente sem alterar o Supabase, execute `npm run preview:profiles` e abra `http://127.0.0.1:5501`. A prévia usa o frontend e SQL reais em banco descartável; os dados somem ao encerrar o servidor. Não valida o PostgREST real nem consulta os calendários remotos.
+
+**Resina da versão 1.8.0:** Games mostra a resina estimada atual junto da previsão de lotar. **Atualizar estimativa** recalcula apenas essa linha, preservando os campos digitados; **Save** registra o valor real e uma nova previsão. Sem previsão salva, a estimativa fica indisponível. A estimativa usa os dados carregados; alterações salvas em outro dispositivo exigem recarregar a lista. Alertas continuam planejados em [docs/resin-alerts-plan.md](docs/resin-alerts-plan.md).
 
 ![Resin Management](img/demo/resin-management-demo-01.png)
 

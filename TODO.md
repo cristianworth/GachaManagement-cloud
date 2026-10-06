@@ -8,16 +8,17 @@ Complexidade estimada para este projeto (HTML, CSS, JavaScript e Supabase): **ba
 
 ## 1. Mostrar a resina atual na coluna "Max Stamina At"
 
-- [ ] Exibir, junto do horário em que a resina ficará cheia, uma estimativa da resina **agora** (por exemplo, `175/240`).
-- **Complexidade: média.** O jogo já guarda `currentStamina`, `capStamina`, `staminaPerMinute` e `dateMaxStamina`, mas a tela só formata a data. É preciso definir como calcular a estimativa a partir do tempo restante, limitar o resultado entre zero e o máximo e lidar com jogos ainda não atualizados.
+- [x] Exibir, junto do horário em que a resina ficará cheia, uma estimativa da resina **agora** (por exemplo, `175/240`). Entregue em 1.8.0.
+- **Complexidade: média.** Usar a previsão salva, o limite e os minutos por unidade para calcular unidades inteiras entre zero e o máximo. Sem previsão salva ou parâmetros válidos, informar que a estimativa está indisponível. A estimativa é atualizada ao carregar a lista ou clicar no botão; não há timer automático neste recorte.
 - **Concluído quando:** o valor mostrado acompanha o tempo decorrido, respeita o limite do jogo e permanece coerente após salvar uma nova resina.
 
 ### 1.1. Botão para atualizar a resina exibida
 
-- [ ] Adicionar um botão na linha de cada jogo para recalcular e exibir a resina estimada naquele momento.
-- **Complexidade: baixa**, se for apenas uma atualização visual com os dados já carregados; **média**, se também buscar os dados mais recentes do Supabase antes do cálculo.
-- **Depende de:** item 1. Decidir se o botão deve só atualizar a tela ou também gravar um novo valor no banco. Uma atualização visual não deve sobrescrever a resina salva sem uma ação explícita.
+- [x] Adicionar um botão na linha de cada jogo para recalcular e exibir a resina estimada naquele momento. Entregue em 1.8.0.
+- **Complexidade: baixa.** Atualização visual com os dados já carregados, conforme pedido de Cristian em 06/10/2026.
+- **Decisão:** clicar não consulta nem grava no Supabase; conserva a resina digitada e as anotações, inclusive rascunhos. A ação Save continua registrando uma quantidade real e uma nova previsão.
 - **Concluído quando:** clicar no botão atualiza apenas o jogo escolhido e mostra o valor calculado para o horário atual.
+- **Teste local:** `npm run preview:profiles`, abrir `http://127.0.0.1:5501`, selecionar WuWa e salvar 175. Conferir `175/240`; depois de seis minutos, atualizar para `176/240`. Digitar outro valor/anotação sem salvar e atualizar conserva o rascunho. Recarregar calcula a estimativa a partir do último valor salvo; ao atingir o prazo, limita em `240/240`. Outro perfil sem resina salva mostra estimativa indisponível.
 
 ## 2. Usar imagem por URL para jogos novos
 
@@ -50,6 +51,8 @@ Complexidade estimada para este projeto (HTML, CSS, JavaScript e Supabase): **ba
 - **Relação com o item 4:** escolher um conjunto visual coerente antes de substituir muitos ícones evita retrabalho.
 
 ## 6. Alerta para uma quantidade escolhida de resina
+
+**Entrega separada, somente levantamento inicial realizado:** plano em [docs/resin-alerts-plan.md](docs/resin-alerts-plan.md). Nenhum alerta ou notificação foi implementado junto da estimativa visual.
 
 - [ ] Permitir escolher um jogo e uma quantidade alvo de resina (por exemplo, 60) e mostrar o horário previsto para atingir esse valor.
 - [ ] Depois de cadastrar o alerta, mostrar na tela uma contagem regressiva até o horário previsto. Atualizar a previsão quando a resina do jogo for salva novamente.

@@ -8,6 +8,18 @@ O projeto segue o versionamento semântico (SemVer), no formato `MAJOR.MINOR.PAT
 - `MINOR`: nova funcionalidade compatível com a versão anterior.
 - `PATCH`: correção de bug ou melhoria pequena, sem nova funcionalidade relevante.
 
+## [1.8.0] - 2026-10-06
+
+### Adicionado
+
+- Estimativa atual de resina na coluna Max Stamina At, com quantidade inteira, limite do jogo e horário do cálculo. Jogos sem previsão salva ou parâmetros válidos exibem estimativa indisponível.
+- Botão Atualizar estimativa por jogo: recalcula a exibição a partir dos dados carregados, sem consultas/escritas no Supabase ou substituição de campos ainda não salvos. Save continua registrando a resina informada.
+- Levantamento de alertas em `docs/resin-alerts-plan.md` e item separado B-2 no roadmap. Apenas planejamento de meta por perfil/jogo e contagem dentro do site; alertas ainda não implementados.
+
+Entrega de resina e levantamento separado de alertas. Commit, push e escolha da numeração autorizados por Cristian em 06/10/2026.
+
+Validação: `npm test` passou 355 testes (66 Jest + 289 Node), incluindo cálculo com relógio fixo, ausência de previsão, limites, minutos fracionários, atualização sem consultas/escritas e preservação de rascunhos. Prévia em navegador conferiu salvar, recarregar e atualizar a estimativa; `git diff --check` passou. Nenhuma alteração de banco é necessária neste recorte.
+
 ## [1.7.0] - 2026-10-06
 
 Parte 4 implementada e roadmap atualizado. Commit, push e versão 1.7.0 autorizados por Cristian em 06/10/2026. O banco live foi reconstruído do zero com autorização; execução no destino é separada da geração do SQL.
