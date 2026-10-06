@@ -25,6 +25,8 @@ test('real profile UI uses SQL contracts and only selected games', async t => {
         } catch (error) { return { data: null, error }; }
     };
     const { selectProfile, clearProfile, getSelectedProfileId } = await import('../js/services/profileSession.js');
+    // Load the actual entry point too: repository mocks cannot detect missing boot exports.
+    await import('../js/index.js');
     const profiles = await import('../js/ui/profileUI.js');
     const tasks = await import('../js/ui/taskUI.js');
     const repo = await import('../js/database/taskDB.js');

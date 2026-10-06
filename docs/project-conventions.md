@@ -24,10 +24,10 @@ Este documento registra decisões verificadas do projeto e preferências de Cris
 ## Identidade e estado
 
 - Preservar conclusão, decisão de ignorar, prazo manual e vínculo candidato/tarefa durante sincronizações repetidas. Ausência na API inativa o candidato; não exclui a tarefa.
-- Não mudar as chaves já utilizadas por GI/HSR/ZZZ incidentalmente. WuWa/NTE identificam edições diferentes do mesmo nome; correção de prazo de uma edição deve reutilizar a identidade persistida.
+- A parte 4 aplica identidade por edição aos cinco jogos. Correção de prazo da mesma edição reutiliza a identidade persistida; períodos separados criam outra edição. Chaves antigas só são adotadas com correspondência segura, nunca apenas pelo nome.
 - Uma nova edição começa sem conclusão ou decisão herdada da anterior. Correspondência ambígua deve interromper a escrita e pedir investigação, não escolher silenciosamente uma tarefa.
-- Tarefas recorrentes manuais continuam separadas dos eventos importados. Limpeza automática de vencidos permanece restrita ao contrato existente do HSR.
-- A entrega de perfis em revisão (`docs/profiles-phases.md`) protege os estados pessoais na limpeza antiga do HSR já na parte 2. A política final autorizada para a parte 4 é excluir permanentemente importados vencidos nos cinco jogos (GI/HSR/ZZZ/WuWa/NTE), respeitando o prazo e a recorrência de cada perfil. Ela ainda não está ativa.
+- Tarefas recorrentes manuais continuam separadas dos eventos importados. A parte 4 exclui importados vencidos nos cinco jogos conforme o prazo e a recorrência de cada perfil; marcas mínimas impedem recriação. O sincronizador limpa antes das correções e após importar. O contrato HSR antigo conserva sua contagem de definições removidas.
+- Cristian reafirmou em 05/10/2026 que o banco live é descartável e pode ser reinstalado do zero. `npm run db:reset:build` gera a instalação atômica com o schema atual; geração não é aplicação no destino. Roteiro e cenários em [event-editions-expiry.md](event-editions-expiry.md).
 
 ## Testes e fixtures
 

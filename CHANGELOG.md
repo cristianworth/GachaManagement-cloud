@@ -8,6 +8,24 @@ O projeto segue o versionamento semântico (SemVer), no formato `MAJOR.MINOR.PAT
 - `MINOR`: nova funcionalidade compatível com a versão anterior.
 - `PATCH`: correção de bug ou melhoria pequena, sem nova funcionalidade relevante.
 
+## [1.7.0] - 2026-10-06
+
+Parte 4 implementada e roadmap atualizado. Commit, push e versão 1.7.0 autorizados por Cristian em 06/10/2026. O banco live foi reconstruído do zero com autorização; execução no destino é separada da geração do SQL.
+
+### Melhorado
+
+- Identidade por edição em GI/HSR/ZZZ, com correções que reutilizam a edição e novas ocorrências independentes. Datas incompletas ou correspondência ambígua bloqueiam toda escrita.
+- Exclusão permanente de importados vencidos por perfil nos cinco jogos, respeitando prazo pessoal, recorrência, jogos ocultos e tarefas vinculadas na revisão. Marcas mínimas impedem recriação da edição encerrada.
+- Limpeza antes das correções da API e após a importação, evitando reabrir um estado já vencido. Workflow diário e regras de horário permanecem iguais.
+- Gerador de reinstalação completa e atômica do banco da aplicação (`npm run db:reset:build`), testes SQL/REST e prévia com eventos sintéticos (`npm run preview:profiles -- --events`). Roteiro em `docs/event-editions-expiry.md`.
+- Roadmap restrito ao trabalho pendente: Favorite tasks em S-1, resina estimada em S-2 e catálogo limitado à expansão ainda não entregue. TODO 13 define estrela, preferência por perfil e favoritas no topo; o recurso de favoritas permanece planejado.
+
+### Corrigido
+
+- Importação de definições compartilhadas deixa de gravar progresso implícito no CRAN antes de selecionar jogos. Boot e lista de tarefas usam a limpeza dos cinco jogos; o teste DOM também carrega o ponto de entrada real.
+
+Validação local: 334 testes passaram, incluindo 103 de banco; `npm test` foi repetido em 06/10/2026 sem falhas. Live reinstalado com autorização de Cristian, RPCs/relacionamentos e importação dos 50 eventos atuais conferidos; repetição não criou novos registros. Validação pessoal da interface conectada ao live e duas conexões reais com gravações continuam pendentes.
+
 ## [1.6.0] - 2026-10-05
 
 Perfis e seleção de jogos (partes 1–3), validados localmente por Cristian, com commit, push e versão autorizados. A parte 4 de identidade/limpeza de eventos permanece pendente; aplicação das migrações e validação do Supabase de destino são etapas separadas.

@@ -3,7 +3,7 @@ import { addTask, updateTask, fetchTaskById } from '../js/database/taskDB.js';
 import { taskToRow } from '../js/database/mappers/taskMapper.js';
 
 jest.mock('../js/ui/eventCover.js', () => ({ createEventCover: jest.fn() }));
-jest.mock('../js/database/eventCandidateDB.js', () => ({ cleanupExpiredHsrEvents: jest.fn(async () => {}) }));
+jest.mock('../js/database/eventCandidateDB.js', () => ({ cleanupExpiredImportedEvents: jest.fn(async () => {}) }));
 jest.mock('../js/database/gameDB.js', () => ({ fetchAllGames: jest.fn(async () => []) }));
 jest.mock('../js/database/taskDB.js', () => ({
     addTask: jest.fn(async () => {}),

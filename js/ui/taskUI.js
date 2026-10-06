@@ -1,6 +1,6 @@
 // js\ui\taskUI.js
 import { createEventCover } from './eventCover.js';
-import { cleanupExpiredHsrEvents, ignoreImportedTask, restoreEventApiDeadline } from '../database/eventCandidateDB.js';
+import { cleanupExpiredImportedEvents, ignoreImportedTask, restoreEventApiDeadline } from '../database/eventCandidateDB.js';
 import { fetchAllGames } from '../database/gameDB.js';
 import { Task } from '../data/Task.js';
 import { fetchAllTasks, completeTask, fetchTaskById, addTask, updateTask, deleteTaskById, createWeeklyTasksForGame } from '../database/taskDB.js';
@@ -28,7 +28,7 @@ export async function displayAllTasks({ successMessage = '' } = {}) {
         }
         setFeedback('taskListMessage');
         try {
-            await cleanupExpiredHsrEvents();
+            await cleanupExpiredImportedEvents();
             const [tasks, games] = await Promise.all([fetchAllTasks(), fetchAllGames()]);
             updateTaskList(tasks, games);
             setFeedback('taskListMessage', successMessage);

@@ -76,22 +76,31 @@ export function assignEditionKeys(candidates, existing) {
         const start = Date.parse(candidate.source_start_at);
         const end = Date.parse(candidate.source_end_at);
         if (candidates.some(row => row !== candidate && row.source === candidate.source &&
-            activityKey(row.name) === activityKey(candidate.name) &&
-            start < Date.parse(row.source_end_at) && Date.parse(row.source_start_at) < end)) {
-            throw new Error('Calendar contains repeated activity names or ambiguous editions; refusing overlapping occurrences.');
+            activityKey(row.name) === activityKey(candidate.name) && !disjointPeriods(candidate, row))) {
+            throw new Error('Calendar contains repeated activity names or ambiguous editions; refusing overlapping or incomplete occurrences.');
         }
-        const matches = existing.filter(row => row.source === candidate.source && activityKey(row.name) === activityKey(candidate.name))
+        const history = existing.filter(row => row.source === candidate.source && activityKey(row.name) === activityKey(candidate.name));
+        const matches = history
             .filter(row => row.external_id === candidate.external_id ||
                 (candidate.source_start_at && sameInstant(row.source_start_at, candidate.source_start_at)) ||
                 (!candidate.source_start_at && candidate.source_end_at && sameInstant(row.source_end_at, candidate.source_end_at)) ||
                 (start < Date.parse(row.source_end_at) && Date.parse(row.source_start_at) < end));
         if (matches.length > 1) throw new Error(`Ambiguous edition for ${candidate.name}; refusing to change existing decisions.`);
+        if (history.some(row => !matches.includes(row) && !disjointPeriods(candidate, row)
+            && (!Number.isFinite(start) || !Number.isFinite(end) || !Number.isFinite(Date.parse(row.source_start_at)) || !Number.isFinite(Date.parse(row.source_end_at))))) {
+            throw new Error(`Ambiguous edition for ${candidate.name}: missing period; refusing to inherit decisions.`);
+        }
         if (matches.length === 1) candidate.external_id = matches[0].external_id;
     }
     if (new Set(candidates.map(row => row.external_id)).size !== candidates.length) {
         throw new Error('Calendar contains repeated activity names or ambiguous editions; cannot assign stable candidate keys.');
     }
     return candidates;
+}
+
+function disjointPeriods(left, right) {
+    return Date.parse(left.source_start_at) >= Date.parse(right.source_end_at)
+        || Date.parse(right.source_start_at) >= Date.parse(left.source_end_at);
 }
 
 function sameInstant(left, right) {
@@ -185,21 +194,26 @@ export async function syncGameEvents(game, { dryRun = false, now = Date.now() } 
     }
 
     const existing = await fetchExistingCandidates(game);
-    if (game.identity === 'edition') assignEditionKeys(candidates, existing);
-    const current = new Map(existing
-        .filter(row => row.source === game.source)
-        .map(row => [row.external_id, row]));
-    const legacy = new Map();
-    for (const row of existing.filter(row => row.source === LEGACY_GENSHIN_EVENT_SOURCE)) {
-        const key = activityKey(row.name);
-        if (legacy.has(key)) throw new Error(`Multiple legacy candidates share the name ${row.name}.`);
-        legacy.set(key, row);
-    }
+    // Old GI sources participate in the same period checks, never name-only adoption.
+    const identityExisting = existing.map(row => row.source === LEGACY_GENSHIN_EVENT_SOURCE ? { ...row, source: game.source } : row);
+    if (game.identity === 'edition') assignEditionKeys(candidates, identityExisting);
+    const previousCandidates = candidates.map(candidate => {
+        const matches = existing.filter(row => row.external_id === candidate.external_id && activityKey(row.name) === activityKey(candidate.name));
+        if (matches.length > 1) throw new Error(`Ambiguous edition for ${candidate.name}; refusing duplicate identities.`);
+        return matches[0];
+    });
     const seenAt = new Date(now).toISOString();
     const counts = { new: 0, migrated: 0, updated: 0, review: 0, unchanged: 0, inactive: 0 };
+    const cleanupExpired = async () => game.cleanupExpired
+        ? (await databaseRequest(databaseUrl('rpc/cleanup_expired_imported_events'), {
+            method: 'POST', body: JSON.stringify({ p_source: game.source }),
+        })).json() : 0;
+    // Close elapsed personal deadlines before a feed correction can extend them.
+    // Identity checks above must finish before any write, including cleanup.
+    const expiredBeforeImport = await cleanupExpired();
     const seenRowIds = new Set();
-    for (const candidate of candidates) {
-        const previous = current.get(candidate.external_id) ?? legacy.get(candidate.external_id);
+    for (const [index, candidate] of candidates.entries()) {
+        const previous = previousCandidates[index];
         if (previous) seenRowIds.add(previous.id);
         const result = await saveCandidate(previous, candidate, seenAt);
         counts[result]++;
@@ -210,10 +224,7 @@ export async function syncGameEvents(game, { dryRun = false, now = Date.now() } 
     const importResponse = await databaseRequest(databaseUrl('rpc/import_event_candidates'), {
         method: 'POST', body: JSON.stringify({ p_source: game.source }),
     });
-    const expiredTasksRemoved = game.key === 'hsr'
-        ? await (await databaseRequest(databaseUrl('rpc/cleanup_expired_hsr_events'), {
-            method: 'POST', body: '{}',
-        })).json() : 0;
+    const expiredTasksRemoved = expiredBeforeImport + await cleanupExpired();
     const summary = { ...counts, skipped, tasks: await importResponse.json(), expiredTasksRemoved };
     console.log(game.name, summary);
     return { gameKey: game.key, dryRun: false, ...summary };

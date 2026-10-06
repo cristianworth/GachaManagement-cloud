@@ -24,8 +24,8 @@ export async function fetchEventReviewCounts() {
         (data ?? []).filter(candidate => candidate.source === game.source).length]));
 }
 
-export async function cleanupExpiredHsrEvents() {
-    const { error } = await getClient().rpc('cleanup_expired_hsr_events');
+export async function cleanupExpiredImportedEvents() {
+    const { error } = await getClient().rpc('cleanup_expired_imported_events');
     if (error) throw error;
 }
 

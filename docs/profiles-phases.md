@@ -1,6 +1,6 @@
 # Perfis: entregas menores para revisão
 
-Cristian pediu reduzir o tamanho da alteração antes de continuar. O trabalho foi separado em quatro partes dependentes. **As partes 1–2 foram commitadas em `5e718fc`; a parte 3 foi validada localmente por Cristian e compõe a versão 1.6.0**. Em 05/10/2026, Cristian autorizou commit, push e atualização da versão. A parte 4 ainda não foi entregue; sua preparação não integra esta versão.
+Cristian pediu reduzir o tamanho da alteração antes de continuar. O trabalho foi separado em quatro partes dependentes. **As partes 1–2 foram commitadas em `5e718fc`; a parte 3 foi validada localmente por Cristian e compõe a versão 1.6.0**. A parte 4 compõe a versão 1.7.0, com commit, push e versão autorizados em 06/10/2026 junto do roadmap atualizado. Este documento conserva a divisão usada nas revisões; o estado atual está no [CHANGELOG](../CHANGELOG.md).
 
 ## Partes
 
@@ -23,8 +23,8 @@ A proteção intermediária impede apagar a definição compartilhada do HSR enq
 - Games, Tasks, dropdowns e revisão deverão respeitar os jogos selecionados no perfil (parte 3).
 - Weeklies mantêm HSR com Echo of War + Simulated Universe semanal; WuWa com Weekly Boss + Fantasies; ZZZ com Hollow Zero + Notorious Hunt. Criação/adiamento serão registrados por perfil e jogo.
 - Cristian escolheu **exclusão permanente dos importados vencidos em GI, HSR, ZZZ, WuWa e NTE**, na parte 4. A identidade nova de GI/HSR/ZZZ e essa política de limpeza têm escopos diferentes: WuWa/NTE já possuem identidade por edição, mas também precisam da limpeza. Não implementar arquivo de tarefas; conservar somente marcas mínimas de identidade para impedir recriação. Tarefas manuais/recorrentes e prazos pessoais futuros continuam protegidos.
-- Foi autorizado reconstruir a base, mas isso não foi necessário. Nenhuma alteração foi aplicada no Supabase real.
-- Commit, push e versão 1.6.0 das partes 1–3 foram autorizados após a validação local de Cristian. A parte 4 terá validação própria antes de commit; não há autorização automática para entregar todas as melhorias do roadmap.
+- A reconstrução foi dispensada nas partes 1–3 e reafirmada por Cristian na parte 4. O live foi reinstalado do zero em 05/10/2026; evidências em [event-editions-expiry.md](event-editions-expiry.md).
+- Commit, push e versão 1.6.0 das partes 1–3 foram autorizados após a validação local de Cristian. Em 06/10/2026, Cristian autorizou commit/push da parte 4 e do roadmap; isso não autoriza implementar todas as melhorias planejadas.
 
 ## Parte 1: o que muda
 
@@ -40,7 +40,7 @@ Novas tabelas:
 
 A migração associa o estado atual ao CRAN, separa progresso do catálogo e conserva os estados dos lotes antigos. Demo e Convidado começam sem seleção/progresso. `reset_application_data()` também limpa as tabelas pessoais e conserva as identidades fixas. Os testes verificam chaves, restrições, RLS, dados independentes e reset em instalação nova e upgrade como `anon`.
 
-**Na parte 1 isolada não entram:** RPCs de acesso por perfil, tela de escolha, filtros por seleção, nova reconciliação ou limpeza de eventos. Os contratos estão agora no diff como parte 2; a interface e a nova política de eventos continuam preservadas apenas como preparação local.
+**Na revisão isolada da parte 1 não entravam:** RPCs de acesso por perfil, tela de escolha, filtros por seleção, nova reconciliação ou limpeza de eventos. Esses componentes foram entregues nas partes seguintes; não usar o recorte inicial como instalação atual completa.
 
 ## Parte 2: o que muda
 
@@ -86,14 +86,16 @@ O teste `profileUI.test.mjs` usa HTML/módulos reais e RPCs executadas em SQL. T
 
 Validação da parte 3: `npm test` passou **316 testes** (50 Jest + 266 Node), incluindo os **5 testes DOM/SQL** de `node --test tests/profileUI.test.mjs`. `git diff --check` passou. Não houve nova alteração em schema, migrações, CLI de sincronização ou workflow diário nesta parte.
 
-## Parte 4: o que falta implementar
+## Parte 4: edições e exclusão de vencidos
+
+**Implementada em 05/10/2026; commit/push autorizados em 06/10/2026:** os quatro pontos abaixo estão no código. Roteiro e evidências em [event-editions-expiry.md](event-editions-expiry.md). O live foi reinstalado do zero com autorização de Cristian; RPCs, catálogo e repetição da sincronização foram conferidos. A validação pessoal na interface conectada ao live e duas conexões reais com gravações ainda não foram concluídas.
 
 1. **Identidade por edição em GI/HSR/ZZZ.** Distinguir períodos diferentes de atividades com o mesmo nome. Correção da mesma edição deve reutilizar sua identidade; uma edição nova deve começar sem conclusão, ignorados ou prazo manual herdados. Associação ambígua deve interromper a escrita. WuWa/NTE já têm identificação por edição.
-2. **Exclusão permanente por perfil nos cinco jogos.** Remover importados vencidos conforme o prazo efetivo de cada perfil, preservando prazos pessoais futuros/indefinidos, recorrência e tarefas manuais. Hoje a proteção intermediária do HSR mantém a tarefa compartilhada inteira enquanto algum perfil estiver protegido; a parte 4 deve permitir remover o estado vencido de CRAN sem apagar o prazo futuro do Demo.
+2. **Exclusão permanente por perfil nos cinco jogos.** Remover importados vencidos conforme o prazo efetivo de cada perfil, preservando prazos pessoais futuros/indefinidos, recorrência e tarefas manuais. A proteção intermediária do HSR mantinha a tarefa compartilhada inteira enquanto algum perfil estivesse protegido; a parte 4 permite remover o estado vencido de CRAN sem apagar o prazo futuro do Demo.
 3. **Impedir recriação da edição removida.** Conservar somente a marca mínima de identidade/decisão necessária para uma nova sincronização não recriar o mesmo evento vencido. A próxima edição deve poder aparecer normalmente.
 4. **Integrar e testar a nova política.** Alinhar reconciliação, importação, limpeza, schema/migração e testes de instalação nova/upgrade. Cobrir correção de datas, edição seguinte, ambiguidade, decisões independentes, prazo manual futuro, recorrência e repetição da sincronização em GI/HSR/ZZZ/WuWa/NTE.
 
-**Pendências de implantação das partes 1–3:** aplicar e verificar as migrações no Supabase de destino, validar as RPCs via PostgREST e testar duas conexões reais. Essas pendências não são login/convite: autenticação, convites e RLS por usuário pertencem a uma entrega futura separada. O catálogo completo da API e variantes regionais também continuam no tier B.
+**Destino das partes 1–4:** em 05/10/2026, o schema atual foi reinstalado no Supabase live, RPCs/relacionamentos via PostgREST e sincronização repetida foram conferidos. Restam validação da interface por Cristian e duas conexões reais com gravações pessoais. Autenticação, convites e RLS por usuário pertencem a uma entrega futura separada. O catálogo completo da API e variantes regionais também continuam no tier B.
 
 ## Testar as partes 1–2
 
@@ -119,7 +121,7 @@ Na parte 2, `npm test` passou **311 testes** (50 Jest + 261 Node), `npm run test
 - prazo manual futuro do Demo com jogo oculto, recorrência vencida, prazo indefinido e tarefa pessoal vinculada durante a limpeza do HSR;
 - exclusão do importado HSR quando nenhum estado protegido resta e preservação de tarefas sem vínculo de importação.
 
-PostgREST real e concorrência entre conexões continuam pendentes. A interface da parte 3 foi validada por Cristian na prévia local, com commit/push autorizados. O agente não aplicou migrações no Supabase real. Commit do código e atualização do banco de destino são operações separadas.
+Na conclusão das partes 1–3, PostgREST real e concorrência entre conexões estavam pendentes. Na parte 4 o agente reinstalou o live e conferiu RPCs/relacionamentos e sincronização; gravações pessoais em duas conexões ainda precisam de validação. Commit do código e atualização do banco de destino são operações separadas.
 
 ## Trabalho preservado localmente
 
@@ -138,4 +140,4 @@ Para **somente conferir** o tamanho da próxima preparação, sem aplicá-la:
 git apply --stat .local-deliveries/profiles/04-editions-expiry.patch
 ```
 
-Após a validação de Cristian, a IA deve atualizar a preparação da próxima parte, conferir `git apply --check` e executar seus testes. A conferência antiga da cadeia não vale após as correções atuais. Não executar novamente os scripts de particionamento/verificação, que pressupõem o estado anterior. Os patches são preparação para revisão, não confirmação de implantação. O CSS dos controles novos foi conferido na prévia local; PostgREST real e concorrência entre duas conexões continuam pendentes.
+Os patches antigos são referências históricas; não reaplicar sobre o código atual nem executar novamente os scripts de particionamento/verificação. O código da parte 4 e suas evidências estão no workspace e em [event-editions-expiry.md](event-editions-expiry.md). PostgREST foi conferido no live; gravações pessoais em duas conexões ainda precisam de validação.

@@ -3,17 +3,24 @@ import { readFile } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
 import { resolve, sep, extname } from 'node:path';
 import { createTestDatabase } from '../tests/helpers/testDatabase.mjs';
+import { seedPreviewEventFixtures } from './previewEventFixtures.js';
 
 // Serve the real frontend against disposable SQL, without loading the production client/config.
 const root = fileURLToPath(new URL('../', import.meta.url));
 const db = await createTestDatabase();
 await db.exec('set role anon');
+const args = process.argv.slice(2);
+if (args.some(arg => arg !== '--events')) throw new Error('Use only --events to load synthetic event scenarios.');
+if (args.includes('--events')) {
+    await seedPreviewEventFixtures(db);
+    console.log('Synthetic events: CRAN expired, Demo with a future manual deadline, Convidado recurring; next editions open.');
+}
 const functions = new Set([
     'initialize_game_catalogue', 'profile_game_catalogue', 'list_profile_games', 'set_profile_games',
     'save_profile_game', 'remove_profile_game', 'list_profile_tasks', 'save_profile_task',
     'complete_profile_task', 'remove_profile_task', 'list_profile_candidates', 'ignore_profile_candidate',
     'ignore_profile_task', 'approve_profile_candidate', 'restore_profile_api_deadline',
-    'create_profile_weekly_batch', 'cleanup_expired_hsr_events', 'reset_application_data',
+    'create_profile_weekly_batch', 'cleanup_expired_imported_events', 'cleanup_expired_hsr_events', 'reset_application_data',
 ]);
 const clientScript = `
 window.supabase = { createClient() {

@@ -1,6 +1,6 @@
 # Próximas melhorias
 
-Prioridades reordenadas em [docs/roadmap-priorities.md](docs/roadmap-priorities.md). Sincronização diária e criação inicial das weeklies ficam fora dessa tier list porque são a próxima entrega reservada; contexto de continuação em [docs/handoff-daily-sync-weeklies.md](docs/handoff-daily-sync-weeklies.md).
+Prioridades reordenadas em [docs/roadmap-priorities.md](docs/roadmap-priorities.md). Sincronização diária, weeklies, perfis, seleção de jogos e política de eventos ficam fora dessa tier list porque já foram implementados; contexto de continuação em [docs/handoff-daily-sync-weeklies.md](docs/handoff-daily-sync-weeklies.md).
 
 Eventos atualizados em [docs/event-integrations.md](docs/event-integrations.md): GI/HSR/ZZZ/WuWa/NTE ativos na versão 1.4.0; fixtures, testes SQL/DOM e CI prontos. WuWa/NTE distinguem horários e edições; Moonlit Path usa a estimativa aceita por Cristian. Convenções para próximas sessões em [docs/project-conventions.md](docs/project-conventions.md).
 
@@ -31,7 +31,7 @@ Complexidade estimada para este projeto (HTML, CSS, JavaScript e Supabase): **ba
 
 - [x] Criar uma tela simples de entrada com perfis predefinidos, sem opção de cadastro.
 - [x] Associar progresso/decisões ao perfil e mostrar somente seus jogos selecionados e tarefas, mantendo catálogo/capas compartilhados.
-- [x] Associar os registros existentes ao perfil principal na migração e testar instalação nova/upgrade. A interface foi validada localmente; aplicação das migrações e validação do Supabase de destino permanecem pendentes.
+- [x] Associar os registros existentes ao perfil principal na migração e testar instalação nova/upgrade. A interface foi validada localmente. Na parte 4, o live foi reinstalado do zero por escolha de Cristian; RPCs, relacionamentos e sincronização foram conferidos. Validação da interface no destino e duas conexões reais permanecem pendentes.
 - **Complexidade: média.** Envolve uma tela, filtros nas consultas e gravações e uma migração cuidadosa dos dados atuais; não exige implementar cadastro de usuários.
 - **Concluído quando:** cada perfil mostra seus próprios jogos e tarefas no navegador e no celular; criar, editar ou excluir em um perfil não altera a lista do outro; os dados existentes continuam acessíveis no perfil principal.
 - **Limite da solução:** essa entrada serve para organizar os dados, não para proteger a privacidade. Sem autenticação real, qualquer visitante pode escolher qualquer um dos três perfis; senhas ou PINs escritos no JavaScript também não protegeriam o banco. A futura tela de login deverá adicionar autenticação e políticas RLS por usuário em uma etapa separada.
@@ -76,24 +76,26 @@ Complexidade estimada para este projeto (HTML, CSS, JavaScript e Supabase): **ba
 
 ## 8. Importar eventos automaticamente pelo StarRailAssistant — MVP
 
-**Recorte implementado na versão 1.4.0:** importação automática em inglês dos cinco jogos, proteção de datas manuais, ignorados, filtros, fixtures, testes SQL/HTML e CI. WuWa/NTE têm identidade por edição e política por campo validada. Fallback chinês, identidade por edição em GI/HSR/ZZZ e limpeza geral continuam separados; os itens abaixo descrevem o MVP completo.
+**Parte 4 implementada:** identidade por edição de GI/HSR/ZZZ e exclusão permanente dos importados vencidos por perfil em GI/HSR/ZZZ/WuWa/NTE. Commit e push autorizados em 06/10/2026. Testes, limites e reinstalação do live do zero em [docs/event-editions-expiry.md](docs/event-editions-expiry.md). Fallback chinês continua pendente; não marcar o MVP inteiro como concluído.
+
+**Recorte implementado na versão 1.4.0:** importação automática em inglês dos cinco jogos, proteção de datas manuais, ignorados, filtros, fixtures, testes SQL/HTML e CI. WuWa/NTE têm identidade por edição e política por campo validada. A parte 4 completa identidade em GI/HSR/ZZZ e limpeza geral; os itens abaixo descrevem o MVP completo, incluindo o fallback chinês ainda pendente.
 
 - [ ] Importar eventos atuais e futuros diretamente para a lista de tarefas quando existir uma data final utilizável. A revisão humana fica reservada aos eventos sem prazo utilizável nas fontes disponíveis.
 - [ ] Preferir os dados em `en-US`; completar o prazo com o registro chinês do mesmo evento quando necessário. Se o calendário inglês estiver indisponível, usar o chinês quando disponível. Registrar a origem do prazo e manter a edição manual.
 - [ ] Usar capa quando disponível e placeholder quando estiver ausente ou não carregar. A falta de capa ou de data inicial não impede a importação de um evento com prazo final utilizável.
 - [ ] Manter o motor de sincronização, a tabela de candidatos e a gravação de tarefas no projeto atual. A tabela de candidatos continua registrando a origem, o vínculo com a tarefa e as decisões de ignorar; a tela de revisão mostra apenas as pendências de prazo.
-- [ ] Validar a mudança primeiro nos jogos já integrados, Genshin e HSR, e depois habilitar WuWa, ZZZ e NTE no mesmo fluxo. O MVP usa os cinco jogos atuais, sem tela inicial de seleção. Endfield fica preparado para uma expansão posterior, salvo mudança explícita de escopo.
+- [x] Validar a mudança primeiro nos jogos já integrados, Genshin e HSR, e depois habilitar WuWa, ZZZ e NTE no mesmo fluxo. Os cinco jogos atuais usam a seleção por perfil entregue em 1.6.0. Endfield fica para uma expansão posterior, salvo mudança explícita de escopo.
 - [x] Fazer uma sincronização inicial dos eventos atuais/futuros e reaproveitar o workflow existente, agora diário às 07h30 de Brasília (10h30 UTC). A aplicação lê as tarefas salvas no Supabase; abrir a página não precisa disparar uma importação completa.
-- [ ] Criar ou atualizar cada edição sem duplicar tarefas em novas execuções. Preservar a conclusão da mesma edição e as decisões de ignorar. Uma edição futura de um modo recorrente deve ter sua própria identidade e estado.
-- [ ] Implementar a proteção dos prazos ajustados manualmente. **Decisão aprovada:** atualizar automaticamente o prazo controlado pela API, mas preservar uma correção manual até o usuário optar por voltar à data da fonte.
-- [ ] Generalizar a limpeza de edições importadas vencidas para os jogos habilitados, preservando tarefas manuais e weeklies. Não excluir tarefas apenas porque um evento sumiu de uma resposta parcial da API.
-- [ ] Isolar falhas por jogo/fonte e registrar o resultado da sincronização. Falha de rede ou resposta inválida não apaga tarefas nem cria uma pendência de revisão para cada evento já conhecido.
+- [x] Criar ou atualizar cada edição sem duplicar tarefas em novas execuções. Preservar a conclusão da mesma edição e as decisões de ignorar. Uma edição futura de um modo recorrente deve ter sua própria identidade e estado.
+- [x] Implementar a proteção dos prazos ajustados manualmente. **Decisão aprovada:** atualizar automaticamente o prazo controlado pela API, mas preservar uma correção manual até o usuário optar por voltar à data da fonte.
+- [x] Generalizar a limpeza de edições importadas vencidas para os jogos habilitados, preservando tarefas manuais e weeklies. Não excluir tarefas apenas porque um evento sumiu de uma resposta parcial da API.
+- [x] Isolar falhas por jogo/fonte e registrar o resultado da sincronização. Falha de rede ou resposta inválida não apaga tarefas nem cria uma pendência de revisão para cada evento já conhecido.
 - [ ] Verificar importação automática, fallback de prazo, ausência de capa/início, repetição da sincronização, eventos ignorados, correções manuais e troca de edição dos modos recorrentes.
 
 - **Complexidade: média para automatizar o fluxo existente; alta para completar o fallback entre idiomas e cobrir os cinco jogos.** A expansão exige conferir os calendários de cada jogo e as peculiaridades de suas edições recorrentes.
 - **Ponto a resolver antes do fallback por evento:** o contrato atual da API não fornece ID por atividade. Nomes e capas podem mudar entre idiomas; vários eventos podem compartilhar exatamente o início e o fim. Definir uma associação explícita entre os registros, com aliases por jogo quando necessário, e persistir a identidade escolhida. Não unir por posição da lista ou somente por datas. Usar o calendário chinês inteiro quando o inglês falha não resolve sozinho um evento sem prazo dentro de uma lista inglesa parcialmente preenchida.
 - **Horários:** idioma não identifica servidor. Manter as conversões já conhecidas para América e aceitar o prazo original da fonte como fallback, com sua origem visível. WuWa/NTE usam bases explícitas por campo e edição; novas edições sem confirmação ficam em revisão. O NTE atual foi conferido nos anúncios globais 1.4; não extrapolar essa correspondência para versões futuras.
-- **Dados existentes:** comentar as tarefas iniciais não remove registros já salvos. Manter a retirada manual dos duplicados antigos, conforme combinado; não fazer uma exclusão automática ampla das tarefas atuais.
+- **Dados existentes:** o live foi reinstalado do zero na parte 4 com autorização de Cristian. A política normal remove somente importados vencidos elegíveis, preservando tarefas manuais, recorrência e prazos pessoais futuros; reinstalar o banco não faz parte da sincronização diária.
 - **Concluído quando:** eventos com prazo utilizável aparecem sem aprovação prévia, somente os sem prazo vão para revisão, repetir a sincronização não duplica nem desfaz decisões do usuário e as weeklies continuam independentes.
 
 ## 9. Manter somente weeklies na população inicial
@@ -106,19 +108,20 @@ Complexidade estimada para este projeto (HTML, CSS, JavaScript e Supabase): **ba
 - [x] Preservar a recorrência das weeklies e impedir que a limpeza de eventos importados as exclua.
 - **Complexidade: média.** A implementação substitui a antiga dependência da tabela vazia por decisões persistidas por jogo. Cada lote inicial é registrado uma única vez, preservando tarefas existentes e exclusões posteriores; futuras adições ao catálogo exigirão uma decisão própria de atualização.
 - **Concluído quando:** a população inicial cria apenas weeklies, com prazos atuais e jogos corretos, e executar novamente não duplica nem restaura atividades que o usuário decidiu remover.
-- **Futuro:** na seleção de jogos, oferecer a opção de criar o lote semanal. A preferência do usuário sobre esse lote deve ser persistida para que a abertura da aplicação não o recrie automaticamente.
+- **Entregue em 1.6.0:** na seleção de jogos, oferecer a opção de criar o lote semanal. A preferência sobre criar/adiar é persistida por perfil e jogo; abrir a aplicação não recria o lote automaticamente.
 
 ## 10. Catálogo de jogos e seleção inicial — depois do MVP
 
 **Base entregue em 1.6.0, validada localmente:** seleção por perfil do catálogo existente, filtros e oferta opcional de weeklies. Catálogo completo da API, variantes regionais e autenticação ficam para entregas posteriores.
 
 - [ ] Evoluir o registro central de integração com chave da API, idiomas disponíveis e regras específicas por jogo, reaproveitando `eventGames.js`.
-- [ ] Separar os jogos disponíveis no catálogo dos jogos que o usuário acompanha. Incluir o catálogo completo suportado pela API, distinguindo variantes regionais quando existirem.
-- [ ] Criar a tela inicial para selecionar jogos e oferecer opcionalmente seus lotes de weeklies.
-- [ ] Usar a mesma seleção nas telas de jogos/resina, tarefas e revisão, e na elegibilidade para importação. Se os perfis do item 3 forem implementados, guardar a seleção por perfil.
-- [ ] Cadastrar jogos selecionados em bases já existentes: adicionar uma definição em `Game.js` não basta, porque a população atual de jogos só roda quando a tabela inteira está vazia.
+- [x] Separar os jogos disponíveis no catálogo dos jogos que o usuário acompanha, com seleção persistida por perfil.
+- [ ] Incluir o catálogo completo suportado pela API, distinguindo variantes regionais quando existirem.
+- [x] Criar a tela inicial para selecionar jogos e oferecer opcionalmente seus lotes de weeklies.
+- [x] Usar a mesma seleção nas telas de jogos/resina, tarefas e revisão, e na materialização pessoal dos importados. Guardar a seleção por perfil; a sincronização continua atualizando as definições compartilhadas.
+- [ ] Cadastrar novos jogos da expansão em bases já existentes: adicionar uma definição em `Game.js` não basta, porque a população atual de jogos só roda quando a tabela inteira está vazia.
 - [ ] Tratar controle de resina como uma capacidade configurada por jogo. Ter um calendário na API não garante que seus parâmetros de resina estejam definidos no sistema.
-- **Complexidade: alta.** Envolve seleção persistida, cadastro de jogos, filtros consistentes e sincronização. Preparação no MVP: centralizar os metadados realmente usados e resolver jogos por chave estável; adicionar a persistência da seleção quando a tela for implementada.
+- **Complexidade restante: alta.** A seleção e os filtros estão entregues. A expansão exige metadados, horários e resina por jogo, além de cadastro incremental e validação de cada integração.
 - **Concluído quando:** escolher um jogo habilita seus dados e sua integração sem exigir cadastro manual de eventos, e todas as telas respeitam a seleção salva.
 
 ## 11. Identificar eventos recém-adicionados — prioridade baixa
@@ -133,3 +136,16 @@ Complexidade estimada para este projeto (HTML, CSS, JavaScript e Supabase): **ba
 - [ ] Paginar a consulta no Supabase, aplicando filtro por jogo antes do limite e ordenação estável por prazo e ID. Mostrar quantidade total e estados sem resultados/erro.
 - [ ] Voltar à primeira página ao trocar de jogo e manter a página válida após ignorar/excluir uma atividade.
 - **Complexidade: média.** Envolve consultas, navegação e tratamento das alterações na lista; esconder linhas no navegador não reduz a quantidade carregada do banco.
+
+## 13. Favorite tasks — favoritas no topo
+
+**Planejado, sem implementação:** próximo item S-1 em [docs/roadmap-priorities.md](docs/roadmap-priorities.md).
+
+- [ ] Permitir marcar/desmarcar uma tarefa por uma estrela na lista de Tasks, com estado visual, nome acessível e operação por teclado.
+- [ ] Persistir a preferência por perfil, sem alterar a definição compartilhada. Recarregar ou ocultar/reselecionar um jogo conserva a escolha; outro perfil tem suas próprias favoritas.
+- [ ] Ordenar favoritas antes das demais, mantendo a ordem por prazo dentro dos dois grupos e um desempate estável. Ao desfavoritar, retornar à posição normal.
+- [ ] Aplicar os filtros e a visibilidade de concluídas antes de exibir a lista. Favoritar não muda prazo, conclusão ou recorrência.
+- [ ] Preservar favoritas nas correções da mesma edição, sincronizações e resets de recorrência. Uma edição nova começa sem herdar essa preferência.
+- [ ] Testar isolamento dos perfis, persistência, ordenação, filtros, desfavoritar e falha de gravação sem deixar a estrela em um estado que não foi salvo.
+- **Complexidade: baixa a média.** Reaproveita os contratos pessoais, mas exige persistência no banco e mudança na ordenação e na ação da lista.
+- **Concluído quando:** a estrela persiste apenas no perfil escolhido, as favoritas visíveis ficam no topo e as demais regras da lista continuam funcionando.

@@ -3,7 +3,7 @@
 // Inicialização do banco: semeia os dados iniciais (primeira execução) e roda a
 // rotina que renova tarefas expiradas. A conexão em si vive em supabaseClient.js.
 
-import { cleanupExpiredHsrEvents } from './eventCandidateDB.js';
+import { cleanupExpiredImportedEvents } from './eventCandidateDB.js';
 import { getClient } from './supabaseClient.js';
 import { populateInitialGames } from './gameDB.js';
 import { updateTask, populateInitialTasks, fetchAllOverdueTasks } from './taskDB.js';
@@ -18,7 +18,7 @@ import { formatDateForDisplay, getNextRecurringDeadline } from '../utils/dateUti
 export async function initializeDatabase() {
     await populateInitialGames();
     await populateInitialTasks();
-    await cleanupExpiredHsrEvents();
+    await cleanupExpiredImportedEvents();
     await updateExpiratedTasksRoutine();
 }
 

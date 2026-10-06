@@ -12,8 +12,9 @@ export function mockDatabaseFetch(t, db, game, getCalendar) {
                 assert.equal(url.searchParams.get('abbreviation'), `eq.${game.abbreviation}`);
                 result = (await db.query('select id from public.games where abbreviation=$1', [game.abbreviation])).rows;
             } else if (url.pathname === '/rest/v1/event_candidates' && !options.method) {
-                assert.equal(url.searchParams.get('source'), `eq.${game.source}`);
-                result = (await db.query('select * from public.event_candidates where source=$1', [game.source])).rows;
+                assert.equal(url.searchParams.get('source'), game.key === 'genshin' ? `in.(${game.source},ennead-genshin-calendar)` : `eq.${game.source}`);
+                result = (await db.query('select * from public.event_candidates where source = any($1::text[])',
+                    [game.key === 'genshin' ? [game.source, 'ennead-genshin-calendar'] : [game.source]])).rows;
             } else if (url.pathname === '/rest/v1/event_candidates') {
                 const row = JSON.parse(options.body);
                 const columns = Object.keys(row);
@@ -29,9 +30,10 @@ export function mockDatabaseFetch(t, db, game, getCalendar) {
             } else if (url.pathname === '/rest/v1/rpc/import_event_candidates') {
                 assert.equal(JSON.parse(options.body).p_source, game.source);
                 result = (await db.query('select public.import_event_candidates($1) as result', [game.source])).rows[0].result;
-            } else if (url.pathname === '/rest/v1/rpc/cleanup_expired_hsr_events') {
-                assert.equal(game.key, 'hsr', 'Only HSR sync may clean HSR tasks');
-                result = (await db.query('select public.cleanup_expired_hsr_events() as result')).rows[0].result;
+            } else if (url.pathname === '/rest/v1/rpc/cleanup_expired_imported_events') {
+                assert.equal(JSON.parse(options.body).p_source, game.source);
+                assert.equal(game.cleanupExpired, true, 'Only opted-in sources may clean their own tasks');
+                result = (await db.query('select public.cleanup_expired_imported_events($1) as result', [game.source])).rows[0].result;
             } else throw new Error(`Unexpected sync request: ${url}`);
         } finally { await db.exec('reset role'); }
         return new Response(JSON.stringify(result));

@@ -12,7 +12,7 @@ function toUtc(value, offset) {
     return date.toISOString();
 }
 
-// The API has no activity ID. A name key lets recurring runs update the same candidate.
+// The API has no activity ID. This name component is combined with the edition period.
 export function activityKey(name) {
     return name.normalize('NFKC').trim().replace(/\s+/g, ' ').toLocaleLowerCase('en-US');
 }

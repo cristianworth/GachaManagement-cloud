@@ -55,13 +55,13 @@ test('Missing candidates become inactive without deleting tasks; sync shares one
         if (url.href === game.url) return new Response(JSON.stringify({ activities: [event] }));
         if (url.pathname.endsWith('/games')) return new Response('[{"id":7}]');
         if (url.pathname.endsWith('/event_candidates') && !options.method) {
-            return new Response(JSON.stringify([{ id: 99, source: game.source, external_id: 'absent', is_active: true, task_id: 55 }]));
+            return new Response(JSON.stringify([{ id: 99, source: game.source, external_id: 'absent', name: 'Absent', is_active: true, task_id: 55 }]));
         }
         const body = JSON.parse(options.body);
         writes.push({ path: url.pathname, id: url.searchParams.get('id'), method: options.method, body });
         assert.notEqual(options.method, 'DELETE');
         assert.ok(!url.pathname.endsWith('/tasks'));
-        return new Response(JSON.stringify(url.pathname.endsWith('/cleanup_expired_hsr_events') ? 0 : {}));
+        return new Response(JSON.stringify(url.pathname.endsWith('/cleanup_expired_imported_events') ? 0 : {}));
     });
     const result = await syncGameEvents(game, { now });
     assert.equal(result.new, 1);
