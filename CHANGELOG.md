@@ -8,6 +8,19 @@ O projeto segue o versionamento semântico (SemVer), no formato `MAJOR.MINOR.PAT
 - `MINOR`: nova funcionalidade compatível com a versão anterior.
 - `PATCH`: correção de bug ou melhoria pequena, sem nova funcionalidade relevante.
 
+## [1.9.1] - 2026-10-07
+
+### Melhorado
+
+- Games passa a ter um único botão **Atualizar dados**, ao lado de Create New Game e View Tasks, substituindo os botões de estimativa por linha. Uma leitura dos jogos do perfil busca resina, anotações, configuração e seleção mais recentes e recalcula todas as estimativas no mesmo instante.
+- Campos editados são preservados individualmente, inclusive durante a consulta; os demais recebem os valores salvos. Atualizar não grava dados nem sincroniza calendários. Save continua sendo a ação de gravação.
+- Clique repetido é bloqueado durante a consulta. Falhas conservam a lista e os rascunhos, com nova tentativa. Se um jogo removido da seleção tiver rascunho, a substituição da lista é interrompida com aviso.
+- Removido o texto “Calculada às…” e simplificado o rótulo para “Resina estimada”, conforme pedido de Cristian. A quantidade estimada e a previsão de lotar continuam visíveis.
+
+Commit, push e escolha da numeração autorizados por Cristian em 07/10/2026. Esta entrega não exige mudança de banco. Roteiro em `docs/refresh-games.md`.
+
+Validação: `npm test` passou 383 testes (69 Jest + 314 Node); `node --test tests/gameStamina.test.mjs tests/uiFeedback.test.mjs` passou 31 testes. Prévia em navegador com SQL descartável conferiu duas abas do mesmo perfil, valores remotos, estimativas e rascunhos preservados. Validação no Supabase live permanece pendente.
+
 ## [1.9.0] - 2026-10-07
 
 ### Adicionado

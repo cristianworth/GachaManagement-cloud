@@ -12,13 +12,13 @@ Complexidade estimada para este projeto (HTML, CSS, JavaScript e Supabase): **ba
 - **Complexidade: média.** Usar a previsão salva, o limite e os minutos por unidade para calcular unidades inteiras entre zero e o máximo. Sem previsão salva ou parâmetros válidos, informar que a estimativa está indisponível. A estimativa é atualizada ao carregar a lista ou clicar no botão; não há timer automático neste recorte.
 - **Concluído quando:** o valor mostrado acompanha o tempo decorrido, respeita o limite do jogo e permanece coerente após salvar uma nova resina.
 
-### 1.1. Botão para atualizar a resina exibida
+### 1.1. Botão único Atualizar dados
 
-- [x] Adicionar um botão na linha de cada jogo para recalcular e exibir a resina estimada naquele momento. Entregue em 1.8.0.
-- **Complexidade: baixa.** Atualização visual com os dados já carregados, conforme pedido de Cristian em 06/10/2026.
-- **Decisão:** clicar não consulta nem grava no Supabase; conserva a resina digitada e as anotações, inclusive rascunhos. A ação Save continua registrando uma quantidade real e uma nova previsão.
-- **Concluído quando:** clicar no botão atualiza apenas o jogo escolhido e mostra o valor calculado para o horário atual.
-- **Teste local:** `npm run preview:profiles`, abrir `http://127.0.0.1:5501`, selecionar WuWa e salvar 175. Conferir `175/240`; depois de seis minutos, atualizar para `176/240`. Digitar outro valor/anotação sem salvar e atualizar conserva o rascunho. Recarregar calcula a estimativa a partir do último valor salvo; ao atingir o prazo, limita em `240/240`. Outro perfil sem resina salva mostra estimativa indisponível.
+- [x] Botão visual por linha entregue em 1.8.0. Em 07/10/2026, Cristian pediu substituí-lo por **Atualizar dados** no topo de Games.
+- [x] Botão único entregue em 1.9.1: uma leitura de `list_profile_games` atualiza os jogos selecionados do perfil e recalcula suas estimativas no mesmo instante.
+- **Complexidade: baixa/média.** A consulta atualiza campos sem edição; resina/anotações alteradas permanecem como rascunho. Estimativas usam a previsão salva mais recente, mesmo quando o campo digitado tem outro valor. Atualizar não grava no banco nem busca calendários; Save continua registrando uma quantidade real e uma nova previsão.
+- **Concluído quando:** atualizações salvas em outra aba/dispositivo aparecem com um clique, sem perda dos rascunhos, sem escritas e com recuperação após falha. Jogo removido com rascunho interrompe a substituição da lista e mostra aviso para copiar o texto antes de recarregar.
+- **Teste local:** comandos e cenários em [docs/refresh-games.md](docs/refresh-games.md). Alertas continuam como entrega independente no TODO 6.
 
 ## 2. Usar imagem por URL para jogos novos
 

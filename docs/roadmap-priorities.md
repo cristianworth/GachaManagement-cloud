@@ -22,6 +22,6 @@ S = próxima entrega prioritária; A = alto retorno; B = depende de uma base ant
 
 Perfis continuam públicos, sem autenticação ou convite; login e RLS por usuário exigem escopo próprio. Catálogo e capas são compartilhados, com progresso e decisões pessoais separados. As novas preferências devem seguir essa separação.
 
-Cristian antecipou o recorte de resina em 06/10/2026. Favorite tasks foi entregue em 1.9.0; a próxima implementação solicitada é o botão único **Atualizar dados** em Games. O alerta de resina mantém entrega e autorização próprias, com o levantamento separado; testes de navegador podem acompanhar mudanças de interface. Ajustes no celular podem acompanhar cada recorte. Expansão do catálogo e fallback entre idiomas devem ter validação própria de horários e associação de edições. Paginação pode subir de prioridade se o volume crescer.
+Cristian antecipou o recorte de resina em 06/10/2026. Favorite tasks foi entregue em 1.9.0 e o botão único **Atualizar dados** em Games em 1.9.1. O alerta de resina mantém entrega e autorização próprias, com o levantamento separado; testes de navegador podem acompanhar mudanças de interface. Ajustes no celular podem acompanhar cada recorte. Expansão do catálogo e fallback entre idiomas devem ter validação própria de horários e associação de edições. Paginação pode subir de prioridade se o volume crescer.
 
 Preservar JavaScript/HTML/CSS sem framework e seguir [project-conventions.md](project-conventions.md).

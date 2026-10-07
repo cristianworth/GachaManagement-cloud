@@ -352,12 +352,6 @@ th {
     font-weight: 600;
 }
 
-.game-stamina-estimate > button {
-    min-height: 2.75rem;
-    margin: 0;
-    white-space: normal;
-}
-
 .task-favorite-toggle {
     flex-shrink: 0;
     min-width: 2.75rem;

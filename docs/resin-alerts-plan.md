@@ -6,7 +6,7 @@ Pedido de Cristian em 06/10/2026: implementar primeiro a estimativa atual e seu 
 
 - Games já usa dados pessoais dos jogos selecionados via `list_profile_games`; `save_profile_game` salva a resina e a previsão de quando ficará cheia. A configuração pode variar por perfil.
 - `dateMaxStamina` é o instante previsto para atingir `capStamina`. Apesar do nome legado, `staminaPerMinute` guarda **minutos por unidade**, pois o cálculo atual multiplica a quantidade restante por esse valor.
-- `estimateCurrentStamina(game, now)` calcula unidades inteiras entre zero e o limite. `maxStaminaAt` vazio identifica um jogo sem previsão salva, mesmo quando o banco fornece uma data padrão. O botão atual usa os dados carregados e não grava nem busca novamente.
+- `estimateCurrentStamina(game, now)` calcula unidades inteiras entre zero e o limite. `maxStaminaAt` vazio identifica um jogo sem previsão salva, mesmo quando o banco fornece uma data padrão. Em 1.8.0, o botão por jogo apenas recalculava os dados carregados. A versão 1.9.1 substitui-o por **Atualizar dados**, que relê os jogos do perfil e recalcula todas as estimativas sem gravar; roteiro em [refresh-games.md](refresh-games.md).
 - `profile_games.overrides` já guarda propriedades pessoais em JSON. Uma meta simples pode aproveitar essa estrutura sem criar uma tabela apenas para um número.
 
 ## Proposta para uma próxima entrega
