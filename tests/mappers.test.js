@@ -53,6 +53,12 @@ test('missing stamina forecasts stay absent instead of becoming the current time
     expect(gameToRow(game).date_max_stamina).toBeNull();
 });
 
+test('favorite state is read from personal rows and omitted from general task edits', () => {
+    expect(taskFromRow({ id: 1, is_favorite: true }).isFavorite).toBe(true);
+    expect(taskFromRow({ id: 2 }).isFavorite).toBe(false);
+    expect(taskToRow({ id: 1, isFavorite: false })).not.toHaveProperty('is_favorite');
+});
+
 test('taskToRow/taskFromRow são simétricos nos campos principais', () => {
     const date = new Date(2025, 2, 16, 6);
     const row = taskToRow({

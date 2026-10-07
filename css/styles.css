@@ -358,6 +358,25 @@ th {
     white-space: normal;
 }
 
+.task-favorite-toggle {
+    flex-shrink: 0;
+    min-width: 2.75rem;
+    min-height: 2.75rem;
+    margin: 0;
+    padding: 4px;
+    background: transparent;
+    color: #854d0e;
+    font-size: 1.6rem;
+}
+
+.task-favorite-toggle[aria-pressed="true"] {
+    background: #fef3c7;
+}
+
+.task-favorite > td:first-child {
+    box-shadow: inset 4px 0 #b7791f;
+}
+
 #task-form,
 #game-form {
     display: flex;

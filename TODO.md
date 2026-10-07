@@ -136,19 +136,19 @@ Complexidade estimada para este projeto (HTML, CSS, JavaScript e Supabase): **ba
 ## 12. Paginar a lista de atividades
 
 - [ ] Avaliar paginação quando o filtro por jogo não for suficiente para reduzir a rolagem. A primeira melhoria da versão 1.2 é o filtro por jogo.
-- [ ] Paginar a consulta no Supabase, aplicando filtro por jogo antes do limite e ordenação estável por prazo e ID. Mostrar quantidade total e estados sem resultados/erro.
+- [ ] Paginar a consulta no Supabase, aplicando filtro por jogo antes do limite e ordenação por favorita, prazo e ID. Mostrar quantidade total e estados sem resultados/erro.
 - [ ] Voltar à primeira página ao trocar de jogo e manter a página válida após ignorar/excluir uma atividade.
 - **Complexidade: média.** Envolve consultas, navegação e tratamento das alterações na lista; esconder linhas no navegador não reduz a quantidade carregada do banco.
 
 ## 13. Favorite tasks — favoritas no topo
 
-**Planejado, sem implementação:** próximo item S-1 em [docs/roadmap-priorities.md](docs/roadmap-priorities.md).
+**Entregue em 1.9.0:** removido da lista de trabalho pendente. A aplicação da migração no Supabase live continua pendente; comandos e cenários em [docs/favorite-tasks.md](docs/favorite-tasks.md).
 
-- [ ] Permitir marcar/desmarcar uma tarefa por uma estrela na lista de Tasks, com estado visual, nome acessível e operação por teclado.
-- [ ] Persistir a preferência por perfil, sem alterar a definição compartilhada. Recarregar ou ocultar/reselecionar um jogo conserva a escolha; outro perfil tem suas próprias favoritas.
-- [ ] Ordenar favoritas antes das demais, mantendo a ordem por prazo dentro dos dois grupos e um desempate estável. Ao desfavoritar, retornar à posição normal.
-- [ ] Aplicar os filtros e a visibilidade de concluídas antes de exibir a lista. Favoritar não muda prazo, conclusão ou recorrência.
-- [ ] Preservar favoritas nas correções da mesma edição, sincronizações e resets de recorrência. Uma edição nova começa sem herdar essa preferência.
-- [ ] Testar isolamento dos perfis, persistência, ordenação, filtros, desfavoritar e falha de gravação sem deixar a estrela em um estado que não foi salvo.
+- [x] Permitir marcar/desmarcar uma tarefa por uma estrela na lista de Tasks, com estado visual, nome acessível e operação por teclado.
+- [x] Persistir a preferência por perfil, sem alterar a definição compartilhada. Recarregar ou ocultar/reselecionar um jogo conserva a escolha; outro perfil tem suas próprias favoritas.
+- [x] Ordenar favoritas antes das demais, mantendo a ordem por prazo dentro dos dois grupos e um desempate estável. Ao desfavoritar, retornar à posição normal.
+- [x] Aplicar os filtros e a visibilidade de concluídas antes de exibir a lista. Favoritar não muda prazo, conclusão ou recorrência.
+- [x] Preservar favoritas nas correções da mesma edição, sincronizações e resets de recorrência. Uma edição nova começa sem herdar essa preferência.
+- [x] Testar isolamento dos perfis, persistência, ordenação, filtros, desfavoritar e falha de gravação sem deixar a estrela em um estado que não foi salvo.
 - **Complexidade: baixa a média.** Reaproveita os contratos pessoais, mas exige persistência no banco e mudança na ordenação e na ação da lista.
 - **Concluído quando:** a estrela persiste apenas no perfil escolhido, as favoritas visíveis ficam no topo e as demais regras da lista continuam funcionando.

@@ -18,7 +18,7 @@ if (args.includes('--events')) {
 const functions = new Set([
     'initialize_game_catalogue', 'profile_game_catalogue', 'list_profile_games', 'set_profile_games',
     'save_profile_game', 'remove_profile_game', 'list_profile_tasks', 'save_profile_task',
-    'complete_profile_task', 'remove_profile_task', 'list_profile_candidates', 'ignore_profile_candidate',
+    'complete_profile_task', 'set_profile_task_favorite', 'remove_profile_task', 'list_profile_candidates', 'ignore_profile_candidate',
     'ignore_profile_task', 'approve_profile_candidate', 'restore_profile_api_deadline',
     'create_profile_weekly_batch', 'cleanup_expired_imported_events', 'cleanup_expired_hsr_events', 'reset_application_data',
 ]);

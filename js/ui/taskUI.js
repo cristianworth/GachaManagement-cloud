@@ -3,13 +3,13 @@ import { createEventCover } from './eventCover.js';
 import { cleanupExpiredImportedEvents, ignoreImportedTask, restoreEventApiDeadline } from '../database/eventCandidateDB.js';
 import { fetchAllGames } from '../database/gameDB.js';
 import { Task } from '../data/Task.js';
-import { fetchAllTasks, completeTask, fetchTaskById, addTask, updateTask, deleteTaskById, createWeeklyTasksForGame } from '../database/taskDB.js';
+import { fetchAllTasks, completeTask, setTaskFavorite, fetchTaskById, addTask, updateTask, deleteTaskById, createWeeklyTasksForGame } from '../database/taskDB.js';
 import { WEEKLY_BATCHES } from '../data/weeklyTasks.js';
 import { formatDateForDisplay, formatDateForInput, getExpirationDate } from '../utils/dateUtils.js';
 import { resetTaskForm, setDateSelector, setTaskFormMessage, setTaskRecurrence } from './formHandler.js'
 import RefreshTypeEnum from '../enums/RefreshTypeEnum.js';
 import Router from '../utils/router.js';
-import { filterTasks } from '../utils/taskFilters.js';
+import { filterTasks, sortTasks } from '../utils/taskFilters.js';
 import { withLoading } from './loadingState.js';
 import { setFeedback } from './feedback.js';
 
@@ -18,6 +18,7 @@ let filterInitialized = false;
 let loadedGames = [];
 let creatingWeeklies = false;
 let weeklyGameDataLoaded = false;
+const pendingFavoriteTasks = new Set();
 
 export async function displayAllTasks({ successMessage = '' } = {}) {
     return withLoading('Carregando tarefas...', async () => {
@@ -77,7 +78,7 @@ function renderTaskList() {
         || !WEEKLY_BATCHES.some(batch => batch.abbreviation === game?.abbreviation);
     const refreshType = document.getElementById('taskRefreshTypeFilter').value;
     const hideCompleted = document.getElementById('taskHideCompleted').checked;
-    const tasks = filterTasks(loadedTasks, { gameId, interval: refreshType, hideCompleted });
+    const tasks = sortTasks(filterTasks(loadedTasks, { gameId, interval: refreshType, hideCompleted }));
     const gameScheduleBody = document.getElementById("gameScheduleBody");
     gameScheduleBody.innerHTML = ''; // clear data
 
@@ -92,6 +93,7 @@ function renderTaskList() {
 
 function createTaskRow(task) {
     let row = document.createElement("tr");
+    row.classList.toggle('task-favorite', task.isFavorite);
     if (task.game && task.game.color) {
         row.style.backgroundColor = task.game.color;
     }
@@ -103,7 +105,7 @@ function createTaskRow(task) {
         <td class="task-game-description"></td>
         <td class="task-description"></td>
         <td>${RefreshTypeEnum.describe(task)}</td>
-        <td>${formatDateForDisplay(task.expirationDate)}</td>
+        <td>${task.expirationDate ? formatDateForDisplay(task.expirationDate) : 'Sem prazo'}</td>
         <td class="list-action-cell">
             <div class="list-actions">
                 <button class="button-edit" id="edit-task-${task.id}"><span class="button-icon" aria-hidden="true">&#9998;</span> Edit</button>
@@ -116,6 +118,16 @@ function createTaskRow(task) {
     const summary = document.createElement('div');
     row.querySelector('.task-game-description').textContent = task.gameDescription;
     summary.className = 'task-summary';
+    const favorite = document.createElement('button');
+    favorite.type = 'button';
+    favorite.id = `favorite-task-${task.id}`;
+    favorite.className = 'task-favorite-toggle';
+    favorite.textContent = task.isFavorite ? '★' : '☆';
+    favorite.setAttribute('aria-pressed', String(task.isFavorite));
+    favorite.setAttribute('aria-label', `${task.isFavorite ? 'Desfavoritar' : 'Favoritar'} ${task.description}`);
+    favorite.title = task.isFavorite ? 'Remover dos favoritos' : 'Adicionar aos favoritos';
+    favorite.disabled = pendingFavoriteTasks.has(task.id);
+    summary.appendChild(favorite);
     summary.appendChild(createEventCover(task.coverUrl, 'task-cover'));
     const description = document.createElement('span');
     description.textContent = task.description;
@@ -142,6 +154,8 @@ function addTaskEventListeners(task) {
     const editButton = document.getElementById(`edit-task-${task.id}`);
     const deleteButton = document.getElementById(`delete-task-${task.id}`);
     const restoreButton = document.getElementById(`restore-deadline-${task.id}`);
+    const favoriteButton = document.getElementById(`favorite-task-${task.id}`);
+    if (favoriteButton) favoriteButton.addEventListener('click', () => handleTaskFavorite(task, favoriteButton));
     if (deleteButton) {
         deleteButton.title = task.eventCandidateId
             ? 'Remove esta tarefa e impede que o evento seja recriado pela sincronização.'
@@ -162,6 +176,29 @@ function addTaskEventListeners(task) {
         errorMessage: 'Não foi possível restaurar o prazo. Confira se a fonte possui uma data válida e tente novamente.',
         save: () => restoreEventApiDeadline(task.eventCandidateId),
     }));
+}
+
+async function handleTaskFavorite(task, button) {
+    if (pendingFavoriteTasks.has(task.id)) return;
+    pendingFavoriteTasks.add(task.id);
+    const hadFocus = document.activeElement === button;
+    const isFavorite = !task.isFavorite;
+    try {
+        await runTaskAction(task, {
+            loadingMessage: 'Salvando favorita...',
+            successMessage: isFavorite ? 'Tarefa adicionada aos favoritos.' : 'Tarefa removida dos favoritos.',
+            errorMessage: 'Não foi possível salvar a favorita. A estrela anterior foi mantida. Tente novamente.',
+            save: () => setTaskFavorite(task.id, isFavorite),
+            onSaved: () => { task.isFavorite = isFavorite; renderTaskList(); },
+        });
+    } finally {
+        pendingFavoriteTasks.delete(task.id);
+        const currentButton = document.getElementById(`favorite-task-${task.id}`);
+        if (currentButton) {
+            currentButton.disabled = false;
+            if (hadFocus) currentButton.focus();
+        }
+    }
 }
 
 async function handleCreateWeeklies() {

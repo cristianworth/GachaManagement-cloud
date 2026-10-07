@@ -80,10 +80,11 @@ export function createDomHarness() {
                 return query;
             }
             const writeTable = { save_profile_game: 'games', save_profile_task: 'tasks', complete_profile_task: 'tasks',
-                remove_profile_game: 'games', remove_profile_task: 'tasks' }[name];
+                set_profile_task_favorite: 'tasks', remove_profile_game: 'games', remove_profile_task: 'tasks' }[name];
             if (writeTable) {
                 const id = payload.p_game_id ?? payload.p_task_id;
-                const value = payload.p_game ?? payload.p_task ?? { is_done: payload.p_is_done };
+                const value = payload.p_game ?? payload.p_task ?? (name === 'set_profile_task_favorite'
+                    ? { is_favorite: payload.p_is_favorite } : { is_done: payload.p_is_done });
                 let query = this.from(writeTable);
                 if (name.startsWith('remove_')) query = query.delete().eq('id', id);
                 else if (id !== undefined) query = query.update(value).eq('id', id);

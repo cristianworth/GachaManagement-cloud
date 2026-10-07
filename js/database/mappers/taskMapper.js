@@ -40,6 +40,7 @@ export function taskFromRow(row) {
         description: row.description,
         expirationDate: row.expiration_date ? new Date(row.expiration_date) : null,
         isDone: row.is_done ?? false,
+        isFavorite: row.is_favorite ?? false,
         refreshType: row.refresh_type,
         repeatDays: row.refresh_type === 0 ? null : row.repeat_days ?? RefreshTypeEnum.findDaysById(row.refresh_type),
         gameId: row.game_id,

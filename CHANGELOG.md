@@ -8,6 +8,18 @@ O projeto segue o versionamento semântico (SemVer), no formato `MAJOR.MINOR.PAT
 - `MINOR`: nova funcionalidade compatível com a versão anterior.
 - `PATCH`: correção de bug ou melhoria pequena, sem nova funcionalidade relevante.
 
+## [1.9.0] - 2026-10-07
+
+### Adicionado
+
+- Favorite tasks: estrela por perfil, persistida no estado pessoal. Favoritas aparecem primeiro, com prazo crescente e desempate por ID em cada grupo, mantendo filtros e Hide completed.
+- Migração incremental e RPC específica para favoritar sem alterar prazo, conclusão, capa ou recorrência. Correções da mesma edição e renovação conservam a estrela; novas edições começam sem ela.
+- Feedback de falhas, proteção contra envio duplicado e foco preservado após reordenar. Roteiro de teste e implantação em `docs/favorite-tasks.md`.
+
+Commit, push e escolha da numeração autorizados por Cristian em 07/10/2026. A migração das favoritas ainda precisa ser aplicada ao Supabase live; publicação do código não executa essa migração.
+
+Validação: `npm test` passou 377 testes (69 Jest + 308 Node). Instalação nova/upgrade e DOM com SQL real cobrem preferência por perfil, preservação, filtros, rejeições, falhas e renovação real de recorrentes. Prévia em navegador conferiu clique, Espaço/Enter, foco, reordenação e persistência após recarregar; `git diff --check` passou.
+
 ## [1.8.0] - 2026-10-06
 
 ### Adicionado

@@ -78,6 +78,10 @@ export async function completeTask(taskId, isDone) {
     }
 }
 
+export async function setTaskFavorite(taskId, isFavorite) {
+    return profileRpc('set_profile_task_favorite', { p_task_id: taskId, p_is_favorite: isFavorite });
+}
+
 function resolveWeeklyGame(games, abbreviation) {
     const matches = games.filter(game => game.abbreviation === abbreviation);
     if (matches.length > 1) throw new Error(`Sigla de jogo ambígua: ${abbreviation}.`);
