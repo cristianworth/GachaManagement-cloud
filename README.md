@@ -4,7 +4,7 @@ As melhorias planejadas e suas estimativas de complexidade estão em [TODO.md](T
 
 O **Gacha Management** é uma aplicação projetada para ajudar jogadores de **gacha games** a gerenciar sua **resina/stamina** e acompanhar **tarefas recorrentes** nos jogos. Ele oferece ferramentas para rastrear a regeneração da stamina, organizar atividades programadas e facilitar o planejamento dentro dos jogos.
 
-Versão atual: **1.9.1**. Consulte o [CHANGELOG](CHANGELOG.md) para ver as alterações de cada versão e as regras de versionamento utilizadas.
+Versão atual: **1.9.2**. Consulte o [CHANGELOG](CHANGELOG.md) para ver as alterações de cada versão e as regras de versionamento utilizadas.
 
 **Perfis da versão 1.6.0, validados localmente:** CRAN, Demo e Convidado, seleção de jogos e progresso pessoal. Perfis são públicos, sem autenticação. Aplicar modelo e contratos antes de usar este frontend no destino. Roteiro em [docs/profiles-phases.md](docs/profiles-phases.md).
 
@@ -152,5 +152,7 @@ npm run test:db
 ```
 
 As [convenções do projeto](docs/project-conventions.md) registram fontes, horários, estado, testes e o fluxo de entrega para próximas sessões.
+
+Na validação local, a etapa 1 usa testes focados nos ajustes. A etapa 2 (`npm test`) fica para versões MAJOR/MINOR, como 1.9.0, ou pedido explícito; versões PATCH, como 1.9.2, não exigem a suíte completa local. Os testes automáticos do CI continuam com a configuração existente.
 
 As amostras reais dos cinco jogos ficam em `tests/fixtures/`, com origem e relógio de referência em `manifest.json`. WuWa está habilitado com política de horários da América e identidade por edição. NTE está habilitado com política por campo e identidade por edição; veja [sua validação](docs/nte-validation.md). Veja o [mapa de testes e roteiro das próximas integrações](docs/event-integrations.md) para comandos separados, atualização de fixtures, limites da validação e decisões de horário/identidade.

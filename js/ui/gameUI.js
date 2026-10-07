@@ -1,5 +1,5 @@
 // js\ui\gameUI.js
-import { Game } from '../data/Game.js';
+import { Game, allGames } from '../data/Game.js';
 import { fetchGameById, fetchAllGames, updateGame, addGame, deleteGameById } from '../database/gameDB.js';
 import { calculateMaxStaminaDate, estimateCurrentStamina, formatDateToDayHour } from '../utils/dateUtils.js';
 import { resetGameForm, setGameFormMessage } from './formHandler.js';
@@ -115,7 +115,10 @@ function createGameRow(game, now) {
         </td>
     `;
 
-    row.querySelector('.game-icon-cell').appendChild(createGameIcon(game.img, game.description));
+    // Older seeds stored a placeholder for NTE; keep explicitly configured images.
+    const iconUrl = game.abbreviation === 'NTE' && (!game.img || game.img === 'img/default-icon.png')
+        ? allGames.find(preset => preset.abbreviation === 'NTE').img : game.img;
+    row.querySelector('.game-icon-cell').appendChild(createGameIcon(iconUrl, game.description));
     row.querySelector('.game-description').textContent = game.description;
     row.querySelector('.pending-task-editor').setAttribute('aria-label', `Tarefas pendentes de ${game.description}`);
     row.querySelector('.pending-task-editor').defaultValue = game.pendingTasks || '';
@@ -147,13 +150,37 @@ export function addGameEventListeners(game) {
     if (deleteGame)     
         deleteGame.addEventListener("click", () => handleDelete(game.id))
 
-    if (pendingTaskEditor)
-        pendingTaskEditor.addEventListener("keydown", handleBulletPoint)
+    if (pendingTaskEditor) {
+        pendingTaskEditor.addEventListener('keydown', handleBulletPoint);
+        pendingTaskEditor.addEventListener('input', handleTodoInput);
+        pendingTaskEditor.addEventListener('compositionend', handleTodoInput);
+    }
     
 }
 
+function handleTodoInput(event) {
+    if (!event.isComposing) formatTodoEditor(event.currentTarget);
+}
+
+function formatTodoEditor(editor) {
+    const start = editor.selectionStart;
+    const end = editor.selectionEnd;
+    const direction = editor.selectionDirection;
+    let startOffset = 0;
+    let endOffset = 0;
+    const value = editor.value.replace(/^[ \t]*(?=[^\s•])/gm, (indent, offset) => {
+        const insertion = offset + indent.length;
+        if (insertion <= start) startOffset += 2;
+        if (insertion <= end) endOffset += 2;
+        return `${indent}• `;
+    });
+    if (value === editor.value) return;
+    editor.value = value;
+    editor.setSelectionRange(start + startOffset, end + endOffset, direction);
+}
+
 function handleBulletPoint(event) {
-    if (event.key !== "Enter") return;
+    if (event.key !== "Enter" || event.isComposing) return;
 
     const editor = event.currentTarget;
     const lineStart = editor.value.lastIndexOf("\n", editor.selectionStart - 1) + 1;
@@ -170,6 +197,7 @@ function handleBulletPoint(event) {
 
     editor.value = nextValue;
     editor.setSelectionRange(nextCursor, nextCursor);
+    formatTodoEditor(editor);
 }
 
 async function handleGameSave(gameId) {

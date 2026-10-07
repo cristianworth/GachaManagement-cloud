@@ -11,6 +11,6 @@ from (values
     ('Honkai Star Rail',     'HSR',  'img/star-rail-icon.png',        300, 6, '#d1f0d1'),
     ('Wuthering Waves',      'WuWa', 'img/wuthering-waves-icon.png',  240, 6, '#ffffb3'),
     ('Zenless Zone Zero',    'ZZZ',  'img/zzz-icon.png',              240, 6, '#e6ccff'),
-    ('Neverness to Everness','NTE',  'img/default-icon.png',          320, 6, '#ffb3b3')
+    ('Neverness to Everness','NTE',  'img/nte-icon.png',              320, 6, '#ffb3b3')
 ) as v(description, abbreviation, img, cap_stamina, stamina_per_minute, color)
 where v.abbreviation not in (select abbreviation from public.games);

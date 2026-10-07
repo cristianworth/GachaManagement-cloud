@@ -41,6 +41,23 @@ Este documento registra decisões verificadas do projeto e preferências de Cris
 - `npm ci` instala versões do lock; `npm test` executa tudo. Para investigação: `npm run test:jest`, `npm run test:node`, `npm run test:db`. CI testa Windows e Linux; sincronização diária às 07h30 de Brasília (10h30 UTC) exige testes aprovados e roda no GitHub Actions, independentemente do computador local.
 - Testes locais não validam permissões reais de PostgREST, concorrência entre conexões ou CSS renderizado. Verificar o destino e a interface quando relevante.
 
+### Execução local em etapas
+
+Preferência de Cristian registrada em 07/10/2026 para reduzir o tempo de validação:
+
+1. **Etapa 1 — testes focados:** executar os arquivos que protegem os comportamentos alterados e efeitos colaterais plausíveis. Uma correção de interface pode usar `node --test tests/gamePresentation.test.mjs tests/gameStamina.test.mjs tests/uiFeedback.test.mjs`; selecionar outros arquivos quando o escopo mudar. Mudanças no banco incluem os contratos SQL afetados, com instalação nova/upgrade quando aplicável.
+2. **Etapa 2 — suíte completa:** executar `npm test` no fechamento de versões MAJOR/MINOR, como `1.9.0` ou `2.0.0`, depois de passar a etapa 1. Não repetir a suíte completa a cada ajuste intermediário.
+
+Versões PATCH, como `1.9.1` e `1.9.2`, usam somente a etapa 1; a etapa 2 só roda nesses casos se Cristian pedir explicitamente. Não repetir verificações já aprovadas quando só documentação/numeração mudou. Informar quais etapas foram executadas e distinguir evidência anterior de uma execução nova. A numeração continua seguindo o escopo e as regras do changelog.
+
+Essa preferência organiza as execuções locais do agente. Os workflows existentes do GitHub Actions continuam executando seus próprios testes; este registro não muda o CI nem a sincronização diária.
+
+## Orientação prática na entrega
+
+Antes do fechamento **Workflow**, incluir um parágrafo **Para testar** com ações concretas na interface e resultados esperados, em linguagem simples. Não substituir esse roteiro apenas por comandos automatizados. Adaptar os passos ao que mudou; quando Cristian já tiver validado, apresentá-los como conferência opcional após a publicação, sem pedir a mesma validação novamente.
+
+Exemplo aprovado por Cristian: “Para testar, recarregue a prévia, selecione NTE e confira o ícone. Em um To-do vazio, digite o primeiro item, pressione Enter e escreva o segundo. Salve e recarregue para conferir a persistência.”
+
 ## Entrega e sincronização
 
 1. Validar calendário/região/horários e contrato de identidade antes de ativar o jogo.

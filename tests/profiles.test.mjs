@@ -26,6 +26,7 @@ for (const migrated of [false, true]) {
             await db.exec('set role anon');
             const gi = (await db.query("select * from games where abbreviation = 'GI'")).rows[0];
             const zzz = (await db.query("select * from games where abbreviation = 'ZZZ'")).rows[0];
+            assert.equal((await db.query("select img from games where abbreviation = 'NTE'")).rows[0].img, 'img/nte-icon.png');
             const profiles = (await db.query('select id,name from profiles order by sort_order')).rows;
             assert.deepEqual(profiles, [{ id: 'cran', name: 'CRAN' }, { id: 'demo', name: 'Demo' }, { id: 'guest', name: 'Convidado' }]);
             await assert.rejects(db.query("update profiles set name='Someone else' where id='cran'"), /permission denied/);

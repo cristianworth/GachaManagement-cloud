@@ -8,6 +8,22 @@ O projeto segue o versionamento semântico (SemVer), no formato `MAJOR.MINOR.PAT
 - `MINOR`: nova funcionalidade compatível com a versão anterior.
 - `PATCH`: correção de bug ou melhoria pequena, sem nova funcionalidade relevante.
 
+## [1.9.2] - 2026-10-07
+
+### Corrigido
+
+- Ícone do NTE na lista de Games: o seed passa a usar `img/nte-icon.png`. Registros antigos com imagem vazia ou `img/default-icon.png` usam o ícone do catálogo na exibição, sem regravar dados e preservando imagens personalizadas. Não exige migração no live.
+- To-do passa a inserir o marcador no primeiro item ao digitar e nas linhas preenchidas de textos colados. Preserva indentação, linhas vazias, marcadores existentes, seleção/cursor e composição de texto. Enter continua a lista; notas antigas não são reescritas ao carregar. Atualizar conserva o rascunho e somente Save grava.
+
+Cristian validou as correções e autorizou commit, push e escolha da numeração em 07/10/2026.
+
+### Documentado
+
+- Preferências em `AGENTS.md` e `docs/project-conventions.md`: etapa 1 com testes focados; etapa 2 com suíte completa local em versões MAJOR/MINOR ou pedido explícito, sem exigi-la em PATCH. Workflows do CI permanecem iguais.
+- Incluir orientações práticas de teste visual antes do Workflow nas entregas, com ações e resultado esperado; validação já confirmada não é solicitada novamente.
+
+Validação funcional anterior a essa política: `npm test` passou 392 testes (69 Jest + 323 Node); `node --test tests/gamePresentation.test.mjs tests/gameStamina.test.mjs tests/uiFeedback.test.mjs` passou 40. Schema novo e upgrade conferem o ícone do seed. Prévia em navegador com SQL descartável confirmou imagem NTE carregada, marcador no primeiro item, Enter, atualização, Save e recarregamento sem duplicação. Nesta publicação, apenas documentação e numeração mudaram após a validação; os testes funcionais não foram repetidos. `git diff --check` e consistência da versão foram conferidos. Nenhum dado do Supabase live foi alterado.
+
 ## [1.9.1] - 2026-10-07
 
 ### Melhorado
