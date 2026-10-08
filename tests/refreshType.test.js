@@ -8,7 +8,7 @@ test('RefreshTypeEnum finds correct values', () => {
 });
 
 test('new presets use 30 days without changing legacy Monthly', () => {
-    expect(RefreshTypeEnum.presets.map(item => item.value)).toEqual(['Event / No repeat', 'Daily', 'Weekly', 'Monthly', 'Custom']);
+    expect(RefreshTypeEnum.presets.map(item => item.value)).toEqual(['Event / No repeat', 'Daily', 'Weekly', 'Monthly', 'Custom', 'Monthly — day 1', 'Monthly — day 15']);
     expect(RefreshTypeEnum.presets.find(item => item.id === 6).days).toBe(30);
     expect(RefreshTypeEnum.getRepeatDays({ refreshType: 6 })).toBe(31);
     expect(RefreshTypeEnum.getRepeatDays({ refreshType: 6, repeatDays: 30 })).toBe(30);

@@ -91,7 +91,7 @@ export function createDomHarness() {
                 else query = query.insert(value).select().single();
                 return query;
             }
-            if (!['cleanup_expired_imported_events', 'ignore_imported_task', 'sync_event_candidate', 'create_profile_weekly_batch'].includes(name)) throw new Error(`Unexpected RPC ${name}`);
+            if (!['cleanup_expired_imported_events', 'ignore_imported_task', 'sync_event_candidate', 'create_profile_weekly_batch', 'create_profile_endgame_batch'].includes(name)) throw new Error(`Unexpected RPC ${name}`);
             state.rpcCalls.push({ name, payload });
             await state.beforeQuery?.({ operation: 'rpc', name, payload });
             if (state.rpcErrors[name]) return { data: null, error: new Error(state.rpcErrors[name]) };

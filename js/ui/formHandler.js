@@ -77,7 +77,7 @@ export function initializeTaskForm() {
 export function setTaskRecurrence(days, sourceManaged = false, presetId = RefreshTypeEnum.findPresetId(days)) {
     document.getElementById('refreshType').value = String(presetId);
     document.getElementById('refreshType').disabled = sourceManaged;
-    const repeats = presetId !== 0;
+    const repeats = presetId !== 0 && !RefreshTypeEnum.getMonthDay({ refreshType: presetId });
     const input = document.getElementById('taskRepeatDays');
     document.getElementById('taskRepeatDaysFields').hidden = !repeats;
     input.value = repeats ? days : '';

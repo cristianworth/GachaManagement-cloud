@@ -160,6 +160,17 @@
 
             <button id="createWeekliesBtn" class="button-add" type="button" disabled>Criar lote inicial de weeklies deste jogo</button>
             <p>Selecione HSR, WuWa ou ZZZ. A criação é única por jogo e perfil. Atividades com o mesmo nome são mantidas com seus dados e repetição atuais; atividades removidas de um lote registrado não são restauradas.</p>
+            <form id="endgameBatchForm" class="endgame-batch">
+                <h2>Lote inicial de desafios — GI + NTE</h2>
+                <p>Imaginarium Theater: dia 1º. Spiral Abyss (Abismo): lembrete antecipado no dia 15, antes do reset oficial do dia 16. Os lembretes do Genshin usam 06:00 de Brasília.</p>
+                <p>Uma única criação para os jogos selecionados neste perfil, independentemente do filtro da lista. Tarefas com o mesmo nome são preservadas; tarefas excluídas de um lote registrado não voltam.</p>
+                <div id="nteBatchDeadlineFields" hidden>
+                    <label for="nteBatchDeadline">Próximo prazo do Beyond the Rails (horário local do navegador):</label>
+                    <input id="nteBatchDeadline" type="datetime-local" step="1" aria-describedby="nteBatchDeadlineHint">
+                    <small id="nteBatchDeadlineHint">Na primeira criação do NTE, informe a data e hora exibidas no jogo. A tarefa repetirá a cada 14 dias a partir desse prazo. Não é necessário preencher novamente para um lote já registrado ou uma tarefa existente com esse nome.</small>
+                </div>
+                <button id="createEndgameBatchBtn" class="button-add" type="submit" disabled>Criar lote inicial de desafios</button>
+            </form>
             <p id="taskListMessage" class="operation-feedback" role="status" hidden></p>
             <button id="taskListRetry" class="button-neutral" type="button" hidden>Tentar novamente</button>
             <div class="table-container">

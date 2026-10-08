@@ -51,6 +51,7 @@ export function taskFromRow(row) {
         eventDeadlineManual: row.event_deadline_manual ?? false,
         weeklyDefinitionKey: row.weekly_batch_items?.definition_key
             ?? row.weekly_batch_items?.[0]?.definition_key ?? null,
+        endgameDefinitionKey: row.shared_key?.startsWith('endgame:') ? row.shared_key.split(':')[2] : null,
         game: row.game ? gameFromRow(row.game) : undefined,
     };
 }

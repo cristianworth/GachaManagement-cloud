@@ -3,7 +3,7 @@ import { createEventCover } from './eventCover.js';
 import { cleanupExpiredImportedEvents, ignoreImportedTask, restoreEventApiDeadline } from '../database/eventCandidateDB.js';
 import { fetchAllGames } from '../database/gameDB.js';
 import { Task } from '../data/Task.js';
-import { fetchAllTasks, completeTask, setTaskFavorite, fetchTaskById, addTask, updateTask, deleteTaskById, createWeeklyTasksForGame } from '../database/taskDB.js';
+import { fetchAllTasks, completeTask, setTaskFavorite, fetchTaskById, addTask, updateTask, deleteTaskById, createWeeklyTasksForGame, createEndgameTasks } from '../database/taskDB.js';
 import { WEEKLY_BATCHES } from '../data/weeklyTasks.js';
 import { formatDateForDisplay, formatDateForInput, getExpirationDate } from '../utils/dateUtils.js';
 import { resetTaskForm, setDateSelector, setTaskFormMessage, setTaskRecurrence } from './formHandler.js'
@@ -17,6 +17,7 @@ let loadedTasks = [];
 let filterInitialized = false;
 let loadedGames = [];
 let creatingWeeklies = false;
+let creatingEndgame = false;
 let weeklyGameDataLoaded = false;
 const pendingFavoriteTasks = new Set();
 
@@ -37,6 +38,7 @@ export async function displayAllTasks({ successMessage = '' } = {}) {
         } catch (error) {
             weeklyGameDataLoaded = false;
             document.getElementById('createWeekliesBtn').disabled = true;
+            document.getElementById('createEndgameBatchBtn').disabled = true;
             console.error('Failed to load task list:', error);
             setFeedback('taskListMessage', successMessage
                 ? `${successMessage} Porém, não foi possível atualizar a lista. Use Tentar novamente para recarregar os dados.`
@@ -66,6 +68,7 @@ function updateTaskList(tasks, games) {
         refreshFilter.addEventListener('change', renderTaskList);
         document.getElementById('taskHideCompleted').addEventListener('change', renderTaskList);
         document.getElementById('createWeekliesBtn').addEventListener('click', handleCreateWeeklies);
+        document.getElementById('endgameBatchForm').addEventListener('submit', handleCreateEndgameBatch);
         filterInitialized = true;
     }
     renderTaskList();
@@ -76,6 +79,10 @@ function renderTaskList() {
     const game = loadedGames.find(game => String(game.id) === gameId);
     document.getElementById('createWeekliesBtn').disabled = creatingWeeklies || !weeklyGameDataLoaded
         || !WEEKLY_BATCHES.some(batch => batch.abbreviation === game?.abbreviation);
+    document.getElementById('createEndgameBatchBtn').disabled = creatingEndgame || !weeklyGameDataLoaded
+        || !loadedGames.some(game => ['GI', 'NTE'].includes(game.abbreviation));
+    document.getElementById('nteBatchDeadlineFields').hidden = !loadedGames.some(game => game.abbreviation === 'NTE');
+    document.getElementById('nteBatchDeadline').disabled = creatingEndgame;
     const refreshType = document.getElementById('taskRefreshTypeFilter').value;
     const hideCompleted = document.getElementById('taskHideCompleted').checked;
     const tasks = sortTasks(filterTasks(loadedTasks, { gameId, interval: refreshType, hideCompleted }));
@@ -226,6 +233,34 @@ async function handleCreateWeeklies() {
     }
 }
 
+async function handleCreateEndgameBatch(event) {
+    event.preventDefault();
+    if (creatingEndgame || !weeklyGameDataLoaded) return;
+    const input = document.getElementById('nteBatchDeadline');
+    const nteDeadline = loadedGames.some(game => game.abbreviation === 'NTE') ? input.value : '';
+    creatingEndgame = true;
+    renderTaskList();
+    setFeedback('taskListMessage');
+    try {
+        await withLoading('Criando lote de desafios...', async () => {
+            const result = await createEndgameTasks({ nteDeadline });
+            input.value = '';
+            const message = result.registered
+                ? 'Lote inicial registrado: ' + result.created + ' criada(s), ' + result.preserved + ' existente(s) preservada(s) com seus dados e repetição atuais.'
+                : 'Lote inicial já registrado para os jogos selecionados. Nenhuma tarefa foi recriada.';
+            await displayAllTasks({ successMessage: message });
+        });
+    } catch (error) {
+        console.error('Failed to create endgame batch:', error);
+        const message = error.message?.startsWith('Informe o próximo prazo futuro')
+            ? error.message : 'Não foi possível criar o lote de desafios. As tarefas existentes foram preservadas. Tente novamente.';
+        setFeedback('taskListMessage', message, 'error');
+    } finally {
+        creatingEndgame = false;
+        renderTaskList();
+    }
+}
+
 async function runTaskAction(task, { loadingMessage, successMessage, errorMessage, save, onSaved, onError }) {
     const controls = [...document.getElementById(`task-checkbox-${task.id}`).closest('tr').querySelectorAll('input, button')];
     const disabledStates = controls.map(control => control.disabled);
@@ -281,8 +316,8 @@ async function handleTaskEdit (taskId) {
             setDateSelector(true);
             document.getElementById("expirationDate").value = task.expirationDate
                 ? `${formatDateForInput(task.expirationDate)}:${String(task.expirationDate.getSeconds()).padStart(2, '0')}` : '';
-            setTaskRecurrence(RefreshTypeEnum.getRepeatDays(task), Boolean(task.eventCandidateId));
-            document.getElementById('taskGameId').disabled = Boolean(task.eventCandidateId);
+            setTaskRecurrence(RefreshTypeEnum.getRepeatDays(task), Boolean(task.eventCandidateId), RefreshTypeEnum.getPresetId(task));
+            document.getElementById('taskGameId').disabled = Boolean(task.eventCandidateId || task.endgameDefinitionKey);
         });
     } catch (error) {
         console.error('Failed to open task:', error);
@@ -310,12 +345,14 @@ export async function handleAddTask() {
     const gameId = parseInt(selectGame.value);
     const gameDescription = selectGame.options[selectGame.selectedIndex].text;
     const taskDescription = document.getElementById("taskDescription").value;
-    const repeats = document.getElementById('refreshType').value !== '0';
+    const selectedType = Number(document.getElementById('refreshType').value);
+    const monthDay = RefreshTypeEnum.getMonthDay({ refreshType: selectedType });
+    const repeats = selectedType !== 0 && !monthDay;
     const repeatDays = repeats ? Number(document.getElementById('taskRepeatDays').value) : null;
     if (repeats && (!Number.isInteger(repeatDays) || repeatDays < 1 || repeatDays > 2147483647)) {
         throw new Error('Enter a positive whole number of days.');
     }
-    const refreshType = RefreshTypeEnum.findPresetId(repeatDays);
+    const refreshType = monthDay ? selectedType : RefreshTypeEnum.findPresetId(repeatDays);
 
     const hasDateSelector = document.getElementById("hasDateSelector").checked;
     let expirationDate = new Date();

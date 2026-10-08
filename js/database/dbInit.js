@@ -9,7 +9,7 @@ import { populateInitialGames } from './gameDB.js';
 import { updateTask, populateInitialTasks, fetchAllOverdueTasks } from './taskDB.js';
 import { displayAllTasks } from '../ui/taskUI.js';
 import RefreshTypeEnum from '../enums/RefreshTypeEnum.js';
-import { formatDateForDisplay, getNextRecurringDeadline } from '../utils/dateUtils.js';
+import { formatDateForDisplay, getNextRecurringDeadline, getNextMonthlyDeadline } from '../utils/dateUtils.js';
 
 /**
  * Ponto único de inicialização, chamado no boot da aplicação (js/index.js).
@@ -50,12 +50,16 @@ export async function updateExpiratedTasksRoutine() {
 
     for (const task of expiredTasks) {
         const daysToRefresh = RefreshTypeEnum.getRepeatDays(task);
-        if (!daysToRefresh) continue;
+        const monthDay = RefreshTypeEnum.getMonthDay(task);
+        if (!daysToRefresh && !monthDay) continue;
 
         const previousDate = new Date(task.expirationDate);
-        task.expirationDate = getNextRecurringDeadline(previousDate, daysToRefresh, new Date(), {
-            utc: Boolean(task.weeklyDefinitionKey) && task.refreshType === 2 && daysToRefresh === 7,
-        });
+        task.expirationDate = monthDay
+            ? getNextMonthlyDeadline(previousDate, monthDay)
+            : getNextRecurringDeadline(previousDate, daysToRefresh, new Date(), {
+                utc: Boolean(task.endgameDefinitionKey)
+                    || Boolean(task.weeklyDefinitionKey) && task.refreshType === 2 && daysToRefresh === 7,
+            });
         task.isDone = false;
 
         console.log(

@@ -1,6 +1,6 @@
 # Roadmap — prioridades por tier
 
-Atualizado em 07/10/2026 conforme o pedido de Cristian. Esta lista contém somente trabalho pendente; a ordem recomenda a próxima entrega e não autoriza implementar todos os itens. Detalhamento em [TODO.md](../TODO.md).
+Atualizado em 08/10/2026 conforme o pedido de Cristian. Esta lista contém somente trabalho pendente; a ordem recomenda a próxima entrega e não autoriza implementar todos os itens. Detalhamento em [TODO.md](../TODO.md).
 
 Saíram da tier list: sincronização diária às 07h30 de Brasília, criação inicial das weeklies, perfis CRAN/Demo/Convidado, seleção dos jogos por perfil, identidade por edição em GI/HSR/ZZZ e exclusão dos importados vencidos nos cinco jogos. Histórico em [CHANGELOG.md](../CHANGELOG.md); limites e verificações manuais restantes da etapa 4 em [event-editions-expiry.md](event-editions-expiry.md). A estimativa atual de resina e seu botão foram entregues em 1.8.0; cenários no TODO 1. Favorite tasks foi entregue em 1.9.0; a migração no Supabase live continua pendente, conforme [favorite-tasks.md](favorite-tasks.md).
 
@@ -8,17 +8,22 @@ S = próxima entrega prioritária; A = alto retorno; B = depende de uma base ant
 
 | Tier | Ordem | Melhoria | Por que esta posição | Complexidade / dependências |
 | --- | --- | --- | --- | --- |
+| **S** | 1 | Lote único: weeklies + desafios já implementados | Pedido atual de Cristian: um único Carregar Lote, com ajuda curta, para os jogos habilitados do perfil. Consolidar os nove itens atuais sem acrescentar o seletor ainda. | Média. [Plano e inventário](task-batch-plan.md); TODO 9.1. |
+| **S** | 2 | Ampliar o lote com desafios de ZZZ/WuWa | Incluir Deadly Assault, Shiyu Defense, Endstate Matrix, Whimpering Wastes e Tower of Adversity após validar calendário América. HSR continua pela API, com reservas inativas. | Média/alta. Depende de âncoras/horários e tratamento por fase do Endstate Matrix; não usar contadores restantes como recorrência. |
 | **A** | 1 | Testes de navegador no CI e publicação condicionada aos testes | Os testes atuais protegem lógica, SQL e DOM. Poucos fluxos em navegador real podem proteger carregamento, filtros, botões, formulários e CSS renderizado. | Média. Conferir a configuração do Pages; complementar o CI existente. |
 | **A** | 2 | Ajustes pontuais de interface no celular | Priorizar tabelas, áreas de toque, filtros e formulários nas telas usadas diariamente. Dividir em recortes pequenos. | Média por recorte. TODO 5. |
 | **B** | 1 | Catálogo completo da API e variantes regionais | A seleção por perfil já existe. Falta ampliar os jogos disponíveis, com metadados e horários verificados para cada integração. | Alta. Parte restante do TODO 10; não repetir a implementação da seleção. |
 | **B** | 2 | Alerta de resina alvo com contagem regressiva — entrega separada | Uma meta por jogo e perfil, previsão e estado de alvo atingido dentro do site. Só o levantamento foi feito; não integra o botão de estimativa. | Média. TODO 6; [plano inicial](resin-alerts-plan.md), após validar TODO 1. |
 | **B** | 3 | Avisos de manutenção e próximos banners | Acrescenta informação útil, mas exige manutenção de datas. Começar com cadastro manual, distinguindo horários globais e do servidor. | Média. TODO 7 e 7.1. |
 | **B** | 4 | Fallback entre calendários inglês e chinês | Pode ampliar a cobertura, mas o provedor não oferece ID por atividade. Exige associação confiável por edição entre idiomas; datas iguais ou posição na lista não bastam. | Alta. Parte restante do TODO 8; aproveitar a identidade já entregue. |
+| **B** | 5 | Escolher itens do Lote em modal | Alternativa futura ao carregamento padrão: checkboxes por jogo, selecionar todos e carregar escolhidos. Registro por definição deve distinguir adiamento de exclusão. | Média. Após o Lote único; [plano](task-batch-plan.md). Não integra a primeira unificação. |
 | **C** | 1 | Favicon e consistência dos ícones | Acabamento localizado depois das melhorias de uso. Manter texto acessível e clareza das ações. | Baixa/média. TODO 4. |
 | **C** | 2 | Indicador de evento recém-adicionado | Ajuda a identificar novidades. Usar a primeira importação da edição, sem renovar o indicador a cada sincronização. | Baixa/média. TODO 11. |
 | **C** | 3 | Paginação no Supabase | Adotar quando o volume ou a rolagem justificarem. Envolve consultas, contagem e navegação, além dos filtros atuais. | Média. TODO 12; respeitar a ordenação de favoritas quando implementada. |
 
 ## Limites e sequência
+
+A próxima sequência proposta é unificar os controles dos nove itens já implementados, depois adicionar os cinco desafios novos com calendário validado e, em entrega futura, oferecer seleção individual em modal. O commit intermediário mantém 1.9.2 e não publica esta evolução. Inventário completo e limitações em [task-batch-plan.md](task-batch-plan.md).
 
 Perfis continuam públicos, sem autenticação ou convite; login e RLS por usuário exigem escopo próprio. Catálogo e capas são compartilhados, com progresso e decisões pessoais separados. As novas preferências devem seguir essa separação.
 

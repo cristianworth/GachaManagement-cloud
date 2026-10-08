@@ -55,6 +55,20 @@ export function getNextRecurringDeadline(previousDate, days, now = new Date(), {
     return next;
 }
 
+export function getNextMonthlyDeadline(previousDate, monthDay, now = new Date()) {
+    const previous = new Date(previousDate);
+    const instant = new Date(now);
+    if (![1, 15].includes(monthDay) || !Number.isFinite(previous.getTime()) || !Number.isFinite(instant.getTime())) {
+        throw new Error('Invalid calendar recurrence.');
+    }
+    if (previous > instant) return previous;
+    // Calendar reminders keep their UTC time, independent of the computer timezone.
+    const next = new Date(Date.UTC(instant.getUTCFullYear(), instant.getUTCMonth(), monthDay,
+        previous.getUTCHours(), previous.getUTCMinutes(), previous.getUTCSeconds(), previous.getUTCMilliseconds()));
+    if (next <= instant) next.setUTCMonth(next.getUTCMonth() + 1);
+    return next;
+}
+
  export function formatDateForInput(date) {
     const d = new Date(date);
     const year = d.getFullYear();

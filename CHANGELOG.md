@@ -8,6 +8,21 @@ O projeto segue o versionamento semântico (SemVer), no formato `MAJOR.MINOR.PAT
 - `MINOR`: nova funcionalidade compatível com a versão anterior.
 - `PATCH`: correção de bug ou melhoria pequena, sem nova funcionalidade relevante.
 
+## [Não publicado]
+
+### Adicionado
+
+- Lote inicial explícito de desafios GI + NTE por perfil: Imaginarium Theater no dia 1º, Spiral Abyss como lembrete antecipado no dia 15 (escolha de Cristian; reset oficial no dia 16), ambos às 06:00 de Brasília. Beyond the Rails repete a cada 14 dias a partir do próximo prazo informado no navegador, sem assumir a âncora da edição atual.
+- Recorrências mensais por dia do calendário, com edição e filtros próprios; Monthly antigo conserva seu intervalo fixo de 30/31 dias. Renovação conserva favoritas, capas e estado dos outros perfis.
+- Uma única transação considera os jogos selecionados no perfil, preserva homônimos e registra a criação por jogo. Repetição não duplica nem restaura exclusões; selecionar NTE posteriormente permite criar somente esse lote. Migração incremental, instalação nova, reset explícito e prévia descartável atualizados. Detalhes em docs/endgame-batch.md.
+
+Validação local em etapa 1: 205 testes distintos aprovados (53 novos + 89 de compatibilidade Node + 63 Jest), incluindo instalação nova e upgrade. Suíte completa reservada ao fechamento MINOR. Conferência visual e Supabase live pendentes; roteiro em docs/endgame-batch.md. Cristian autorizou o commit intermediário em 08/10/2026, mantendo a versão 1.9.2 e esta seção “Não publicado”, sem push.
+
+### Planejado e documentado
+
+- Lote único com **Carregar Lote** para weeklies e desafios dos jogos habilitados. Inventário e plano em docs/task-batch-plan.md: nove itens implementados, cinco adições de ZZZ/WuWa pendentes de calendário e três alternativas HSR inativas porque já chegam pela API.
+- Seleção individual em modal registrada como evolução futura no roadmap e TODO 9.1. Contadores fornecidos por Cristian foram preservados como observações, sem convertê-los em intervalos ou horários confirmados. A interface continua com os controles separados neste commit.
+
 ## [1.9.2] - 2026-10-07
 
 ### Corrigido

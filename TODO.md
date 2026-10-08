@@ -113,6 +113,16 @@ Complexidade estimada para este projeto (HTML, CSS, JavaScript e Supabase): **ba
 - **Concluído quando:** a população inicial cria apenas weeklies, com prazos atuais e jogos corretos, e executar novamente não duplica nem restaura atividades que o usuário decidiu remover.
 - **Entregue em 1.6.0:** na seleção de jogos, oferecer a opção de criar o lote semanal. A preferência sobre criar/adiar é persistida por perfil e jogo; abrir a aplicação não recria o lote automaticamente.
 
+## 9.1. Evolução: Lote único de weeklies e desafios
+
+Planejamento pedido em 08/10/2026. Inventário completo, contadores fornecidos, referências e sequência em [docs/task-batch-plan.md](docs/task-batch-plan.md). A regra histórica de “somente weeklies” do item 9 não limita esta evolução autorizada para planejamento.
+
+- [ ] Unificar os nove itens já implementados em uma entrada **Carregar Lote**, usando os jogos habilitados no perfil e operação SQL transacional. Manter categorias e recorrências internas, tarefas existentes e exclusões.
+- [ ] Acrescentar Deadly Assault e Shiyu Defense do ZZZ; Endstate Matrix, Whimpering Wastes e Hazard Zone de Tower of Adversity do WuWa, somente após conferir calendário América.
+- [ ] Manter Pure Fiction, Apocalyptic Shadow e Memory of Chaos como referências de fallback inativas/comentadas, porque a API já fornece suas edições.
+- [ ] Em entrega futura, oferecer **Escolher itens…** em modal com checkboxes e estado por definição, distinguindo adiamento de exclusão.
+- [x] Documentar o inventário: nove itens implementados, cinco novos planejados e três reservas HSR pela API. Não interpretar tempo restante como intervalo de recorrência.
+
 ## 10. Catálogo de jogos e seleção inicial — depois do MVP
 
 **Base entregue em 1.6.0, validada localmente:** seleção por perfil do catálogo existente, filtros e oferta opcional de weeklies. Catálogo completo da API, variantes regionais e autenticação ficam para entregas posteriores.

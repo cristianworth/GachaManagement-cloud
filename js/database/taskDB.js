@@ -107,6 +107,13 @@ export async function createWeeklyTasksForGame(abbreviation, { now } = {}) {
     return createWeeklyBatch(batch, game, true, now);
 }
 
+export async function createEndgameTasks({ nteDeadline, now } = {}) {
+    return profileRpc('create_profile_endgame_batch', {
+        ...(nteDeadline ? { p_nte_deadline: new Date(nteDeadline).toISOString() } : {}),
+        ...(now !== undefined ? { p_now: new Date(now).toISOString() } : {}),
+    });
+}
+
 export async function populateInitialTasks({ now, explicit = false } = {}) {
     const games = await fetchAllGames();
     // Validate every enabled abbreviation before any write, even in an empty task table.
