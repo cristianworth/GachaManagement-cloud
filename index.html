@@ -75,7 +75,7 @@
         <section>
             <h1 class="main-title">
                 <a href="https://cristianworth.github.io/GachaManagement-cloud/" target="_blank">
-                    Gacha Management <span class="version-badge">v1.10.0</span>
+                    Gacha Management <span class="version-badge">v1.11.0</span>
                 </a>
                 <br>
                 <a href="https://github.com/cristianworth/GachaManagement-cloud/tree/main" target="_blank">Dev Repo</a>
@@ -159,6 +159,7 @@
             </div>
 
             <button id="loadTaskBatchBtn" class="button-add" type="button" disabled aria-describedby="taskBatchHint">Carregar Lote</button>
+            <button id="chooseTaskBatchBtn" class="button-neutral" type="button" disabled aria-haspopup="dialog">Escolher itens…</button>
             <p id="taskBatchHint">Adiciona as atividades padrão dos jogos selecionados neste perfil, preservando tarefas existentes e exclusões. O filtro da lista não limita o lote.</p>
             <p id="taskListMessage" class="operation-feedback" role="status" hidden></p>
             <button id="taskListRetry" class="button-neutral" type="button" hidden>Tentar novamente</button>
@@ -182,6 +183,21 @@
             </div>
         </section>
     </div>
+
+    <dialog id="taskBatchDialog" aria-labelledby="taskBatchTitle" aria-describedby="taskBatchInstructions">
+        <form id="taskBatchSelectionForm">
+            <h2 id="taskBatchTitle">Escolher itens do lote</h2>
+            <p id="taskBatchInstructions">Itens desmarcados ficam adiados para depois. Nenhuma tarefa existente será excluída. O filtro da lista não limita esta seleção.</p>
+            <label class="task-batch-item"><input id="taskBatchSelectAll" type="checkbox"> Selecionar todos os disponíveis</label>
+            <div id="taskBatchGroups"></div>
+            <p id="taskBatchSummary" role="status" aria-live="polite"></p>
+            <p id="taskBatchMessage" class="operation-feedback" role="status" hidden></p>
+            <div class="task-batch-actions">
+                <button id="taskBatchCancel" class="button-neutral" type="button">Cancelar</button>
+                <button id="taskBatchSubmit" class="button-add" type="submit">Carregar escolhidos</button>
+            </div>
+        </form>
+    </dialog>
 
     <div data-page="eventGames" style="display:none">
         <section>

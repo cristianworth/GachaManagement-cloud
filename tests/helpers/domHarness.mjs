@@ -4,6 +4,12 @@ import { JSDOM } from 'jsdom';
 export function createDomHarness() {
     // Scripts and external resources stay disabled: no production client is executed.
     const dom = new JSDOM(readFileSync(new URL('../../index.html', import.meta.url), 'utf8'), { url: 'http://localhost:5500/' });
+    // jsdom has no native dialog implementation; production uses the browser focus trap.
+    dom.window.HTMLDialogElement.prototype.showModal = function () { this.open = true; };
+    dom.window.HTMLDialogElement.prototype.close = function () {
+        if (!this.open) return;
+        this.open = false; this.dispatchEvent(new dom.window.Event('close'));
+    };
     const originals = Object.fromEntries(['window', 'document', 'history', 'Option'].map(key => [key, globalThis[key]]));
     for (const key of Object.keys(originals)) globalThis[key] = dom.window[key];
     dom.window.localStorage.setItem('gacha-profile', 'cran');
@@ -91,14 +97,14 @@ export function createDomHarness() {
                 else query = query.insert(value).select().single();
                 return query;
             }
-            if (!['cleanup_expired_imported_events', 'ignore_imported_task', 'sync_event_candidate', 'create_profile_weekly_batch', 'create_profile_endgame_batch', 'create_profile_task_batch'].includes(name)) throw new Error(`Unexpected RPC ${name}`);
+            if (!['cleanup_expired_imported_events', 'ignore_imported_task', 'sync_event_candidate', 'create_profile_weekly_batch', 'create_profile_endgame_batch', 'create_profile_task_batch', 'list_profile_task_batch', 'choose_profile_task_batch'].includes(name)) throw new Error(`Unexpected RPC ${name}`);
             state.rpcCalls.push({ name, payload });
             await state.beforeQuery?.({ operation: 'rpc', name, payload });
             if (state.rpcErrors[name]) return { data: null, error: new Error(state.rpcErrors[name]) };
             if (name === 'ignore_imported_task') {
                 state.tasks = state.tasks.filter(row => row.id !== payload.p_task_id);
             }
-            return { data: state.rpcResults[name] ?? (['create_profile_weekly_batch', 'create_profile_task_batch'].includes(name)
+            return { data: state.rpcResults[name] ?? (name === 'list_profile_task_batch' ? [] : ['create_profile_weekly_batch', 'create_profile_task_batch'].includes(name)
                 ? { status: 'created', created: 0, preserved: 0, registered: 0 } : 0), error: null };
         },
     };

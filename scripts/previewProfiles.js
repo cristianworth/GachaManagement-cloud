@@ -20,7 +20,7 @@ const functions = new Set([
     'save_profile_game', 'remove_profile_game', 'list_profile_tasks', 'save_profile_task',
     'complete_profile_task', 'set_profile_task_favorite', 'remove_profile_task', 'list_profile_candidates', 'ignore_profile_candidate',
     'ignore_profile_task', 'approve_profile_candidate', 'restore_profile_api_deadline',
-    'task_batch_catalogue', 'create_profile_task_batch', 'create_profile_endgame_batch', 'create_profile_weekly_batch', 'cleanup_expired_imported_events', 'cleanup_expired_hsr_events', 'reset_application_data',
+    'list_profile_task_batch', 'choose_profile_task_batch', 'task_batch_cover_catalogue', 'task_batch_catalogue', 'create_profile_task_batch', 'create_profile_endgame_batch', 'create_profile_weekly_batch', 'cleanup_expired_imported_events', 'cleanup_expired_hsr_events', 'reset_application_data',
 ]);
 const clientScript = `
 window.supabase = { createClient() {
@@ -64,7 +64,7 @@ async function query(request) {
     if (!functions.has(name)) throw new Error('Unsupported preview operation');
     const keys = Object.keys(params);
     if (!keys.every(key => /^p_[a-z_]+$/.test(key))) throw new Error('Invalid preview parameter');
-    const values = keys.map(key => ['p_game', 'p_task', 'p_definitions', 'p_games'].includes(key)
+    const values = keys.map(key => ['p_game', 'p_task', 'p_definitions', 'p_games', 'p_items'].includes(key)
         ? JSON.stringify(params[key]) : params[key]);
     const result = await db.query(`select public.${name}(${keys.map((key, i) => `${key} => $${i + 1}`).join(',')}) as result`, values);
     return result.rows[0].result;

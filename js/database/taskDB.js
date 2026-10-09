@@ -113,6 +113,17 @@ export async function createEndgameTasks({ now } = {}) {
     });
 }
 
+export async function fetchTaskBatchItems() {
+    return (await profileRpc('list_profile_task_batch')) ?? [];
+}
+
+export async function chooseTaskBatch(items, { now } = {}) {
+    return profileRpc('choose_profile_task_batch', {
+        p_items: items,
+        ...(now !== undefined ? { p_now: new Date(now).toISOString() } : {}),
+    });
+}
+
 export async function loadTaskBatch({ now } = {}) {
     return profileRpc('create_profile_task_batch', {
         ...(now !== undefined ? { p_now: new Date(now).toISOString() } : {}),

@@ -115,13 +115,13 @@ Complexidade estimada para este projeto (HTML, CSS, JavaScript e Supabase): **ba
 
 ## 9.1. Evolução: Lote único de weeklies e desafios
 
-Planejamento pedido em 08/10/2026. Inventário completo, contadores fornecidos, referências e sequência em [docs/task-batch-plan.md](docs/task-batch-plan.md). Itens 1 e 2 fechados em 1.10.0, com commit/push autorizados e migrações live pendentes. Item 3 e imagens dos endgames são a próxima entrega: [handoff](docs/handoff-task-batch-personalization.md).
+Planejamento pedido em 08/10/2026. Inventário completo, contadores fornecidos, referências e sequência em [docs/task-batch-plan.md](docs/task-batch-plan.md). Itens 1 e 2 fechados em 1.10.0, com commit/push autorizados e migrações live pendentes. Item 3 e imagens implementados localmente em 09/10, em revisão: [recorte](docs/task-batch-personalization.md). Contexto anterior: [handoff](docs/handoff-task-batch-personalization.md).
 
 - [x] Unificar os nove itens já implementados em uma entrada **Carregar Lote**, usando os jogos habilitados no perfil e operação SQL transacional. Manter categorias e recorrências internas, tarefas existentes e exclusões.
 - [x] Acrescentar Deadly Assault e Shiyu Defense do ZZZ; fase 3.7 do Endstate Matrix, Whimpering Wastes e Hazard Zone de Tower of Adversity do WuWa. Calendário América, referência global Endstate aceita por Cristian e registro por definição preservando lotes antigos.
 - [x] Manter Pure Fiction, Apocalyptic Shadow e Memory of Chaos como referências de fallback inativas/comentadas, porque a API já fornece suas edições.
-- [ ] Próxima entrega: oferecer **Escolher itens…** em modal com checkboxes e estado por definição, distinguindo adiamento de exclusão.
-- [ ] Buscar imagens reais para os oito endgames ativos, registrar origem e preservar capas personalizadas/remoções explícitas.
+- [x] Implementação local: **Escolher itens…** em modal com checkboxes por jogo e decisão por definição/fase; adiamento separado de exclusão. Validação visual/revisão/publicação pendentes: [recorte](docs/task-batch-personalization.md).
+- [x] Oito imagens reais com origem registrada, defaults somente de novas definições; capas personalizadas/null preservadas. Sem backfill; validação visual pendente.
 - [x] Documentar o inventário: 14 itens de lote e três reservas HSR inativas/comentadas. Não interpretar tempo restante como intervalo de recorrência.
 - [ ] Automatizar o calendário das próximas fases de Endstate Matrix a partir de fonte verificada. A fase atual não repete; fase vencida não é importada e informa calendário pendente. Não pedir datas ao usuário nem presumir 42 dias.
 

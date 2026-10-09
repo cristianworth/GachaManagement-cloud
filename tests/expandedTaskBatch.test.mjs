@@ -120,7 +120,7 @@ test('Expansion migration preserves an existing closed nine-item batch until the
         alter default privileges in schema public grant usage, select on sequences to anon;`);
     await db.exec(await readProjectFile('tests/fixtures/pre-events-schema.sql'));
     await db.exec(await readProjectFile('db/seed.sql'));
-    for (const file of migrations.filter(f => !f.includes('expanded-task-batch')))
+    for (const file of migrations.slice(0, migrations.indexOf('2026-10-08-expanded-task-batch.sql')))
         await db.exec(await readProjectFile(`db/migrations/${file}`));
     await db.exec('set role anon');
     const games = (await db.query('select id,abbreviation from games')).rows;

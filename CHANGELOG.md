@@ -12,6 +12,29 @@ O projeto segue o versionamento semântico (SemVer), no formato `MAJOR.MINOR.PAT
 
 Sem alterações registradas.
 
+## [1.11.0] - 2026-10-09
+
+### Adicionado
+
+- **Escolher itens…** ao lado de Carregar Lote abre um modal com checkboxes agrupados pelos jogos habilitados, selecionar todos e resumo da carga parcial. Abrir/cancelar não grava; desmarcar e confirmar adia, sem excluir. Carregar Lote continua trazendo tudo elegível.
+- Decisões por definição/fase em operação SQL transacional: seleção parcial não fecha o grupo inteiro, preserva marcadores históricos, exclusões, renomes, homônimos e estado pessoal. RPCs públicas, schema novo e migrações incrementais incluídos.
+- Oito capas reais para os endgames, com origem Game8/GameWith registrada. Defaults somente de novas definições compartilhadas; capas personalizadas e remoções explícitas anteriores são preservadas, sem backfill. As seis weeklies seguem sem capa padrão.
+
+### Melhorado
+
+- Modal nativo com labels, foco inicial/devolução, estados protegidos/calendário pendente, bloqueio de envio repetido e retry. Troca de perfil não muda o ator da requisição; gravação seguida de refresh falho continua sendo informada como salva.
+- Prévia descartável aceita os novos contratos e serializa a seleção JSON. Teste histórico da expansão corta a sequência na migração anterior, sem aplicar posteriores fora de ordem.
+
+### Documentado
+
+- Contratos, modelo, fontes, limites e cenários em [personalização](docs/task-batch-personalization.md); TODO 9.1 e inventário atualizados. Calendários continuam automáticos, HSR reservas inativas e Endstate 3.7 sem recorrência inventada.
+
+Cristian validou a prévia e autorizou commit e versão 1.11.0 em 09/10/2026. Push e aplicação de SQL continuam sem autorização nesta entrega.
+
+**Validação:** etapa 1 com 211 testes de regressão; depois 43 complementares e recorte final com 44, todos aprovados (execuções com sobreposição, não somar). SQL real como anon em instalação nova/upgrade, preservação, rollback e DOM. HTTP na prévia confirmou 2 criações parciais, 12 posteriores, zero na repetição e oito capas; Cristian confirmou que a interface funciona. Etapa 2 no fechamento MINOR: `npm test` passou **531 testes (69 Jest + 462 Node)**, sem falhas.
+
+**Implantação:** migrações seleção → capas de 09/10/2026 ainda não aplicadas no Supabase. Nenhum reset do live. Capas antigas continuam inalteradas; PostgREST/concorrência real permanecem não validados.
+
 ## [1.10.0] - 2026-10-08
 
 ### Adicionado

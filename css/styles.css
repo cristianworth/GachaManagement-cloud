@@ -578,3 +578,14 @@ textarea::placeholder {
 .profile-game-choices label { display: flex; align-items: center; gap: 12px; }
 .profile-game-choices input { width: auto; }
 .profile-weekly-option input { width: auto; }
+
+#taskBatchDialog { width: min(36rem, calc(100vw - 3rem)); max-height: 85vh; overflow: auto; box-sizing: border-box; border-radius: 12px; padding: 24px; }
+#taskBatchDialog::backdrop { background: rgb(0 0 0 / 55%); }
+#taskBatchDialog form { max-width: 100%; }
+#taskBatchGroups { display: grid; gap: 16px; margin: 16px 0; }
+#taskBatchGroups fieldset { min-width: 0; border: 1px solid #888; border-radius: 8px; }
+#taskBatchGroups legend { padding: 0 8px; font-weight: bold; }
+#taskBatchDialog .task-batch-item { display: flex; align-items: flex-start; gap: 10px; padding: 8px 0; text-align: left; }
+#taskBatchDialog input[type="checkbox"] { width: auto; flex-shrink: 0; margin-top: 3px; }
+.task-batch-item small { display: block; margin-top: 4px; }
+.task-batch-actions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 10px; }

@@ -1,0 +1,66 @@
+[
+  {
+    "abbreviation": "GI",
+    "definition_key": "imaginarium-theater",
+    "cover_url": "https://img.game8.co/3943955/ce05aa7ad789c490d54b655fb8a26774.png/show",
+    "source_url": "https://game8.co/games/Genshin-Impact/archives/401979",
+    "source_label": "Genshin Impact - Imaginarium Theater Guide",
+    "checked_on": "2026-10-09"
+  },
+  {
+    "abbreviation": "GI",
+    "definition_key": "spiral-abyss",
+    "cover_url": "https://img.game8.co/4302376/f98fc79a591045f8bdd0631cfe9e323e.png/show",
+    "source_url": "https://game8.co/games/Genshin-Impact/archives/304937",
+    "source_label": "Genshin Impact - Spiral Abyss Guide - How to Get to Musk Reef",
+    "checked_on": "2026-10-09"
+  },
+  {
+    "abbreviation": "NTE",
+    "definition_key": "beyond-the-rails",
+    "cover_url": "https://img.gamewith.net/article/thumbnail/rectangle/74216.png",
+    "source_url": "https://gamewith.net/nte/74216",
+    "source_label": "Beyond the Rails Guide - Location and How to Play",
+    "checked_on": "2026-10-09"
+  },
+  {
+    "abbreviation": "ZZZ",
+    "definition_key": "deadly-assault",
+    "cover_url": "https://img.game8.co/4206855/1971519f6eb1a44b0a88dfc3a8da0d59.png/show",
+    "source_url": "https://game8.co/games/Zenless-Zone-Zero/archives/489103",
+    "source_label": "Zenless Zone Zero Deadly Assault Guide and Reset",
+    "checked_on": "2026-10-09"
+  },
+  {
+    "abbreviation": "ZZZ",
+    "definition_key": "shiyu-defense",
+    "cover_url": "https://img.game8.co/3955541/2ff3a0bf93bdac4d79177454d0d1d880.png/show",
+    "source_url": "https://game8.co/games/Zenless-Zone-Zero/archives/460702",
+    "source_label": "Shiyu Defense guide header",
+    "checked_on": "2026-10-09"
+  },
+  {
+    "abbreviation": "WuWa",
+    "definition_key": "tower-of-adversity",
+    "cover_url": "https://img.game8.co/3893839/206a2ebc90ef6fff3394d7bf64e09383.png/show",
+    "source_url": "https://game8.co/games/Wuthering-Waves/archives/453474",
+    "source_label": "Wuthering Waves - Tower of Adversity Guide",
+    "checked_on": "2026-10-09"
+  },
+  {
+    "abbreviation": "WuWa",
+    "definition_key": "whimpering-wastes",
+    "cover_url": "https://img.game8.co/4104601/0cce02f634aeb46c7679e546e4cd71d6.png/show",
+    "source_url": "https://game8.co/games/Wuthering-Waves/archives/498614",
+    "source_label": "Wuthering Waves - Whimpering Wastes Guide",
+    "checked_on": "2026-10-09"
+  },
+  {
+    "abbreviation": "WuWa",
+    "definition_key": "endstate-matrix",
+    "cover_url": "https://img.game8.co/4447878/9bc0b8315174f9135d0af2f92f38f687.png/show",
+    "source_url": "https://game8.co/games/Wuthering-Waves/archives/572518",
+    "source_label": "Endstate Matrix",
+    "checked_on": "2026-10-09"
+  }
+]

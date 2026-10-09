@@ -1,9 +1,10 @@
 // js\ui\taskUI.js
+import { initializeTaskBatchPicker } from './taskBatchPicker.js';
 import { createEventCover } from './eventCover.js';
 import { cleanupExpiredImportedEvents, ignoreImportedTask, restoreEventApiDeadline } from '../database/eventCandidateDB.js';
 import { fetchAllGames } from '../database/gameDB.js';
 import { Task } from '../data/Task.js';
-import { fetchAllTasks, completeTask, setTaskFavorite, fetchTaskById, addTask, updateTask, deleteTaskById, loadTaskBatch } from '../database/taskDB.js';
+import { fetchAllTasks, completeTask, setTaskFavorite, fetchTaskById, addTask, updateTask, deleteTaskById, loadTaskBatch, chooseTaskBatch } from '../database/taskDB.js';
 import { WEEKLY_BATCHES } from '../data/weeklyTasks.js';
 import { formatDateForDisplay, formatDateForInput, getExpirationDate } from '../utils/dateUtils.js';
 import { resetTaskForm, setDateSelector, setTaskFormMessage, setTaskRecurrence } from './formHandler.js'
@@ -67,6 +68,7 @@ function updateTaskList(tasks, games) {
         refreshFilter.addEventListener('change', renderTaskList);
         document.getElementById('taskHideCompleted').addEventListener('change', renderTaskList);
         document.getElementById('loadTaskBatchBtn').addEventListener('click', () => handleLoadTaskBatch());
+        initializeTaskBatchPicker(handleLoadTaskBatch, updateBatchControls);
         filterInitialized = true;
     }
     renderTaskList();
@@ -200,7 +202,7 @@ async function handleTaskFavorite(task, button) {
     }
 }
 
-async function handleLoadTaskBatch() {
+async function handleLoadTaskBatch({ items, deferredCount = 0 } = {}) {
     if (loadingTaskBatch || !batchDataLoaded) return;
     const profileId = getSelectedProfileId();
     if (!profileId) {
@@ -211,30 +213,47 @@ async function handleLoadTaskBatch() {
     updateBatchControls();
     setFeedback('taskListMessage');
     try {
-        await withLoading('Carregando lote...', async () => {
-            const result = await loadTaskBatch();
-            if (getSelectedProfileId() !== profileId) throw new Error('Profile changed while loading the batch.');
+        return await withLoading('Carregando lote...', async () => {
+            const result = items === undefined ? await loadTaskBatch() : await chooseTaskBatch(items);
+            if (getSelectedProfileId() !== profileId) {
+                if (items === undefined) throw new Error('Profile changed while loading the batch.');
+                document.getElementById('taskBatchDialog').close();
+                setFeedback('taskListMessage', 'Seleção salva no perfil original. Recarregue a lista do perfil atual.');
+                return true;
+            }
             let message = result.registered
                 ? `Lote registrado: ${result.created} criada(s), ${result.preserved} existente(s) preservada(s) com seus dados e repetição atuais.`
                 : result.deferred ? 'Nenhuma nova tarefa foi criada.'
                     : 'Lote já registrado para os jogos selecionados. Nenhuma tarefa foi recriada.';
+            if (items !== undefined && !result.registered) message = 'Seleção salva. Nenhuma nova tarefa foi criada.';
+            if (deferredCount) message += ` ${deferredCount} item(ns) adiado(s), disponível(is) para carregar depois.`;
             if (result.deferred) message += ' Endstate Matrix aguarda o calendário da próxima fase; nenhum prazo foi inventado.';
+            if (items !== undefined) document.getElementById('taskBatchDialog').close();
             await displayAllTasks({ successMessage: message });
+            return true;
         });
     } catch (error) {
         console.error('Failed to load task batch:', error);
         const message = 'Não foi possível carregar o lote. As tarefas existentes foram preservadas. Tente novamente.';
         setFeedback('taskListMessage', message, 'error');
+        return false;
     } finally {
         loadingTaskBatch = false;
         updateBatchControls();
+        if (items !== undefined && !document.getElementById('taskBatchDialog').open) {
+            const trigger = document.getElementById('chooseTaskBatchBtn');
+            if (!trigger.disabled) trigger.focus();
+            else document.getElementById('taskListRetry').focus();
+        }
     }
 }
 
 function updateBatchControls() {
     const supported = [...WEEKLY_BATCHES.map(batch => batch.abbreviation), 'GI', 'NTE'];
-    document.getElementById('loadTaskBatchBtn').disabled = loadingTaskBatch || !batchDataLoaded
+    const disabled = loadingTaskBatch || !batchDataLoaded
         || !loadedGames.some(game => supported.includes(game.abbreviation));
+    document.getElementById('loadTaskBatchBtn').disabled = disabled;
+    document.getElementById('chooseTaskBatchBtn').disabled = disabled;
 }
 
 async function runTaskAction(task, { loadingMessage, successMessage, errorMessage, save, onSaved, onError }) {

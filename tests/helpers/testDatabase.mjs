@@ -13,6 +13,8 @@ export const migrations = [
     '2026-10-08-endgame-batch.sql',
     '2026-10-08-unified-task-batch.sql',
     '2026-10-08-expanded-task-batch.sql',
+    '2026-10-09-task-batch-selection.sql',
+    '2026-10-09-task-batch-covers.sql',
 ];
 export const readProjectFile = path => readFile(new URL(`../../${path}`, import.meta.url), 'utf8');
 

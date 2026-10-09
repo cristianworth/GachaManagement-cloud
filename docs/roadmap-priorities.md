@@ -8,7 +8,7 @@ S = próxima entrega prioritária; A = alto retorno; B = depende de uma base ant
 
 | Tier | Ordem | Melhoria | Por que esta posição | Complexidade / dependências |
 | --- | --- | --- | --- | --- |
-| **S** | 1 | Personalizar o Lote e adicionar imagens dos endgames | Próxima entrega pedida por Cristian: Escolher itens… abre modal com checkboxes por jogo; buscar imagens próprias dos oito endgames. Preservar decisões antigas e capas personalizadas. | Média. Contrato por definição deve distinguir adiamento de exclusão; [handoff](handoff-task-batch-personalization.md). |
+| **S** | 1 | Personalizar o Lote e adicionar imagens dos endgames | Implementado localmente em 09/10: modal por jogo, decisões por definição e oito defaults reais. Próximo passo: revisão e validação visual de Cristian; sem publicação/live. [Recorte](task-batch-personalization.md). | Média. Contrato por definição deve distinguir adiamento de exclusão; [handoff](handoff-task-batch-personalization.md). |
 | **A** | 1 | Testes de navegador no CI e publicação condicionada aos testes | Os testes atuais protegem lógica, SQL e DOM. Poucos fluxos em navegador real podem proteger carregamento, filtros, botões, formulários e CSS renderizado. | Média. Conferir a configuração do Pages; complementar o CI existente. |
 | **A** | 2 | Ajustes pontuais de interface no celular | Priorizar tabelas, áreas de toque, filtros e formulários nas telas usadas diariamente. Dividir em recortes pequenos. | Média por recorte. TODO 5. |
 | **B** | 1 | Catálogo completo da API e variantes regionais | A seleção por perfil já existe. Falta ampliar os jogos disponíveis, com metadados e horários verificados para cada integração. | Alta. Parte restante do TODO 10; não repetir a implementação da seleção. |
@@ -22,7 +22,7 @@ S = próxima entrega prioritária; A = alto retorno; B = depende de uma base ant
 
 ## Limites e sequência
 
-Os itens 1 e 2 (Lote único com 14 definições, incluindo os cinco novos modos) estão implementados e testados localmente. A unificação foi validada por Cristian; a expansão aguarda conferência visual e publicação. Saiu da lista de implementação pendente. Seguem o item 3 (seleção individual) e a automação das próximas fases Endstate; a fase atual tem prazo aceito por Cristian, sem repetição inventada. Fechamento 1.10.0 autorizado com commit/push em 08/10/2026; migrações live pendentes. O [handoff](handoff-task-batch-personalization.md) orienta o modal e as imagens dos endgames. Inventário completo e limitações em [task-batch-plan.md](task-batch-plan.md).
+Os itens 1 e 2 (Lote único com 14 definições, incluindo os cinco novos modos) estão implementados e testados localmente. A unificação foi validada por Cristian; a expansão aguarda conferência visual e publicação. Saiu da lista de implementação pendente. O item 3 e as imagens estão em revisão local desde 09/10 ([recorte](task-batch-personalization.md)); segue futura a automação das próximas fases Endstate; a fase atual tem prazo aceito por Cristian, sem repetição inventada. Fechamento 1.10.0 autorizado com commit/push em 08/10/2026; migrações live pendentes. O [handoff](handoff-task-batch-personalization.md) orienta o modal e as imagens dos endgames. Inventário completo e limitações em [task-batch-plan.md](task-batch-plan.md).
 
 Perfis continuam públicos, sem autenticação ou convite; login e RLS por usuário exigem escopo próprio. Catálogo e capas são compartilhados, com progresso e decisões pessoais separados. As novas preferências devem seguir essa separação.
 

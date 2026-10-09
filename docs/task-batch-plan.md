@@ -1,6 +1,10 @@
 # Lote único — inventário e entregas
 
-Atualizado em 08/10/2026. **Itens 1 e 2 implementados localmente:** Carregar Lote reúne 14 definições, incluindo os cinco desafios novos. Cristian validou a unificação anterior e autorizou esta expansão. O item 3 (seleção individual) e as imagens dos endgames são a próxima entrega. Fechamento em **1.10.0**, com commit/push autorizados por Cristian em 08/10/2026; sem aplicação no Supabase live. Continuidade em [handoff-task-batch-personalization.md](handoff-task-batch-personalization.md).
+Atualizado em 08/10/2026. **Itens 1 e 2 implementados localmente:** Carregar Lote reúne 14 definições, incluindo os cinco desafios novos. Cristian validou a unificação anterior e autorizou esta expansão. O item 3 e as imagens foram validados por Cristian em 09/10/2026, com commit/1.11.0 autorizados; sem push ou SQL live. Fechamento em **1.10.0**, com commit/push autorizados por Cristian em 08/10/2026; sem aplicação no Supabase live. Continuidade em [handoff-task-batch-personalization.md](handoff-task-batch-personalization.md).
+
+## Etapa 3 em revisão local — 09/10/2026
+
+Modal e decisões por definição/fase implementados sobre 1.10.0, com defaults reais dos oito endgames. Cristian validou a prévia e autorizou commit e versão 1.11.0; push/aplicação live continuam pendentes. Contratos, migrações, evidências, limites e **Para testar** em [task-batch-personalization.md](task-batch-personalization.md). Marcadores antigos e capas customizadas/null são preservados; não há backfill. Item 3 validado por Cristian; próximo recorte tratará atualização explícita de capas e restauração de itens excluídos.
 
 ## Inventário central
 
@@ -34,7 +38,7 @@ Catálogo público: `public.task_batch_catalogue()`. Contrato usado pelo fronten
 
 1. **Lote único:** uma RPC e uma transação para weeklies, GI e NTE. Referência NTE automática, sem formulário. Mantém os contratos anteriores.
 2. **Cinco desafios novos:** agora incluídos na mesma transação. Registro por definição/fase em `profile_task_batch_items` permite acrescentar somente os novos itens a um lote antigo. Aplicar a migração não cria tarefas. O clique não reabre marcadores antigos nem restaura tarefas excluídas/renomeadas.
-3. **Futuro — Escolher itens…:** modal ao lado de Carregar Lote, com grupos por jogo, checkboxes, selecionar todos e resumo. Carregar Lote continua carregando todas as definições elegíveis. Definir estados “nunca escolhido”, “adiado”, “criado” e “excluído”; adiar não é excluir. Tooltip só explica, sem controles essenciais. Não foi implementado nesta entrega.
+3. **Implementado localmente — Escolher itens…:** modal ao lado de Carregar Lote, com grupos por jogo, checkboxes, selecionar todos e resumo. Carregar Lote continua carregando todas as definições elegíveis. Distingue itens nunca escolhidos, adiados, criados/preservados e excluídos, além da proteção histórica e do calendário pendente; adiar não é excluir. Tooltip só explica, sem controles essenciais. Implementação local da etapa 3 descrita no documento acima; publicação continua pendente.
 
 Os intervalos fixos usam âncoras absolutas e UTC; não somam o contador ao dia de cada clique. Renovação de tarefas vencidas ocorre ao abrir/recarregar, conserva capas/favoritas e reabre conclusão no próximo ciclo futuro. Não há timer em segundo plano. Homônimos exatos no mesmo jogo são preservados inclusive se forem Event/Custom; lote registrado não garante que foram convertidos à recorrência do catálogo.
 
