@@ -138,7 +138,7 @@ test('real profile UI uses SQL contracts and only selected games', async t => {
     await tasks.displayAllTasks();
     el('taskGameFilter').value = String(hsr.id);
     el('taskGameFilter').dispatchEvent(new harness.dom.window.Event('change'));
-    el('createWeekliesBtn').click();
+    el('loadTaskBatchBtn').click();
     await waitFor(() => el('loadingOverlay').hidden);
     assert.equal((await repo.fetchAllTasks()).length, 2, 'Explicit creation remains available after skipping');
     await Router.navigateTo('/tasks/create');

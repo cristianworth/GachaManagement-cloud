@@ -82,8 +82,9 @@ test('incremental favorite migration preserves all existing personal state', asy
     const db = await createTestDatabase();
     t.after(() => db.close());
     const sql = await readProjectFile('db/migrations/2026-10-06-favorite-tasks.sql');
-    assert.ok((await readProjectFile('db/schema.sql')).endsWith(sql));
-    assert.equal(migrations.at(-1), '2026-10-06-favorite-tasks.sql');
+    assert.ok((await readProjectFile('db/schema.sql')).replace(/\r\n/g, '\n').includes(sql.replace(/\r\n/g, '\n')));
+    assert.ok(migrations.includes('2026-10-06-favorite-tasks.sql'));
+    assert.ok(migrations.indexOf('2026-10-06-favorite-tasks.sql') < migrations.indexOf('2026-10-08-endgame-batch.sql'));
     await db.exec(`insert into tasks (description,game_id,expiration_date,is_done,refresh_type,repeat_days,cover_url)
         select 'Existing personal weekly',id,'2099-10-10T09:00:00Z',true,2,7,'https://example.com/keep.png' from games where abbreviation='GI';
         update profile_tasks set event_deadline_manual=true;`);

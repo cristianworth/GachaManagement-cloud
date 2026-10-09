@@ -91,15 +91,15 @@ export function createDomHarness() {
                 else query = query.insert(value).select().single();
                 return query;
             }
-            if (!['cleanup_expired_imported_events', 'ignore_imported_task', 'sync_event_candidate', 'create_profile_weekly_batch', 'create_profile_endgame_batch'].includes(name)) throw new Error(`Unexpected RPC ${name}`);
+            if (!['cleanup_expired_imported_events', 'ignore_imported_task', 'sync_event_candidate', 'create_profile_weekly_batch', 'create_profile_endgame_batch', 'create_profile_task_batch'].includes(name)) throw new Error(`Unexpected RPC ${name}`);
             state.rpcCalls.push({ name, payload });
             await state.beforeQuery?.({ operation: 'rpc', name, payload });
             if (state.rpcErrors[name]) return { data: null, error: new Error(state.rpcErrors[name]) };
             if (name === 'ignore_imported_task') {
                 state.tasks = state.tasks.filter(row => row.id !== payload.p_task_id);
             }
-            return { data: state.rpcResults[name] ?? (name === 'create_profile_weekly_batch'
-                ? { status: 'created', created: 0, preserved: 0 } : 0), error: null };
+            return { data: state.rpcResults[name] ?? (['create_profile_weekly_batch', 'create_profile_task_batch'].includes(name)
+                ? { status: 'created', created: 0, preserved: 0, registered: 0 } : 0), error: null };
         },
     };
     dom.window.supabase = { createClient: () => client };

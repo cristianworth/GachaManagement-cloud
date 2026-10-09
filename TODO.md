@@ -115,13 +115,15 @@ Complexidade estimada para este projeto (HTML, CSS, JavaScript e Supabase): **ba
 
 ## 9.1. Evolução: Lote único de weeklies e desafios
 
-Planejamento pedido em 08/10/2026. Inventário completo, contadores fornecidos, referências e sequência em [docs/task-batch-plan.md](docs/task-batch-plan.md). A regra histórica de “somente weeklies” do item 9 não limita esta evolução autorizada para planejamento.
+Planejamento pedido em 08/10/2026. Inventário completo, contadores fornecidos, referências e sequência em [docs/task-batch-plan.md](docs/task-batch-plan.md). Itens 1 e 2 fechados em 1.10.0, com commit/push autorizados e migrações live pendentes. Item 3 e imagens dos endgames são a próxima entrega: [handoff](docs/handoff-task-batch-personalization.md).
 
-- [ ] Unificar os nove itens já implementados em uma entrada **Carregar Lote**, usando os jogos habilitados no perfil e operação SQL transacional. Manter categorias e recorrências internas, tarefas existentes e exclusões.
-- [ ] Acrescentar Deadly Assault e Shiyu Defense do ZZZ; Endstate Matrix, Whimpering Wastes e Hazard Zone de Tower of Adversity do WuWa, somente após conferir calendário América.
-- [ ] Manter Pure Fiction, Apocalyptic Shadow e Memory of Chaos como referências de fallback inativas/comentadas, porque a API já fornece suas edições.
-- [ ] Em entrega futura, oferecer **Escolher itens…** em modal com checkboxes e estado por definição, distinguindo adiamento de exclusão.
-- [x] Documentar o inventário: nove itens implementados, cinco novos planejados e três reservas HSR pela API. Não interpretar tempo restante como intervalo de recorrência.
+- [x] Unificar os nove itens já implementados em uma entrada **Carregar Lote**, usando os jogos habilitados no perfil e operação SQL transacional. Manter categorias e recorrências internas, tarefas existentes e exclusões.
+- [x] Acrescentar Deadly Assault e Shiyu Defense do ZZZ; fase 3.7 do Endstate Matrix, Whimpering Wastes e Hazard Zone de Tower of Adversity do WuWa. Calendário América, referência global Endstate aceita por Cristian e registro por definição preservando lotes antigos.
+- [x] Manter Pure Fiction, Apocalyptic Shadow e Memory of Chaos como referências de fallback inativas/comentadas, porque a API já fornece suas edições.
+- [ ] Próxima entrega: oferecer **Escolher itens…** em modal com checkboxes e estado por definição, distinguindo adiamento de exclusão.
+- [ ] Buscar imagens reais para os oito endgames ativos, registrar origem e preservar capas personalizadas/remoções explícitas.
+- [x] Documentar o inventário: 14 itens de lote e três reservas HSR inativas/comentadas. Não interpretar tempo restante como intervalo de recorrência.
+- [ ] Automatizar o calendário das próximas fases de Endstate Matrix a partir de fonte verificada. A fase atual não repete; fase vencida não é importada e informa calendário pendente. Não pedir datas ao usuário nem presumir 42 dias.
 
 ## 10. Catálogo de jogos e seleção inicial — depois do MVP
 

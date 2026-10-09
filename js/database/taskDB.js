@@ -107,9 +107,14 @@ export async function createWeeklyTasksForGame(abbreviation, { now } = {}) {
     return createWeeklyBatch(batch, game, true, now);
 }
 
-export async function createEndgameTasks({ nteDeadline, now } = {}) {
+export async function createEndgameTasks({ now } = {}) {
     return profileRpc('create_profile_endgame_batch', {
-        ...(nteDeadline ? { p_nte_deadline: new Date(nteDeadline).toISOString() } : {}),
+        ...(now !== undefined ? { p_now: new Date(now).toISOString() } : {}),
+    });
+}
+
+export async function loadTaskBatch({ now } = {}) {
+    return profileRpc('create_profile_task_batch', {
         ...(now !== undefined ? { p_now: new Date(now).toISOString() } : {}),
     });
 }

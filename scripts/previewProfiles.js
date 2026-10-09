@@ -20,7 +20,7 @@ const functions = new Set([
     'save_profile_game', 'remove_profile_game', 'list_profile_tasks', 'save_profile_task',
     'complete_profile_task', 'set_profile_task_favorite', 'remove_profile_task', 'list_profile_candidates', 'ignore_profile_candidate',
     'ignore_profile_task', 'approve_profile_candidate', 'restore_profile_api_deadline',
-    'create_profile_endgame_batch', 'create_profile_weekly_batch', 'cleanup_expired_imported_events', 'cleanup_expired_hsr_events', 'reset_application_data',
+    'task_batch_catalogue', 'create_profile_task_batch', 'create_profile_endgame_batch', 'create_profile_weekly_batch', 'cleanup_expired_imported_events', 'cleanup_expired_hsr_events', 'reset_application_data',
 ]);
 const clientScript = `
 window.supabase = { createClient() {

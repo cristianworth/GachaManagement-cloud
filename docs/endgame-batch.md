@@ -1,8 +1,6 @@
-# Lote inicial de desafios GI + NTE
+# Desafios GI + NTE no Lote
 
-Implementação local de 08/10/2026, ainda sem publicação ou migração no Supabase live. É uma ação explícita separada das weeklies e dos eventos importados da API.
-
-A evolução solicitada para um único **Carregar Lote**, incluindo weeklies e outros desafios, está planejada em [task-batch-plan.md](task-batch-plan.md). A interface descrita abaixo ainda mantém os controles separados.
+Entrega 1.10.0 de 08/10/2026, com commit/push autorizados; migração no Supabase live pendente. GI/NTE integram **Carregar Lote** junto das seis weeklies. Interface, inventário completo, sequência de migrações e próximos itens em [task-batch-plan.md](task-batch-plan.md).
 
 ## Catálogo e decisões
 
@@ -10,48 +8,53 @@ A evolução solicitada para um único **Carregar Lote**, incluindo weeklies e o
 | --- | --- | --- |
 | GI | Imaginarium Theater | Dia 1º de cada mês, 09:00 UTC / 06:00 Brasília |
 | GI | Spiral Abyss (Abismo) | Lembrete antecipado no dia 15, 09:00 UTC / 06:00 Brasília |
-| NTE | Beyond the Rails | A cada 14 dias a partir do próximo prazo informado pelo usuário |
+| NTE | Beyond the Rails | A cada 14 dias, referência fixa 21/10/2026 às 10:00 UTC / 07:00 Brasília |
 
-A [HoYoverse](https://support.hoyoverse.com/hc/en-us/articles/50333950598553-When-does-the-Spiral-Abyss-reset-and-what-are-the-rewards) confirma Theater no dia 1º e Abismo no dia 16. Perguntado sobre dia 16 oficial ou lembrete antecipado no dia 15, Cristian escolheu **“Dia 15 — lembrete antecipado”**. Os horários de 06:00 são o padrão adotado para os lembretes deste lote; não são evidência independente do horário de cada reset no jogo.
+A [HoYoverse](https://support.hoyoverse.com/hc/en-us/articles/50333950598553-When-does-the-Spiral-Abyss-reset-and-what-are-the-rewards) confirma Theater no dia 1º e Abismo no dia 16. Cristian escolheu **“Dia 15 — lembrete antecipado”**. Os horários de 06:00 são o padrão adotado para os lembretes do Genshin, sem afirmar que todos os resets ocorrem nesse instante.
 
-Cristian forneceu um resumo com ciclo típico de 14 dias para NTE, horários de reset e orientação para consultar o contador do jogo. A página [Icy Veins](https://www.icy-veins.com/neverness-to-everness/nte-beyond-the-rails), lida em 08/10/2026, informa o ciclo típico de 14 dias e ainda mostra 23/09–07/10, sem estabelecer uma próxima âncora regional na América. O reset diário confirmado do NTE não determina sozinho a data e hora de Beyond the Rails. Por isso o campo não tem uma data padrão inventada. O usuário informa o próximo prazo conferido no jogo, no **horário local do navegador**; o frontend converte o instante para ISO/UTC, e a renovação conserva essa hora UTC. Se o calendário do jogo mudar, o prazo e o intervalo podem ser editados manualmente.
+## Referência automática do NTE
+
+Cristian reafirmou em 08/10/2026 que os contadores fornecidos foram **conferidos por ele dentro do jogo**. Esclareceu Beyond the Rails como “12d xh left”: usar **hoje + 13 dias às 05:00 do servidor América**. A referência normalizada é:
+
+- Data de referência da conversa: 08/10/2026.
+- Próximo reset confirmado pelo usuário: 21/10/2026 às 05:00 América (UTC−5 fixo).
+- Instante absoluto: **2026-10-21T10:00:00Z**, equivalente a **21/10/2026 às 07:00 Brasília**.
+- Ciclo acordado: 14 dias; referência central do sistema, independente do perfil e do navegador.
+
+Essa procedência é confirmação em jogo pelo usuário, não uma verificação independente na web. A [Icy Veins](https://www.icy-veins.com/neverness-to-everness/nte-beyond-the-rails) consultada anteriormente descrevia ciclo típico de 14 dias e uma edição antiga; isso não invalida a confirmação atual de Cristian.
+
+public.next_beyond_the_rails_deadline(p_now) calcula o próximo instante **estritamente futuro** a partir da referência fixa. Em 21/10 às 10:00 UTC, já retorna 04/11 às 10:00 UTC; pula ciclos perdidos e mantém UTC mesmo quando o fuso do banco usa DST. Não calcula “hoje + 13 dias” a cada carregamento. Se o calendário do jogo mudar futuramente, atualizar a referência/regra central durante o desenvolvimento.
+
+Preferência registrada em [project-conventions.md](project-conventions.md) e AGENTS.md: importações de API, lotes e outros carregamentos devem ser **automáticos, sem solicitar datas na interface**. A tela de confirmação foi removida. Dúvidas de calendário são esclarecidas durante o desenvolvimento, sem exigir configuração por usuário/perfil.
 
 ## Contratos e preservação
 
-- Um botão e uma RPC `create_profile_endgame_batch` criam o lote dos jogos GI/NTE habilitados no perfil. O filtro visual não restringe a ação. Só GI gera duas tarefas; só NTE gera uma; ambos geram três.
-- O boot não chama essa RPC. A criação fica registrada em `profile_endgame_batches`, por perfil e sigla. Habilitar um jogo posteriormente permite acrescentá-lo sem reabrir o lote anterior.
-- Nome exato + jogo + tarefa pessoal ativa bloqueia duplicação, sem presumir origem. Preserva integralmente homônimos, inclusive Events/Custom, capas, favoritas, conclusão e prazos. O lote registrado não garante a recorrência dos homônimos preservados. Abismo é criado com o nome inglês **Spiral Abyss**; uma tarefa antiga nomeada apenas “Abismo” não é inferida como homônimo.
-- Repetir a ação não recria tarefas excluídas nem renomeadas. Para restaurar uma atividade removida, use Create New Task. Um reset completo explícito limpa também os marcadores deste lote; aplicar a migração não executa reset.
-- GI e NTE são uma transação: falta de prazo futuro para um NTE ausente ou falha em qualquer inserção desfaz tarefas e marcadores da operação inteira. NTE já registrado, ou homônimo existente, dispensa novo prazo.
-- Perfis compartilham a identidade da definição (`tasks.shared_key`, prefixo `endgame:`), com prazo, recorrência, conclusão, exclusão e favorita pessoais. Nenhum candidato da API é criado/vinculado por este lote.
-- Tipos `refresh_type=9` (dia 1º) e `10` (dia 15) têm `repeat_days=null`; constraints exigem um prazo. Tipos anteriores mantêm significado e dados. A opção Monthly antiga continua sendo 30 dias (31 nos registros legados sem intervalo explícito).
-- Renovação ocorre ao abrir/recarregar o aplicativo, seguindo o fluxo existente: tarefas vencidas reabrem no próximo prazo estritamente futuro e conservam favoritas/capas. Não é timer em segundo plano. Mensais seguem calendário UTC e a hora do prazo salvo; Beyond the Rails usa 14 dias UTC desde o prazo anterior, pulando ciclos perdidos. Edição de prazo é respeitada até vencer.
+- O frontend chama create_profile_task_batch com o perfil ativo. O servidor usa now() e delega às criações semanais, GI/NTE e aos cinco desafios novos de ZZZ/WuWa na mesma transação; falha em um jogo desfaz todas as tarefas e marcadores novos.
+- A assinatura SQL anterior create_profile_endgame_batch conserva seu parâmetro opcional de prazo explícito por compatibilidade. Omitido/null calcula automaticamente; um override explícito inválido é rejeitado. A interface e os repositórios de carregamento não solicitam nem enviam esse parâmetro. Edição manual de tarefa existente continua disponível.
+- O boot não cria os desafios. A criação explícita por clique é registrada em profile_endgame_batches, por perfil e sigla. Habilitar um jogo depois permite acrescentá-lo sem reabrir lotes antigos.
+- Nome exato + jogo + tarefa pessoal ativa preserva homônimos integralmente, inclusive Events/Custom, capas, favoritas, conclusão, prazo e recorrência. Um homônimo registrado não passa a ser recorrente automaticamente. “Abismo” não é inferido como homônimo de “Spiral Abyss”.
+- Repetir não recria excluídos/renomeados. Para restaurar, usar o cadastro manual. Reset completo explícito limpa os marcadores; aplicar a migração não executa reset nem reescreve tarefas anteriores.
+- Perfis compartilham a identidade da definição em tasks.shared_key (prefixo endgame:), com estado pessoal separado. Nenhum candidato da API é criado/vinculado por este lote.
+- Tipos refresh_type=9 (dia 1º) e 10 (dia 15) têm repeat_days=null e prazo obrigatório. Monthly antigo conserva 30 dias (31 nos registros legados sem intervalo explícito).
+- Ao abrir/recarregar, vencidos recorrentes reabrem no próximo prazo futuro, conservando favoritas/capas. Calendário mensal e NTE gerenciado seguem UTC; prazo manual existente é respeitado até vencer. Não é timer em segundo plano.
 
-## Banco e validação local
+## Banco e teste local
 
-Para destino existente já atualizado até favoritas, aplique **somente** `db/migrations/2026-10-08-endgame-batch.sql` no SQL Editor. A ordem completa está em `tests/helpers/testDatabase.mjs`; a migração anterior necessária é `2026-10-06-favorite-tasks.sql`. Para instalação nova, `db/schema.sql` e `db/seed.sql` já incluem a estrutura. Não reaplique o schema inteiro em uma instalação existente.
-
-Prévia com banco descartável, sem credenciais nem acesso ao Supabase:
+No destino existente atualizado até favoritas, aplicar 2026-10-08-endgame-batch.sql, depois 2026-10-08-unified-task-batch.sql e 2026-10-08-expanded-task-batch.sql. Aplicar somente as migrações que faltam. Instalação nova usa db/schema.sql e db/seed.sql. Nenhuma migração desta entrega foi aplicada ao live.
 
 ```powershell
 npm run preview:profiles
 # Abra http://127.0.0.1:5501/tasks
 ```
 
-Para testar, selecione um perfil e habilite Genshin e NTE em Selecionar jogos. Abra Tasks, informe o próximo prazo do Beyond the Rails no horário local e clique em **Criar lote inicial de desafios**. Confira três tarefas e seus intervalos (dia 1, dia 15 e 14 dias). Marque uma favorita/concluída, edite seu nome ou prazo, salve e recarregue: seus dados devem continuar iguais. Repita o botão: nenhuma duplicata. Exclua uma tarefa e repita: ela não deve voltar. Troque para Demo para conferir que a criação e conclusão são independentes. Para reproduzir a renovação, ajuste um prazo para o passado, conclua e recarregue: deve reabrir no próximo ciclo futuro mantendo a estrela.
+Reiniciar uma prévia anterior para recriar seu banco temporário com o SQL novo. A prévia não acessa o Supabase; seus dados somem ao encerrar o servidor.
 
-No teste de falha, parta de um perfil ainda sem lote, com GI/NTE habilitados e campo NTE vazio. A ação deve explicar o prazo necessário e não criar nenhuma das três tarefas. Para apenas GI, desabilite NTE no perfil: o campo some e a criação mensal dispensa âncora.
-
-Etapa 1 — contratos novos, calendário e DOM real:
+Para testar, habilite GI e NTE em um perfil, abra Tasks e clique em **Carregar Lote**. Não deve aparecer formulário ou confirmação de prazo. Confira Theater no dia 1º, Abismo no dia 15 e Beyond the Rails em 21/10/2026 às 07:00 Brasília, caso carregado antes desse instante. Recarregue e repita: nenhuma duplicata. Favorite/conclua/edite uma tarefa; o lote deve preservar suas escolhas. Exclua outra e repita: não deve voltar. Troque de perfil para conferir estado independente.
 
 ```powershell
-node --test tests/endgameBatches.test.mjs tests/endgameRecurrence.test.mjs tests/endgameBatchesUI.test.mjs
-# Compatibilidade de perfis, weeklies e mensagens:
-node --test tests/profiles.test.mjs tests/weeklyBatches.test.mjs tests/weeklyBatchesUI.test.mjs tests/uiFeedback.test.mjs
-# Recorrência, filtros, formulários, mapper e reset antigos:
-node node_modules/jest/bin/jest.js --runInBand --runTestsByPath tests/refreshType.test.js tests/dateUtils.test.js tests/taskFilters.test.js tests/taskRenewal.test.js tests/taskForm.test.js tests/mappers.test.js tests/databaseReset.test.js
+node --test tests/taskBatch.test.mjs tests/expandedTaskBatch.test.mjs tests/taskBatchUI.test.mjs tests/endgameBatches.test.mjs tests/endgameBatchesUI.test.mjs tests/endgameRecurrence.test.mjs tests/profileUI.test.mjs tests/uiFeedback.test.mjs
 ```
 
-Etapa 1 executada: **205 testes distintos aprovados** (53 novos, 89 de compatibilidade Node e 63 Jest). A conferência em navegador não foi realizada porque o controle do navegador falhou ao iniciar; a prévia local está disponível para o teste de Cristian.
+Etapa 1 atual: **124 testes focados aprovados**, incluindo a expansão ZZZ/WuWa, offline, com relógio fixo, SQL como anon em instalação nova/upgrade e DOM com cliente simulado. Cobrem o reset exato, ciclos perdidos, UTC/DST, ausência de entrada manual, rollback integral, perfis, homônimos e preservação. Validações históricas: 205 testes antes da unificação; 178 na primeira unificação com o diálogo agora removido. Não somar execuções históricas à contagem atual.
 
-Testes offline com relógio fixo, PostgreSQL descartável e cliente simulado. Contratos SQL rodam como `anon` em instalação nova e upgrade. Cobrem transação/rollback, retry, homônimos, exclusão/renomeação, seleção posterior, perfis, favoritas, prazos, meses curtos/ano bissexto/virada do ano e fusos com DST. A suíte completa fica para o fechamento da versão MINOR ou pedido explícito. Ainda falta validar a migração/RPC no Supabase real, PostgREST e concorrência entre duas conexões reais; o PGlite não comprova esses pontos.
+Navegador real e PostgREST live ainda não conferidos. No fechamento MINOR 1.10.0, `npm test` passou **487 testes (69 Jest + 418 Node)**. Os cinco novos modos estão implementados; seleções individuais e automação de próximas fases Endstate permanecem futuras. Continuidade em [handoff-task-batch-personalization.md](handoff-task-batch-personalization.md).

@@ -2,21 +2,18 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createDomHarness, waitFor } from './helpers/domHarness.mjs';
 
-test('Endgame batch UI, calendar edits and renewal preserve profile choices', async t => {
+test('Calendar edits and renewal preserve profile choices', async t => {
     const { dom, state, close } = createDomHarness();
     t.after(close);
     t.mock.method(console, 'log', () => {});
     t.mock.method(console, 'error', () => {});
     t.mock.method(globalThis, 'fetch', () => { throw new Error('Tests must remain offline'); });
     const ui = await import('../js/ui/taskUI.js');
-    const repository = await import('../js/database/taskDB.js');
     const forms = await import('../js/ui/formHandler.js');
     const dropdowns = await import('../js/ui/dropdownHandler.js');
     const { default: Router } = await import('../js/utils/router.js');
     t.mock.method(Router, 'navigateTo', () => {});
     const el = id => document.getElementById(id);
-    const calls = () => state.rpcCalls.filter(c => c.name === 'create_profile_endgame_batch');
-    const submit = () => el('endgameBatchForm').dispatchEvent(new dom.window.Event('submit', { cancelable: true }));
     state.games = [{ id: 42, abbreviation: 'GI', description: 'Genshin' }, { id: 88, abbreviation: 'NTE', description: 'NTE' }];
     state.tasks = [{ id: 5, description: 'Imaginarium Theater', refresh_type: 9, repeat_days: null,
         game_id: 42, game_description: 'Genshin', is_done: true, is_favorite: true, expiration_date: '2099-01-01T09:00:00Z',
@@ -25,86 +22,6 @@ test('Endgame batch UI, calendar edits and renewal preserve profile choices', as
     await dropdowns.populateGameDropDown();
     dropdowns.populateRefreshTypeDropDown();
     forms.initializeTaskForm();
-
-    await t.test('Batch works on all enabled games regardless of the list filter, with one request for repeated clicks', async () => {
-        assert.equal(el('createEndgameBatchBtn').disabled, false);
-        assert.equal(el('nteBatchDeadlineFields').hidden, false);
-        el('taskGameFilter').value = '42';
-        el('taskGameFilter').dispatchEvent(new dom.window.Event('change'));
-        el('nteBatchDeadline').value = '2099-01-10T07:00:00';
-        let release;
-        const gate = new Promise(resolve => { release = resolve; });
-        state.beforeQuery = ({ name }) => name === 'create_profile_endgame_batch' ? gate : undefined;
-        state.rpcResults.create_profile_endgame_batch = { created: 3, preserved: 0, registered: 2 };
-        const before = calls().length;
-        submit(); submit();
-        assert.equal(el('createEndgameBatchBtn').disabled, true);
-        assert.equal(el('nteBatchDeadline').disabled, true);
-        release();
-        await waitFor(() => el('loadingOverlay').hidden);
-        assert.equal(calls().length, before + 1);
-        assert.deepEqual(calls().at(-1).payload, { p_profile_id: 'cran', p_nte_deadline: new Date('2099-01-10T07:00:00').toISOString() });
-        assert.match(el('taskListMessage').textContent, /3 criada/);
-        assert.equal(el('nteBatchDeadline').value, '');
-        assert.equal(el('taskGameFilter').value, '42');
-        state.beforeQuery = null;
-    });
-
-    await t.test('Failure retains the anchor and tasks, then retry succeeds', async () => {
-        const before = structuredClone(state.tasks);
-        el('nteBatchDeadline').value = '2099-02-10T07:00:00';
-        state.rpcErrors.create_profile_endgame_batch = 'Batch failed';
-        submit();
-        await waitFor(() => el('loadingOverlay').hidden);
-        assert.deepEqual(state.tasks, before);
-        assert.equal(el('nteBatchDeadline').value, '2099-02-10T07:00');
-        assert.match(el('taskListMessage').textContent, /preservadas/);
-        assert.equal(el('createEndgameBatchBtn').disabled, false);
-        delete state.rpcErrors.create_profile_endgame_batch;
-        state.rpcResults.create_profile_endgame_batch = { created: 0, preserved: 0, registered: 0 };
-        submit();
-        await waitFor(() => el('loadingOverlay').hidden);
-        assert.match(el('taskListMessage').textContent, /já registrado/);
-    });
-
-    await t.test('Missing NTE anchor surfaces the database explanation and does not leave stale loading', async () => {
-        state.rpcErrors.create_profile_endgame_batch = 'Informe o próximo prazo futuro do Beyond the Rails mostrado no jogo. Nenhuma tarefa foi criada.';
-        submit();
-        await waitFor(() => el('loadingOverlay').hidden);
-        assert.match(el('taskListMessage').textContent, /Informe o próximo prazo futuro/);
-        assert.equal(el('createEndgameBatchBtn').disabled, false);
-        delete state.rpcErrors.create_profile_endgame_batch;
-    });
-
-    await t.test('Saved batch plus failed list refresh keeps saved status; read retry never creates again', async () => {
-        state.beforeQuery = ({ name }) => { if (name === 'create_profile_endgame_batch') state.readError = 'Read failed'; };
-        submit();
-        await waitFor(() => el('loadingOverlay').hidden);
-        assert.match(el('taskListMessage').textContent, /já registrado.*não foi possível atualizar/);
-        assert.equal(el('createEndgameBatchBtn').disabled, true);
-        const before = calls().length;
-        state.readError = null; state.beforeQuery = null;
-        el('taskListRetry').click();
-        await waitFor(() => el('loadingOverlay').hidden);
-        assert.equal(calls().length, before);
-    });
-
-    await t.test('GI-only skips hidden NTE input; unrelated selection disables the batch', async () => {
-        const enabled = state.games;
-        state.games = [enabled[0]];
-        await ui.displayAllTasks();
-        assert.equal(el('nteBatchDeadlineFields').hidden, true);
-        el('nteBatchDeadline').value = '2099-03-10T07:00:00';
-        submit();
-        await waitFor(() => el('loadingOverlay').hidden);
-        assert.equal(calls().at(-1).payload.p_nte_deadline, undefined);
-        state.games = [{ id: 99, abbreviation: 'HSR', description: 'HSR' }];
-        await ui.displayAllTasks();
-        assert.equal(el('createEndgameBatchBtn').disabled, true);
-        state.games = enabled;
-        await ui.displayAllTasks();
-        await dropdowns.populateGameDropDown();
-    });
 
     await t.test('Editing and saving a calendar task retains its recurrence, completion and favorite', async () => {
         el('edit-task-5').click();
@@ -147,5 +64,30 @@ test('Endgame batch UI, calendar edits and renewal preserve profile choices', as
         assert.ok(state.tasks.slice(0, 3).every(t => !t.is_done && t.is_favorite && t.cover_url === 'https://example.com/cover.jpg'));
         assert.equal(state.tasks[3].is_done, true);
         assert.equal(state.tasks[3].expiration_date, '2026-09-01T09:00:00Z');
+    });
+
+    await t.test('Added fixed challenges renew in UTC while the Endstate phase remains nonrecurring', async () => {
+        const RealDate = globalThis.Date;
+        class FixedDate extends RealDate {
+            constructor(...args) { super(...(args.length ? args : ['2026-12-31T12:00:00Z'])); }
+            static now() { return RealDate.parse('2026-12-31T12:00:00Z'); }
+        }
+        t.mock.method(globalThis, 'Date', FixedDate);
+        state.tasks = [
+            { id: 21, description: 'Deadly Assault', refresh_type: 3, repeat_days: 14, expiration_date: '2026-10-09T09:00:00Z', shared_key: 'endgame:ZZZ:deadly-assault' },
+            { id: 22, description: 'Shiyu Defense', refresh_type: 3, repeat_days: 14, expiration_date: '2026-10-16T09:00:00Z', shared_key: 'endgame:ZZZ:shiyu-defense' },
+            { id: 23, description: 'Tower of Adversity', refresh_type: 5, repeat_days: 28, expiration_date: '2026-10-12T09:00:00Z', shared_key: 'endgame:WuWa:tower-of-adversity' },
+            { id: 24, description: 'Whimpering Wastes', refresh_type: 5, repeat_days: 28, expiration_date: '2026-10-26T09:00:00Z', shared_key: 'endgame:WuWa:whimpering-wastes' },
+            { id: 25, description: 'Endstate Matrix', refresh_type: 0, repeat_days: null, expiration_date: '2026-11-10T20:00:00Z', shared_key: 'endgame:WuWa:endstate-matrix:3.7' },
+        ].map(t => ({ ...t, game_id: 42, is_done: true, is_favorite: true, cover_url: 'https://example.com/cover.jpg' }));
+        const { updateExpiratedTasksRoutine } = await import('../js/database/dbInit.js');
+        await updateExpiratedTasksRoutine();
+        assert.deepEqual(state.tasks.map(t => t.expiration_date), [
+            '2027-01-01T09:00:00.000Z', '2027-01-08T09:00:00.000Z',
+            '2027-01-04T09:00:00.000Z', '2027-01-18T09:00:00.000Z', '2026-11-10T20:00:00Z',
+        ]);
+        assert.ok(state.tasks.slice(0, 4).every(t => !t.is_done));
+        assert.equal(state.tasks[4].is_done, true);
+        assert.ok(state.tasks.every(t => t.is_favorite && t.cover_url === 'https://example.com/cover.jpg'));
     });
 });

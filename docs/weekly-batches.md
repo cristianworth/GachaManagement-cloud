@@ -2,6 +2,8 @@
 
 Entrega da versão 1.5.0, datada de 05/10/2026, com commit e atualização do changelog autorizados por Cristian. Testes offline aprovados; o agente não aplicou a migração nem validou a interface, PostgREST ou duas conexões reais no Supabase de destino. Push depende de pedido explícito.
 
+> Interface atual: as weeklies agora integram **Carregar Lote** junto dos desafios GI/NTE/ZZZ/WuWa. O fluxo unificado é transacional entre jogos e conserva os contratos e marcadores descritos neste histórico. Consulte [Lote único](task-batch-plan.md) para as migrações, comandos e roteiro atual; o botão por jogo citado abaixo pertence à entrega original.
+
 ## Catálogo e relógio
 
 | Sigla cadastrada | Definições do novo lote | Reset América |

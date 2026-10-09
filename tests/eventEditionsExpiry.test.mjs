@@ -122,7 +122,7 @@ test('live reset starts every profile empty, is repeatable and rolls back a fail
     const db = await createTestDatabase();
     t.after(() => db.close());
     const [schema, seed] = await Promise.all([readProjectFile('db/schema.sql'), readProjectFile('db/seed.sql')]);
-    assert.ok(schema.includes(await readProjectFile('db/migrations/2026-10-05-event-editions-expiry.sql')), 'Fresh schema and incremental contract must agree exactly');
+    assert.ok(schema.replace(/\r\n/g, '\n').includes((await readProjectFile('db/migrations/2026-10-05-event-editions-expiry.sql')).replace(/\r\n/g, '\n')), 'Fresh schema and incremental contract must agree, regardless of checkout line endings');
     const reset = buildDatabaseReset(schema, seed);
     await db.exec(`create table public.unrelated_data (value text); insert into public.unrelated_data values ('Keep me');
         create function public.unrelated_function() returns text language sql as $$ select 'Keep me'::text $$;`);
@@ -132,7 +132,7 @@ test('live reset starts every profile empty, is repeatable and rolls back a fail
     await db.exec(reset);
     assert.equal((await db.query('select count(*)::int n from games')).rows[0].n, 5);
     assert.equal((await db.query('select count(*)::int n from profiles')).rows[0].n, 3);
-    for (const table of ['tasks', 'event_candidates', 'profile_tasks', 'profile_games', 'profile_event_decisions', 'profile_weekly_batches']) {
+    for (const table of ['tasks', 'event_candidates', 'profile_tasks', 'profile_games', 'profile_event_decisions', 'profile_weekly_batches', 'profile_endgame_batches', 'profile_task_batch_items']) {
         assert.equal((await db.query(`select count(*)::int n from ${table}`)).rows[0].n, 0, table);
     }
     assert.equal((await db.query('select value from unrelated_data')).rows[0].value, 'Keep me');

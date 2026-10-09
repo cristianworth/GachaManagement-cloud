@@ -10,18 +10,39 @@ O projeto segue o versionamento semântico (SemVer), no formato `MAJOR.MINOR.PAT
 
 ## [Não publicado]
 
+Sem alterações registradas.
+
+## [1.10.0] - 2026-10-08
+
 ### Adicionado
 
-- Lote inicial explícito de desafios GI + NTE por perfil: Imaginarium Theater no dia 1º, Spiral Abyss como lembrete antecipado no dia 15 (escolha de Cristian; reset oficial no dia 16), ambos às 06:00 de Brasília. Beyond the Rails repete a cada 14 dias a partir do próximo prazo informado no navegador, sem assumir a âncora da edição atual.
-- Recorrências mensais por dia do calendário, com edição e filtros próprios; Monthly antigo conserva seu intervalo fixo de 30/31 dias. Renovação conserva favoritas, capas e estado dos outros perfis.
-- Uma única transação considera os jogos selecionados no perfil, preserva homônimos e registra a criação por jogo. Repetição não duplica nem restaura exclusões; selecionar NTE posteriormente permite criar somente esse lote. Migração incremental, instalação nova, reset explícito e prévia descartável atualizados. Detalhes em docs/endgame-batch.md.
+- Lote de desafios por perfil: Imaginarium Theater (dia 1º), Spiral Abyss (lembrete antecipado no dia 15, escolha de Cristian; reset oficial dia 16) e Beyond the Rails (14 dias). Calendário mensal segue o dia do mês, sem alterar Monthly legado de 30/31 dias.
+- Deadly Assault e Shiyu Defense (14 dias), Tower of Adversity e Whimpering Wastes (28 dias), às 06h de Brasília. Âncoras confirmadas/aceitas: 09/10, 16/10, 12/10 e 26/10/2026, respectivamente.
+- Endstate Matrix, fase 3.7, até 10/11/2026 às 17h de Brasília: referência global derivada do fim da versão na API e aceita por Cristian. Sem intervalo fixo presumido; fase vencida não é importada e informa calendário pendente. Próximas fases ainda exigem atualização central.
+- Registro por definição/fase permite acrescentar os cinco novos desafios a lotes antigos sem restaurar excluídos ou renomeados. Schema, migrações incrementais, reset explícito e prévia descartável atualizados.
 
-Validação local em etapa 1: 205 testes distintos aprovados (53 novos + 89 de compatibilidade Node + 63 Jest), incluindo instalação nova e upgrade. Suíte completa reservada ao fechamento MINOR. Conferência visual e Supabase live pendentes; roteiro em docs/endgame-batch.md. Cristian autorizou o commit intermediário em 08/10/2026, mantendo a versão 1.9.2 e esta seção “Não publicado”, sem push.
+### Melhorado
 
-### Planejado e documentado
+- **Carregar Lote** reúne seis weeklies e oito desafios, **14 definições**, em uma única RPC/transação para os jogos habilitados no perfil. O filtro visual não limita a ação.
+- Removidos os controles separados e o formulário de prazo NTE. O servidor calcula o próximo ciclo a partir de 21/10/2026 às 07h de Brasília; produção não recebe datas/relógio do navegador.
+- Repetição preserva homônimos, capas, favoritas, conclusão, recorrência, prazos e decisões por perfil; bloqueio de clique repetido e erros/retry mantêm a lista e distinguem gravação concluída de refresh com falha.
+- Pure Fiction, Apocalyptic Shadow e Memory of Chaos continuam pela API, com reservas inativas/comentadas; nenhuma falha da API ativa fallback.
 
-- Lote único com **Carregar Lote** para weeklies e desafios dos jogos habilitados. Inventário e plano em docs/task-batch-plan.md: nove itens implementados, cinco adições de ZZZ/WuWa pendentes de calendário e três alternativas HSR inativas porque já chegam pela API.
-- Seleção individual em modal registrada como evolução futura no roadmap e TODO 9.1. Contadores fornecidos por Cristian foram preservados como observações, sem convertê-los em intervalos ou horários confirmados. A interface continua com os controles separados neste commit.
+### Corrigido
+
+- Verificações históricas de migrações nos testes agora aceitam migrações posteriores a favoritas e normalizam quebras de linha Windows/Linux na comparação de SQL. O teste de reinstalação também confere os novos marcadores de lote.
+
+### Documentado
+
+- Preferência de importações automáticas sem solicitar datas na interface; datas observadas por Cristian no jogo são evidência válida identificada.
+- Inventário, calendário, fontes e limitações em [docs/task-batch-plan.md](docs/task-batch-plan.md) e [docs/expanded-task-batch.md](docs/expanded-task-batch.md).
+- [Handoff para a próxima IA](docs/handoff-task-batch-personalization.md) e [prompt de continuidade](docs/prompt-next-ai-task-batch.md). Próxima entrega: **Escolher itens…**, modal com checkboxes por jogo, e imagens para os oito endgames. Automação das futuras fases Endstate permanece separada no roadmap.
+
+Cristian autorizou commit, push e numeração a critério da IA em 08/10/2026. A versão MINOR consolida o commit intermediário anterior e a unificação/expansão do lote.
+
+**Validação:** etapa 1 com 124 testes focados aprovados; etapa 2, `npm test`, **487 testes aprovados (69 Jest + 418 Node)**. Instalação nova/upgrade, migração sobre lote existente, rollback integral, reset repetível/atômico, isolamento, homônimos, exclusões, UTC/DST, renovação e DOM. Prévia HTTP com SQL real criou 14 tarefas e zero na repetição. A suíte completa encontrou duas verificações antigas incompatíveis com a evolução; foram corrigidas, verificadas isoladamente e a suíte completa passou na nova execução. Nenhuma API ou banco live foi consultado pelos testes.
+
+**Implantação:** commit/push não aplicam SQL. Migrações endgame → unified → expanded de 08/10/2026 ainda pendentes no Supabase live; PostgREST/concorrência real e navegador renderizado não foram validados nesta entrega. Workflow diário às 07h30 de Brasília permanece igual.
 
 ## [1.9.2] - 2026-10-07
 

@@ -1,104 +1,91 @@
-# Plano — Lote único de tarefas
+# Lote único — inventário e entregas
 
-Pedido de Cristian em 08/10/2026. **Este documento planeja a próxima implementação; não descreve uma interface já entregue.** O commit intermediário mantém a versão 1.9.2 e o changelog em “Não publicado”, sem push, conforme escolha explícita de Cristian. Nenhuma alteração no Supabase live faz parte deste planejamento.
+Atualizado em 08/10/2026. **Itens 1 e 2 implementados localmente:** Carregar Lote reúne 14 definições, incluindo os cinco desafios novos. Cristian validou a unificação anterior e autorizou esta expansão. O item 3 (seleção individual) e as imagens dos endgames são a próxima entrega. Fechamento em **1.10.0**, com commit/push autorizados por Cristian em 08/10/2026; sem aplicação no Supabase live. Continuidade em [handoff-task-batch-personalization.md](handoff-task-batch-personalization.md).
 
-## Objetivo e entregas recomendadas
+## Inventário central
 
-Na interface, apresentar somente **Carregar Lote**, com uma ajuda curta: “Adiciona as atividades padrão dos jogos selecionados neste perfil, preservando tarefas existentes e exclusões.” O filtro de jogo da lista não limita essa ação. O usuário não precisa ver o inventário completo na entrega inicial.
+O botão considera todos os jogos habilitados no perfil, independentemente do filtro visual. Criação é explícita, mas o calendário é automático: não há confirmação nem campo de prazo. Homônimos conservam os dados e a recorrência que já tinham. O catálogo conta definições, não todas as edições da API.
 
-1. **Unificar os controles dos nove itens implementados.** Substituir o botão semanal por jogo e o formulário separado GI/NTE por uma entrada única. Manter weekly/endgame como categorias internas, com identidades e recorrências próprias. Usar uma operação SQL transacional para os jogos habilitados, sem encadear gravações parciais no frontend. O próximo prazo NTE continua necessário quando ainda não houver referência válida; nessa situação, abrir uma confirmação curta do prazo antes de gravar. Depois de uma referência válida, o carregamento normal pode ser um clique.
-2. **Ampliar para 14 itens ativos, após conferir calendário.** Acrescentar Deadly Assault, Shiyu Defense, Endstate Matrix, Whimpering Wastes e Tower of Adversity. Não transformar os contadores restantes em intervalos. Modos sem data/hora regional utilizável ficam pendentes de calendário, sem prazo inventado. A entrega que os ativa deve resolver essa pendência antes de anunciar “carrega tudo”.
-3. **Personalização futura, em entrega separada.** Ao lado de Carregar Lote, oferecer **Escolher itens…**. Um modal com grupos por jogo, checkboxes, “Selecionar todos” e resumo do que será criado/preservado. Não criar uma página nova inicialmente: a seleção é pequena e o modal conserva o contexto de Tasks. Tooltip serve apenas como explicação, com acesso também por toque/teclado; não deve conter controles essenciais.
-
-O pedido atual é processamento, documentação e planejamento. A unificação e os cinco novos modos ainda não foram implementados. Não alterar a sincronização diária nem importar novamente eventos da API ao apertar Carregar Lote.
-
-## Inventário único
-
-**Hoje implementados: nove itens de lote** (seis weeklies + três desafios). **Planejados: cinco adicionais.** **HSR: três reservas inativas**, já atendidas pela API. O catálogo documentado soma 17 definições; a meta do lote padrão é 14 ativas, não 17. Os números contam definições, não todas as edições simultâneas da API.
-
-| Jogo | Definição | Situação atual | Regra / pendência |
+| Jogo | Atividade | Regra ativa | Próxima referência em Brasília, a partir de 08/10/2026 |
 | --- | --- | --- | --- |
-| HSR | Echo of War | Weekly implementada | 7 dias, segunda às 09:00 UTC / 06:00 Brasília |
-| HSR | Simulated Universe | Weekly implementada | 7 dias por preferência pessoal de Cristian; não é confirmação do reset das recompensas |
-| WuWa | Weekly Boss | Weekly implementada | 7 dias, segunda às 09:00 UTC / 06:00 Brasília |
-| WuWa | Fantasies of the Thousand Gateways | Weekly implementada | 7 dias, mesma referência semanal |
-| ZZZ | Hollow Zero | Weekly implementada | 7 dias, mesma referência semanal |
-| ZZZ | Notorious Hunt | Weekly implementada | 7 dias, mesma referência semanal |
-| GI | Imaginarium Theater | Desafio implementado localmente | Dia 1º, 09:00 UTC / 06:00 Brasília; horário adotado para lembrete |
-| GI | Spiral Abyss | Desafio implementado localmente | Lembrete no dia 15, 09:00 UTC / 06:00 Brasília; reset oficial dia 16 |
-| NTE | Beyond the Rails | Desafio implementado localmente | 14 dias desde o próximo prazo informado; âncora atual regional ainda não conferida |
-| ZZZ | Deadly Assault | Novo, planejado | Referência histórica: sexta a cada 14 dias; conferir a âncora e o horário da edição na América |
-| ZZZ | Shiyu Defense | Novo, planejado | Referência histórica: sexta a cada 14 dias, alternada com Deadly Assault; não aplicar regra antiga de dias 1/16 |
-| WuWa | Endstate Matrix | Novo, planejado | Calendário por fase/versão, com fim explícito; não repetir a cada 33 dias nem presumir 42 |
-| WuWa | Whimpering Wastes | Novo, planejado | Referência histórica: 28 dias; conferir fase recorrente, próxima âncora e horário na América |
-| WuWa | Tower of Adversity | Novo, planejado | Hazard Zone recorrente: referência histórica de 28 dias; não repetir zonas permanentes |
-| HSR | Pure Fiction | API; reserva inativa | Manter por edição na API; alternativa documentada/comentada, sem criação pelo lote |
-| HSR | Apocalyptic Shadow | API; reserva inativa | Mesmo tratamento, sem duplicar ou substituir eventos existentes |
-| HSR | Memory of Chaos | API; reserva inativa | Mesmo tratamento; não supor intervalo universal a partir do tempo restante |
+| HSR | Echo of War | Weekly, 7 dias | Segunda às 06h |
+| HSR | Simulated Universe | Weekly por preferência pessoal de Cristian | Segunda às 06h; não afirma o ciclo oficial de recompensas |
+| WuWa | Weekly Boss | Weekly, 7 dias | Segunda às 06h |
+| WuWa | Fantasies of the Thousand Gateways | Weekly, 7 dias | Segunda às 06h |
+| ZZZ | Hollow Zero | Weekly, 7 dias | Segunda às 06h |
+| ZZZ | Notorious Hunt | Weekly, 7 dias | Segunda às 06h |
+| GI | Imaginarium Theater | Dia 1º do mês | 01/11 às 06h |
+| GI | Spiral Abyss | Lembrete no dia 15, escolha aprovada | 15/10 às 06h; reset oficial dia 16 |
+| NTE | Beyond the Rails | 14 dias, América 05h UTC−5 | 21/10 às 07h |
+| ZZZ | Deadly Assault | 14 dias, sextas, América 04h UTC−5 | **09/10 às 06h**, referência escolhida por Cristian |
+| ZZZ | Shiyu Defense | 14 dias, sextas alternadas, América 04h UTC−5 | **16/10 às 06h** |
+| WuWa | Tower of Adversity | Hazard Zone, 28 dias, América 04h UTC−5 | **12/10 às 06h** |
+| WuWa | Whimpering Wastes | Zonas recorrentes, 28 dias, América 04h UTC−5 | **26/10 às 06h** |
+| WuWa | Endstate Matrix | Fase 3.7, sem intervalo fixo | **10/11 às 17h**, fim global derivado da versão e aceito por Cristian |
+| HSR | Pure Fiction | **Reserva inativa**, atendida pela API | Contador fornecido: 10d + horas |
+| HSR | Apocalyptic Shadow | **Reserva inativa**, atendida pela API | Contador fornecido: 38d + horas |
+| HSR | Memory of Chaos | **Reserva inativa**, atendida pela API | Contador fornecido: 24d + horas |
 
-Catálogo semanal atual: `js/data/weeklyTasks.js`. Catálogo GI/NTE atual: `db/migrations/2026-10-08-endgame-batch.sql` e seção correspondente em `db/schema.sql`. Não existe ainda um catálogo físico unificado. A próxima implementação deve concentrar a definição lógica com chaves estáveis, jogo, categoria, origem, estado ativo/inativo e regra de calendário; validar a correspondência com SQL para evitar listas divergentes. HSR deve usar um estado inativo explícito (ou bloco comentado de referência), sem ativação automática quando uma consulta à API falhar.
+São **14 definições ativas no catálogo e três reservas inativas**. As reservas HSR também estão comentadas no SQL; ausência/falha da API não as ativa. Não duplicar nem substituir suas edições importadas.
 
-## Contadores fornecidos por Cristian
+Catálogo público: `public.task_batch_catalogue()`. Contrato usado pelo frontend: `public.create_profile_task_batch()`. Fonte atual dos cinco modos, decisões, limites e implementação em [expanded-task-batch.md](expanded-task-batch.md). GI/NTE em [endgame-batch.md](endgame-batch.md); história das weeklies em [weekly-batches.md](weekly-batches.md).
 
-Recebidos nesta conversa em 08/10/2026. A data/hora em que foram observados no jogo não foi informada. `xh` significa horas restantes não especificadas. Os valores abaixo são **evidência fornecida pelo usuário, não datas finais verificadas**.
+## Entregas e preservação
 
-| Jogo | Modo | Texto fornecido |
-| --- | --- | --- |
-| ZZZ | Deadly Assault | 1d xh left |
-| ZZZ | Shiyu Defense | 7d xh left |
-| WuWa | Endstate Matrix | 33d xh left |
-| WuWa | Whimpering Wastes | 17d xh left |
-| WuWa | Tower of Adversity | 3d xh left |
-| GI | Imaginarium Theater | 23d xh left |
-| GI | Spiral Abyss | 7d xh left |
-| HSR | Pure Fiction | 10d xh left |
-| HSR | Apocalyptic Shadow | 38d xh left |
-| HSR | Memory of Chaos | 24d xh left |
-| NTE | Beyond the Rails | 12d xh left |
+1. **Lote único:** uma RPC e uma transação para weeklies, GI e NTE. Referência NTE automática, sem formulário. Mantém os contratos anteriores.
+2. **Cinco desafios novos:** agora incluídos na mesma transação. Registro por definição/fase em `profile_task_batch_items` permite acrescentar somente os novos itens a um lote antigo. Aplicar a migração não cria tarefas. O clique não reabre marcadores antigos nem restaura tarefas excluídas/renomeadas.
+3. **Futuro — Escolher itens…:** modal ao lado de Carregar Lote, com grupos por jogo, checkboxes, selecionar todos e resumo. Carregar Lote continua carregando todas as definições elegíveis. Definir estados “nunca escolhido”, “adiado”, “criado” e “excluído”; adiar não é excluir. Tooltip só explica, sem controles essenciais. Não foi implementado nesta entrega.
 
-Um contador não informa sozinho o intervalo completo, o instante de captura nem o horário final. As horas restantes podem estar relacionadas ao reset, mas isso precisa de confirmação para cada modo; Endstate Matrix pode encerrar perto da manutenção, diferente do reset diário. Não somar “dias restantes” ao momento em que o botão for clicado: isso deslocaria os prazos a cada carregamento.
+Os intervalos fixos usam âncoras absolutas e UTC; não somam o contador ao dia de cada clique. Renovação de tarefas vencidas ocorre ao abrir/recarregar, conserva capas/favoritas e reabre conclusão no próximo ciclo futuro. Não há timer em segundo plano. Homônimos exatos no mesmo jogo são preservados inclusive se forem Event/Custom; lote registrado não garante que foram convertidos à recorrência do catálogo.
 
-Antes de ativar os novos modos, registrar uma **data/hora absoluta e a região América**, além da recorrência. Se vier somente do jogo, registrar a leitura como confirmação manual, não como verificação independente na web. Manter o lembrete antecipado do Abismo no dia 15, escolha já aprovada; o contador real do jogo não muda essa decisão silenciosamente.
+**Endstate Matrix:** a fase atual tem identidade própria e fica sem repetição. Ao vencer, uma tarefa já criada permanece com sua conclusão/prazo; não é evento importado da API. Uma primeira importação após o prazo não cria tarefa vencida e informa que o calendário da próxima fase está pendente. Não há próxima fase nem intervalo de 33/42 dias inventados. Atualizar automaticamente o calendário de futuras fases exige evolução separada; o botão atual não busca a API da versão. Essa limitação está no roadmap. Novos calendários devem preservar decisões e distinguir fases anteriores de homônimos manuais.
 
-## Consulta das APIs e referências
+## Contadores e decisões do usuário
 
-Consulta pública somente leitura realizada nesta entrega, sem sincronização, escrita no live ou alteração das fixtures:
+Contadores fornecidos e reafirmados por Cristian como observados no jogo em 08/10/2026: Deadly 1d + horas; Shiyu 7d + horas; Endstate 33d + horas; Whimpering 17d + horas; Tower 3d + horas; Theater 23d + horas; Abyss 7d + horas; Pure Fiction 10d + horas; Apocalyptic 38d + horas; Memory 24d + horas; Beyond 12d + horas. Isso confirma uma observação, **não a duração de um ciclo**.
 
-| Fonte | Atividades recebidas | Correspondências dos desafios listados |
-| --- | --- | --- |
-| GI | 8 | Nenhuma por nome |
-| HSR | 15 | Seis edições, incluindo uma vencida e edições futuras, dos três modos |
-| ZZZ | 12 | Nenhuma por nome |
-| WuWa | 12 | Nenhuma por nome |
-| NTE | 9 | Nenhuma por nome |
+Esclarecimentos aprovados:
+- NTE: 08/10 + 13 dias às 05h da América, resultando em 21/10T10:00Z.
+- Deadly: entre o arredondamento para sábado e o calendário de sexta, Cristian escolheu **09/10 às 06h de Brasília**.
+- Endstate: Cristian aceitou **o fim global da versão**, derivado da API, em 10/11 às 17h de Brasília. Não tratá-lo como reset local da América.
+- Abismo: manter lembrete no **dia 15**, mesmo com reset oficial no dia 16.
+- Importações não devem pedir datas ao usuário. Dúvidas são resolvidas durante desenvolvimento e documentadas uma vez.
 
-URLs são as do registro `js/events/eventGames.js` (StarRailAssistant `*-en-US.json`). Ausência por nome nesta amostra não garante ausência permanente da API nem comprova que outro nome representa o mesmo modo. Não usar falha/ausência momentânea como autorização para gerar fallback.
+## Banco e teste local
 
-No HSR, o JSON retornou Pure Fiction: Domain Genesis até 19/10/2026, Memory of Chaos: Crossing the Afterlife até 02/11/2026 e Apocalyptic Shadow: Dominance of Oblivion até 16/11/2026, com horários brutos de fim `03:59:59`, além das próximas edições. São campos da fonte, não novos horários regionais conferidos nesta entrega. Os períodos retornados não são todos idênticos; não criar fallback fixo de 42 dias por suposição.
+Banco existente atualizado até favoritas, nesta ordem:
+1. `db/migrations/2026-10-08-endgame-batch.sql`
+2. `db/migrations/2026-10-08-unified-task-batch.sql`
+3. `db/migrations/2026-10-08-expanded-task-batch.sql`
 
-Referências consultadas por busca em 08/10/2026:
+Aplicar somente as que faltam. Instalação nova usa `db/schema.sql` + `db/seed.sql`. Não reaplicar schema inteiro num banco existente. Nenhuma dessas migrações foi aplicada ao live nesta entrega.
 
-- [Deadly Assault — Game8](https://game8.co/games/Zenless-Zone-Zero/archives/489103): conteúdo indexado de abril de 2026 descreve sexta a cada duas semanas.
-- [Shiyu Defense — Game8](https://game8.co/games/Zenless-Zone-Zero/archives/457183): seção de reset indexada de abril descreve sexta a cada duas semanas. A mesma página conserva texto antigo de dias 1/16; esse trecho não deve virar regra de produção.
-- [Tower of Adversity — Game8](https://game8.co/games/Wuthering-Waves/archives/453474): conteúdo indexado de março descreve Hazard Zone em ciclos de 28 dias.
-- [Whimpering Wastes — Game8](https://game8.co/games/Wuthering-Waves/archives/498614): conteúdo indexado de abril mostra fases antigas; não confirma o próximo prazo de outubro.
-- [Endstate Matrix — Game8](https://game8.co/games/Wuthering-Waves/archives/572518): conteúdo indexado de março descreve fases por versão, término próximo da atualização e compara Whimpering Wastes/ToA a ciclos de 28 dias. “7 dias depois da atualização” descreve o início de uma fase, não repetição semanal.
+```powershell
+npm run preview:profiles
+# Abra http://127.0.0.1:5501/tasks
+```
 
-A abertura direta dessas cinco páginas falhou com HTTP 402; o levantamento usa o conteúdo indexado retornado pela busca. Isso é suficiente para identificar cuidados do modelo, mas **não confirma a edição atual, âncora ou horário América**. Para GI e NTE, evidências e limitações anteriores permanecem em [endgame-batch.md](endgame-batch.md).
+Reiniciar a prévia para recriar o banco temporário com o schema atual. Ela não usa Supabase e perde dados ao encerrar. `npm start` usa a configuração normal.
 
-## Comportamento e estado a preservar
+**Para testar:** selecione CRAN ou Demo, habilite os cinco jogos e desmarque a criação opcional de weeklies para observar 14 atividades de uma vez. Em Tasks, clique em Carregar Lote e confira os cinco novos nomes e os prazos da tabela. Não aparece diálogo. Se as seis weeklies já vieram pela seleção, serão oito desafios novos, totalizando 14 atividades de lote. Em banco com os nove anteriores, o clique acrescenta apenas cinco.
 
-- Carregar Lote significa carregar as definições ativas elegíveis dos jogos habilitados no perfil. Não significa sincronizar a API, restaurar exclusões ou alterar recorrências de homônimos.
-- Um lote unificado na interface não exige fundir identidades ou transformar todos os modos em Weekly. Manter regras semanais, mensais, intervalos ancorados e calendário por fase separados internamente.
-- Aproveitar os contratos existentes dentro de uma transação SQL. Não reabrir lotes já registrados nem reinterpretar tarefas ausentes como nunca criadas. O registro atual é por jogo; a seleção futura precisará de decisões por definição para distinguir itens adiados de itens removidos.
-- Na personalização futura, um item desmarcado para adiar não equivale a exclusão permanente. “Carregar tudo” respeita exclusões anteriores. Restauração deve ser ação explícita própria, preservando a política já combinada.
-- Endstate Matrix deve usar o fim verificado da fase atual, sem repetição automática presumida. A próxima fase precisará de outra referência de calendário; automatizá-la exige fonte confiável ou manutenção explícita desse calendário. Não rotular isso como ciclo fixo de 33 dias.
-- Preferir HSR pela API, com identidade e prazo por edição. Um fallback futuro exige ativação deliberada e reconciliação quando a API voltar; comparar apenas “Pure Fiction” com “Pure Fiction: nome da edição” não impede duplicatas com segurança.
+Favorite/conclua/edite capa ou prazo de um novo desafio, recarregue e carregue novamente: os dados devem permanecer. Exclua outro, repita e confira que ele não voltou. Troque de perfil para conferir isolamento. O filtro visual da lista não limita os jogos carregados.
 
-## Testes da próxima implementação
+Etapa 1, offline:
+```powershell
+node --test tests/taskBatch.test.mjs tests/expandedTaskBatch.test.mjs tests/taskBatchUI.test.mjs tests/endgameBatches.test.mjs tests/endgameBatchesUI.test.mjs tests/endgameRecurrence.test.mjs tests/profileUI.test.mjs tests/uiFeedback.test.mjs
+```
 
-Na entrega de unificação, testar uma única ação/RPC para todos os jogos habilitados, sem dependência do filtro; perfis isolados; clique duplo; preservação de conclusão/favorita/imagem/prazo/recorrência; nenhuma recriação de excluídos; rollback completo se um jogo falhar; retry depois de resposta perdida e depois de falha na leitura da lista. Não repetir a suíte completa a cada ajuste: etapa 1 focada e etapa 2 no fechamento MINOR.
+**124 testes aprovados** nesta expansão: SQL real como anon, instalação nova/upgrade, migração com lote anterior, UTC/DST, virada exata/ciclos perdidos, fase vencida, reset, homônimos, isolamento, rollback e DOM real com cliente simulado. Evidências históricas: 107 na automação NTE, 178 na primeira unificação e 205 antes da unificação; não somar execuções. No fechamento MINOR 1.10.0, `npm test` passou **487 testes (69 Jest + 418 Node)**. As duas verificações históricas de migrações incompatíveis com a evolução foram corrigidas e a suíte completa repetida com sucesso. Prévia reiniciada e conferida por HTTP com SQL real: Convidado criou 14 tarefas, os cinco prazos coincidem com a tabela, repetição criou zero e o HTML não contém diálogo. CRAN e Demo ficaram livres para testar a criação. Navegador real e PostgREST/Supabase live ainda não validados.
 
-Na expansão, testar a âncora e os horários UTC de cada novo modo, ciclos perdidos/DST, fases com intervalo variável e a ausência de fallback HSR. Calendário sem base válida deve interromper a criação com explicação, sem gravar dados parcialmente.
+## Consulta anterior das APIs
 
-Para testar a versão intermediária já implementada, usar o roteiro de [endgame-batch.md](endgame-batch.md). Os botões continuam separados neste commit. Nenhuma tela, tooltip ou modal novo foi implementado apenas por este planejamento.
+Consulta pública somente leitura nesta entrega, sem alterar fixtures: GI 8 atividades; HSR 15; ZZZ 12; WuWa 12; NTE 9. Nenhum dos desafios fora do HSR apareceu por nome. HSR apresentou seis edições dos três modos, incluindo vencidas/futuras. Ausência numa amostra não autoriza fallback.
+
+HSR retornou Domain Genesis até 19/10/2026, Crossing the Afterlife até 02/11/2026 e Dominance of Oblivion até 16/11/2026, com fim bruto 03:59:59. São dados da fonte, não novos horários regionais conferidos aqui.
+
+Raiz do JSON WuWa, separada de activities[0]:
+```json
+{"version":"3.7","versionName":"Prism's Illusion, Heart's Illumination","startTime":"2026-09-30T11:00:00","endTime":"2026-11-11T03:59:59","cover":"https://i0.hdslb.com/bfs/new_dyn/7ae8269b71e9ad214db2ef026d8075ee1955897084.jpg"}
+```
+A primeira atividade é Cubie Wars, com outro prazo; não usá-la como metadados da versão. O JSON não fornece offset. A interpretação do fim global para Endstate é uma referência **derivada, aceita por Cristian**, conforme documentação da expansão.

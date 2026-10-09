@@ -12,6 +12,8 @@ Este documento registra decisões verificadas do projeto e preferências de Cris
 
 ## Fontes e horários
 
+- Preferência de Cristian: importações de API, lotes e qualquer outro carregamento devem ser automáticos, sem solicitar datas ou prazos na interface. Datas confirmadas por ele dentro do jogo são evidência válida: registrar uma referência absoluta e sua procedência uma vez, calcular os próximos ciclos e não pedir a mesma informação novamente. Se faltar uma regra, esclarecer durante o desenvolvimento; não transferir a configuração do calendário para cada importação/perfil. Edição manual de uma tarefa existente continua disponível.
+
 - StarRailAssistant fornece o calendário JSON de descoberta; Game8 é a referência solicitada para conferir datas finais e horários na América. Anúncios oficiais complementam a distinção entre manutenção global e horário do servidor.
 - Confira versão/edição e data da informação. Conteúdo indexado antigo não confirma uma edição atual. Trechos fornecidos por Cristian são evidência identificada como tal, não uma leitura independente da página.
 - Inglês no endpoint não significa servidor América. Preserve o horário bruto da fonte e o instante convertido separadamente. Nunca use o fuso do computador para converter o calendário.

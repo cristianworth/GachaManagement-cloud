@@ -11,6 +11,8 @@ export const migrations = [
     '2026-10-05-event-editions-expiry.sql',
     '2026-10-06-favorite-tasks.sql',
     '2026-10-08-endgame-batch.sql',
+    '2026-10-08-unified-task-batch.sql',
+    '2026-10-08-expanded-task-batch.sql',
 ];
 export const readProjectFile = path => readFile(new URL(`../../${path}`, import.meta.url), 'utf8');
 

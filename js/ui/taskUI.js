@@ -3,12 +3,13 @@ import { createEventCover } from './eventCover.js';
 import { cleanupExpiredImportedEvents, ignoreImportedTask, restoreEventApiDeadline } from '../database/eventCandidateDB.js';
 import { fetchAllGames } from '../database/gameDB.js';
 import { Task } from '../data/Task.js';
-import { fetchAllTasks, completeTask, setTaskFavorite, fetchTaskById, addTask, updateTask, deleteTaskById, createWeeklyTasksForGame, createEndgameTasks } from '../database/taskDB.js';
+import { fetchAllTasks, completeTask, setTaskFavorite, fetchTaskById, addTask, updateTask, deleteTaskById, loadTaskBatch } from '../database/taskDB.js';
 import { WEEKLY_BATCHES } from '../data/weeklyTasks.js';
 import { formatDateForDisplay, formatDateForInput, getExpirationDate } from '../utils/dateUtils.js';
 import { resetTaskForm, setDateSelector, setTaskFormMessage, setTaskRecurrence } from './formHandler.js'
 import RefreshTypeEnum from '../enums/RefreshTypeEnum.js';
 import Router from '../utils/router.js';
+import { getSelectedProfileId } from '../services/profileSession.js';
 import { filterTasks, sortTasks } from '../utils/taskFilters.js';
 import { withLoading } from './loadingState.js';
 import { setFeedback } from './feedback.js';
@@ -16,9 +17,8 @@ import { setFeedback } from './feedback.js';
 let loadedTasks = [];
 let filterInitialized = false;
 let loadedGames = [];
-let creatingWeeklies = false;
-let creatingEndgame = false;
-let weeklyGameDataLoaded = false;
+let loadingTaskBatch = false;
+let batchDataLoaded = false;
 const pendingFavoriteTasks = new Set();
 
 export async function displayAllTasks({ successMessage = '' } = {}) {
@@ -36,9 +36,8 @@ export async function displayAllTasks({ successMessage = '' } = {}) {
             setFeedback('taskListMessage', successMessage);
             return true;
         } catch (error) {
-            weeklyGameDataLoaded = false;
-            document.getElementById('createWeekliesBtn').disabled = true;
-            document.getElementById('createEndgameBatchBtn').disabled = true;
+            batchDataLoaded = false;
+            updateBatchControls();
             console.error('Failed to load task list:', error);
             setFeedback('taskListMessage', successMessage
                 ? `${successMessage} Porém, não foi possível atualizar a lista. Use Tentar novamente para recarregar os dados.`
@@ -52,7 +51,7 @@ export async function displayAllTasks({ successMessage = '' } = {}) {
 function updateTaskList(tasks, games) {
     loadedTasks = tasks;
     loadedGames = games;
-    weeklyGameDataLoaded = true;
+    batchDataLoaded = true;
     const filter = document.getElementById('taskGameFilter');
     const selectedGame = filter.value;
     filter.replaceChildren(new Option('All games', ''));
@@ -67,8 +66,7 @@ function updateTaskList(tasks, games) {
         filter.addEventListener('change', renderTaskList);
         refreshFilter.addEventListener('change', renderTaskList);
         document.getElementById('taskHideCompleted').addEventListener('change', renderTaskList);
-        document.getElementById('createWeekliesBtn').addEventListener('click', handleCreateWeeklies);
-        document.getElementById('endgameBatchForm').addEventListener('submit', handleCreateEndgameBatch);
+        document.getElementById('loadTaskBatchBtn').addEventListener('click', () => handleLoadTaskBatch());
         filterInitialized = true;
     }
     renderTaskList();
@@ -76,13 +74,7 @@ function updateTaskList(tasks, games) {
 
 function renderTaskList() {
     const gameId = document.getElementById('taskGameFilter').value;
-    const game = loadedGames.find(game => String(game.id) === gameId);
-    document.getElementById('createWeekliesBtn').disabled = creatingWeeklies || !weeklyGameDataLoaded
-        || !WEEKLY_BATCHES.some(batch => batch.abbreviation === game?.abbreviation);
-    document.getElementById('createEndgameBatchBtn').disabled = creatingEndgame || !weeklyGameDataLoaded
-        || !loadedGames.some(game => ['GI', 'NTE'].includes(game.abbreviation));
-    document.getElementById('nteBatchDeadlineFields').hidden = !loadedGames.some(game => game.abbreviation === 'NTE');
-    document.getElementById('nteBatchDeadline').disabled = creatingEndgame;
+    updateBatchControls();
     const refreshType = document.getElementById('taskRefreshTypeFilter').value;
     const hideCompleted = document.getElementById('taskHideCompleted').checked;
     const tasks = sortTasks(filterTasks(loadedTasks, { gameId, interval: refreshType, hideCompleted }));
@@ -208,57 +200,41 @@ async function handleTaskFavorite(task, button) {
     }
 }
 
-async function handleCreateWeeklies() {
-    if (creatingWeeklies) return;
-    const game = loadedGames.find(game => String(game.id) === document.getElementById('taskGameFilter').value);
-    if (!game) return;
-    creatingWeeklies = true;
-    const button = document.getElementById('createWeekliesBtn');
-    button.disabled = true;
+async function handleLoadTaskBatch() {
+    if (loadingTaskBatch || !batchDataLoaded) return;
+    const profileId = getSelectedProfileId();
+    if (!profileId) {
+        setFeedback('taskListMessage', 'Selecione um perfil antes de carregar o lote.', 'error');
+        return;
+    }
+    loadingTaskBatch = true;
+    updateBatchControls();
     setFeedback('taskListMessage');
     try {
-        await withLoading('Criando weeklies...', async () => {
-            const result = await createWeeklyTasksForGame(game.abbreviation);
-            const message = result.created || result.preserved
-                ? `Lote inicial registrado: ${result.created} criada(s), ${result.preserved} existente(s) preservada(s) com seus dados e repetição atuais.`
-                : 'Lote inicial já registrado. A criação é única por jogo; nenhuma tarefa foi recriada.';
+        await withLoading('Carregando lote...', async () => {
+            const result = await loadTaskBatch();
+            if (getSelectedProfileId() !== profileId) throw new Error('Profile changed while loading the batch.');
+            let message = result.registered
+                ? `Lote registrado: ${result.created} criada(s), ${result.preserved} existente(s) preservada(s) com seus dados e repetição atuais.`
+                : result.deferred ? 'Nenhuma nova tarefa foi criada.'
+                    : 'Lote já registrado para os jogos selecionados. Nenhuma tarefa foi recriada.';
+            if (result.deferred) message += ' Endstate Matrix aguarda o calendário da próxima fase; nenhum prazo foi inventado.';
             await displayAllTasks({ successMessage: message });
         });
     } catch (error) {
-        console.error('Failed to create weekly batch:', error);
-        setFeedback('taskListMessage', 'Não foi possível criar as weeklies. As tarefas existentes foram preservadas. Tente novamente.', 'error');
+        console.error('Failed to load task batch:', error);
+        const message = 'Não foi possível carregar o lote. As tarefas existentes foram preservadas. Tente novamente.';
+        setFeedback('taskListMessage', message, 'error');
     } finally {
-        creatingWeeklies = false;
-        renderTaskList();
+        loadingTaskBatch = false;
+        updateBatchControls();
     }
 }
 
-async function handleCreateEndgameBatch(event) {
-    event.preventDefault();
-    if (creatingEndgame || !weeklyGameDataLoaded) return;
-    const input = document.getElementById('nteBatchDeadline');
-    const nteDeadline = loadedGames.some(game => game.abbreviation === 'NTE') ? input.value : '';
-    creatingEndgame = true;
-    renderTaskList();
-    setFeedback('taskListMessage');
-    try {
-        await withLoading('Criando lote de desafios...', async () => {
-            const result = await createEndgameTasks({ nteDeadline });
-            input.value = '';
-            const message = result.registered
-                ? 'Lote inicial registrado: ' + result.created + ' criada(s), ' + result.preserved + ' existente(s) preservada(s) com seus dados e repetição atuais.'
-                : 'Lote inicial já registrado para os jogos selecionados. Nenhuma tarefa foi recriada.';
-            await displayAllTasks({ successMessage: message });
-        });
-    } catch (error) {
-        console.error('Failed to create endgame batch:', error);
-        const message = error.message?.startsWith('Informe o próximo prazo futuro')
-            ? error.message : 'Não foi possível criar o lote de desafios. As tarefas existentes foram preservadas. Tente novamente.';
-        setFeedback('taskListMessage', message, 'error');
-    } finally {
-        creatingEndgame = false;
-        renderTaskList();
-    }
+function updateBatchControls() {
+    const supported = [...WEEKLY_BATCHES.map(batch => batch.abbreviation), 'GI', 'NTE'];
+    document.getElementById('loadTaskBatchBtn').disabled = loadingTaskBatch || !batchDataLoaded
+        || !loadedGames.some(game => supported.includes(game.abbreviation));
 }
 
 async function runTaskAction(task, { loadingMessage, successMessage, errorMessage, save, onSaved, onError }) {

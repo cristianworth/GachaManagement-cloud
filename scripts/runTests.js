@@ -17,7 +17,7 @@ let failed = false;
 if (!nodeOnly && !dbOnly) {
     failed = run(['node_modules/jest/bin/jest.js', '--runInBand', ...jestArgs]) !== 0;
 }
-const files = dbOnly ? ['tests/database.test.mjs', 'tests/weeklyBatches.test.mjs', 'tests/profileModel.test.mjs', 'tests/profiles.test.mjs', 'tests/eventEditionsExpiry.test.mjs', 'tests/favoriteTasks.test.mjs', 'tests/endgameBatches.test.mjs'] : readdirSync(new URL('../tests/', import.meta.url))
+const files = dbOnly ? ['tests/database.test.mjs', 'tests/weeklyBatches.test.mjs', 'tests/profileModel.test.mjs', 'tests/profiles.test.mjs', 'tests/eventEditionsExpiry.test.mjs', 'tests/favoriteTasks.test.mjs', 'tests/endgameBatches.test.mjs', 'tests/taskBatch.test.mjs', 'tests/expandedTaskBatch.test.mjs'] : readdirSync(new URL('../tests/', import.meta.url))
     .filter(file => file.endsWith('.test.mjs')).sort().map(file => `tests/${file}`);
 if (run(['--test', ...files]) !== 0) failed = true;
 process.exitCode = failed ? 1 : 0;

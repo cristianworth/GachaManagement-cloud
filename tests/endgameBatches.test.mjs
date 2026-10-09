@@ -5,7 +5,7 @@ import { createTestDatabase, readProjectFile } from './helpers/testDatabase.mjs'
 const clock = '2026-10-08T12:00:00Z';
 const anchor = '2026-10-21T10:00:00Z';
 const rpc = async (db, name, args) => (await db.query(`select public.${name}(${args.map((_, i) => `$${i + 1}`).join(',')}) as result`, args)).rows[0].result;
-const batch = (db, profile = 'cran', date = anchor, now = clock) => rpc(db, 'create_profile_endgame_batch', [profile, date, now]);
+const batch = (db, profile = 'cran', date = null, now = clock) => rpc(db, 'create_profile_endgame_batch', [profile, date, now]);
 const tasks = (db, profile = 'cran') => rpc(db, 'list_profile_tasks', [profile]);
 const select = (db, profile, ids) => rpc(db, 'set_profile_games', [profile, ids, false]);
 async function snapshot(db) {
@@ -93,11 +93,11 @@ for (const migrated of [false, true]) test(`Endgame batch as anon: ${migrated ? 
         assert.equal((await tasks(db, 'demo')).some(t => t.description === 'Beyond the Rails'), true);
     });
 
-    for (const invalid of [null, clock, '2026-01-01T10:00:00Z', 'infinity']) {
+    for (const invalid of [clock, '2026-01-01T10:00:00Z', 'infinity']) {
         await scenario(`Invalid NTE anchor ${invalid} rolls back the complete batch`, async () => {
             const before = await snapshot(db);
             await db.exec('savepoint rejected');
-            await assert.rejects(batch(db, 'cran', invalid), /próximo prazo futuro/);
+            await assert.rejects(batch(db, 'cran', invalid), /Prazo explícito inválido/);
             await db.exec('rollback to savepoint rejected');
             assert.deepEqual(await snapshot(db), before);
         });
