@@ -13,4 +13,6 @@ export const WEEKLY_BATCHES = Object.freeze([
         { key: 'hollow-zero', description: 'Hollow Zero' },
         { key: 'notorious-hunt', description: 'Notorious Hunt' },
     ] },
+    { abbreviation: 'GI', definitions: [{ key: 'weekly-boss', description: 'Weekly Boss' }] },
+    { abbreviation: 'NTE', definitions: [{ key: 'weekly-boss', description: 'Weekly Boss' }] },
 ]);

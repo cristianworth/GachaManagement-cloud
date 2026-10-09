@@ -33,7 +33,7 @@ test('Legacy weekly repository retains boot and explicit creation contracts', as
         await repository.populateInitialTasks({ now: '2026-10-04T12:00:00Z' });
         const calls = createCalls().slice(before);
         assert.equal(reads, 1);
-        assert.deepEqual(calls.map(call => [call.payload.p_abbreviation, call.payload.p_game_id]), [['HSR', 42], ['ZZZ', 88]]);
+        assert.deepEqual(calls.map(call => [call.payload.p_abbreviation, call.payload.p_game_id]), [['HSR', 42], ['ZZZ', 88], ['GI', 1]]);
         assert.ok(calls.every(call => !call.payload.p_explicit && call.payload.p_now === '2026-10-04T12:00:00.000Z'));
         assert.deepEqual(state.tasks, rows);
         state.games = games;
@@ -53,7 +53,7 @@ test('Legacy weekly repository retains boot and explicit creation contracts', as
         state.games = state.games.filter(game => game.abbreviation !== 'HSR');
         await assert.rejects(repository.createWeeklyTasksForGame('HSR'), /não cadastrado/);
         state.games.push({ id: 42, abbreviation: 'HSR', description: 'HSR custom ID' });
-        await assert.rejects(repository.createWeeklyTasksForGame('GI'), /sem lote/);
+        await assert.rejects(repository.createWeeklyTasksForGame('UNKNOWN'), /sem lote/);
         assert.equal(createCalls().length, before);
     });
 

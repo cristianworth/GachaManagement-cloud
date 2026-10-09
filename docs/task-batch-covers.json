@@ -62,5 +62,69 @@
     "source_url": "https://game8.co/games/Wuthering-Waves/archives/572518",
     "source_label": "Endstate Matrix",
     "checked_on": "2026-10-09"
+  },
+  {
+    "abbreviation": "HSR",
+    "definition_key": "echo-of-war",
+    "cover_url": "https://img.game8.co/4219086/15d7d900482b095987344cd3e305f515.png/show",
+    "source_url": "https://game8.co/games/Honkai-Star-Rail/archives/410031",
+    "source_label": "Echoes of War Weekly Bosses and Drops | Honkai: Star Rail｜Game8",
+    "checked_on": "2026-10-09"
+  },
+  {
+    "abbreviation": "HSR",
+    "definition_key": "simulated-universe",
+    "cover_url": "https://img.game8.co/3668343/07dbaf282c60b9ddf0f893877e60b595.png/show",
+    "source_url": "https://game8.co/games/Honkai-Star-Rail/archives/409149",
+    "source_label": "Simulated Universe Guide | Honkai: Star Rail｜Game8",
+    "checked_on": "2026-10-09"
+  },
+  {
+    "abbreviation": "GI",
+    "definition_key": "weekly-boss",
+    "cover_url": "https://img.game8.co/3358170/84dac34cf25fbf37297273dd9472e03c.png/show",
+    "source_url": "https://game8.co/games/Genshin-Impact/archives/331384",
+    "source_label": "List of Weekly Bosses and Drops | Trounce Domain Guide | Genshin Impact",
+    "checked_on": "2026-10-09"
+  },
+  {
+    "abbreviation": "NTE",
+    "definition_key": "weekly-boss",
+    "cover_url": "https://img.game8.co/4488767/c531bb490192501df9511b21649758dd.png/show",
+    "source_url": "https://game8.co/games/Neverness-to-Everness/archives/597952",
+    "source_label": "How to Beat Morphix Guide | Neverness to Everness (representative weekly boss)",
+    "checked_on": "2026-10-09"
+  },
+  {
+    "abbreviation": "WuWa",
+    "definition_key": "weekly-boss",
+    "cover_url": "https://img.game8.co/3893931/a4beb189a6b449319c48ce6736f258d2.png/show",
+    "source_url": "https://game8.co/games/Wuthering-Waves/archives/456244",
+    "source_label": "Scar Boss Fight and Location | Wuthering Waves (WuWa)｜Game8 (representative weekly boss)",
+    "checked_on": "2026-10-09"
+  },
+  {
+    "abbreviation": "WuWa",
+    "definition_key": "fantasies-of-the-thousand-gateways",
+    "cover_url": "https://img.game8.co/4104936/1d1c7948d340059366941588c0db569f.png/show",
+    "source_url": "https://game8.co/games/Wuthering-Waves/archives/498720",
+    "source_label": "Fantasies of the Thousand Gateways Guide | Wuthering Waves",
+    "checked_on": "2026-10-09"
+  },
+  {
+    "abbreviation": "ZZZ",
+    "definition_key": "hollow-zero",
+    "cover_url": "https://img.game8.co/3889779/999b78370d9698fa7bcd539da597c682.png/show",
+    "source_url": "https://game8.co/games/Zenless-Zone-Zero/archives/457182",
+    "source_label": "Hollow Zero Guide and Rewards | Zenless Zone Zero",
+    "checked_on": "2026-10-09"
+  },
+  {
+    "abbreviation": "ZZZ",
+    "definition_key": "notorious-hunt",
+    "cover_url": "https://img.game8.co/3923776/e2c37b33dafc5fcd8b2b0849920645b1.png/show",
+    "source_url": "https://game8.co/games/Zenless-Zone-Zero/archives/455454",
+    "source_label": "Notorious Hunt Guide | Zenless Zone Zero",
+    "checked_on": "2026-10-09"
   }
 ]

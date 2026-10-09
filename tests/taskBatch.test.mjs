@@ -32,9 +32,9 @@ for (const migrated of [false, true]) test(`Unified task batch as anon: ${migrat
         try { await run(); } finally { await db.exec('rollback'); }
     });
 
-    await scenario('Public catalogue matches six existing weekly definitions and eight challenges; HSR reserves stay inactive', async () => {
+    await scenario('Public catalogue matches eight weekly definitions and eight challenges; HSR reserves stay inactive', async () => {
         const catalogue = await rpc(db, 'task_batch_catalogue');
-        assert.equal(catalogue.length, 14);
+        assert.equal(catalogue.length, 16);
         assert.deepEqual(catalogue.filter(d => d.kind === 'weekly').map(d => [d.abbreviation, d.definition_key, d.description, d.refresh_type, d.repeat_days]).sort(),
             WEEKLY_BATCHES.flatMap(b => b.definitions.map(d => [b.abbreviation, d.key, d.description, 2, 7])).sort());
         assert.deepEqual(catalogue.filter(d => d.kind === 'endgame').map(d => [d.description, d.refresh_type, d.repeat_days, d.month_day]).sort(), [
@@ -52,7 +52,7 @@ for (const migrated of [false, true]) test(`Unified task batch as anon: ${migrat
         ['2026-12-31T20:00:00Z', '2027-01-13T10:00:00.000Z'],
     ]) await scenario(`Automatic NTE deadline at ${now} skips expired cycles in fixed UTC`, async () => {
         await db.exec("set local timezone='Pacific/Auckland'");
-        assert.equal((await batch(db, 'cran', null, now)).created, now < '2026-11-10T20:00:00Z' ? 14 : 13);
+        assert.equal((await batch(db, 'cran', null, now)).created, now < '2026-11-10T20:00:00Z' ? 16 : 15);
         const row = (await tasks(db)).find(t => t.description === 'Beyond the Rails');
         assert.equal(new Date(row.expiration_date).toISOString(), expected);
         assert.equal(row.repeat_days, 14);
@@ -66,13 +66,13 @@ for (const migrated of [false, true]) test(`Unified task batch as anon: ${migrat
         assert.deepEqual(await snapshot(db), before);
     });
 
-    await scenario('One call creates fourteen tasks, then repeats without mutations or inherited progress', async () => {
-        assert.deepEqual(await batch(db), { status: 'created', created: 14, preserved: 0, registered: 10 });
+    await scenario('One call creates sixteen tasks, then repeats without mutations or inherited progress', async () => {
+        assert.deepEqual(await batch(db), { status: 'created', created: 16, preserved: 0, registered: 12 });
         const rows = (await tasks(db)).filter(t => /^(weekly|endgame):/.test(t.shared_key));
-        assert.equal(rows.length, 14);
+        assert.equal(rows.length, 16);
         assert.deepEqual(rows.map(t => t.description).sort(), [
             'Beyond the Rails', 'Deadly Assault', 'Echo of War', 'Endstate Matrix', 'Fantasies of the Thousand Gateways', 'Hollow Zero',
-            'Imaginarium Theater', 'Notorious Hunt', 'Shiyu Defense', 'Simulated Universe', 'Spiral Abyss', 'Tower of Adversity', 'Weekly Boss', 'Whimpering Wastes',
+            'Imaginarium Theater', 'Notorious Hunt', 'Shiyu Defense', 'Simulated Universe', 'Spiral Abyss', 'Tower of Adversity', 'Weekly Boss', 'Weekly Boss', 'Weekly Boss', 'Whimpering Wastes',
         ]);
         assert.deepEqual(rows.filter(t => t.shared_key.startsWith('endgame:')).map(t => [t.description, t.refresh_type, t.repeat_days, new Date(t.expiration_date).toISOString()]).sort(), [
             ['Beyond the Rails', 3, 14, '2026-10-21T10:00:00.000Z'],
@@ -91,7 +91,7 @@ for (const migrated of [false, true]) test(`Unified task batch as anon: ${migrat
         await rpc(db, 'complete_profile_task', ['cran', rows[0].id, true]);
         await rpc(db, 'set_profile_task_favorite', ['cran', rows[0].id, true]);
         const cran = await tasks(db);
-        assert.equal((await batch(db, 'demo', '2026-10-22T10:00:00Z')).created, 14);
+        assert.equal((await batch(db, 'demo', '2026-10-22T10:00:00Z')).created, 16);
         const demo = (await tasks(db, 'demo')).filter(t => /^(weekly|endgame):/.test(t.shared_key));
         assert.deepEqual(demo.map(t => t.id).sort(), rows.map(t => t.id).sort());
         assert.ok(demo.every(t => !t.is_done && !t.is_favorite));
@@ -108,7 +108,7 @@ for (const migrated of [false, true]) test(`Unified task batch as anon: ${migrat
             await rpc(db, 'set_profile_task_favorite', ['cran', row.id, true]);
             originals.push((await tasks(db)).find(t => t.id === row.id));
         }
-        assert.deepEqual(await batch(db, 'cran', null), { status: 'created', created: 12, preserved: 2, registered: 10 });
+        assert.deepEqual(await batch(db, 'cran', null), { status: 'created', created: 14, preserved: 2, registered: 12 });
         for (const before of originals) assert.deepEqual((await tasks(db)).find(t => t.id === before.id), before);
     });
 
@@ -122,19 +122,19 @@ for (const migrated of [false, true]) test(`Unified task batch as anon: ${migrat
         const theater = old.find(t => t.description === 'Imaginarium Theater');
         await rpc(db, 'save_profile_task', ['cran', JSON.stringify({ ...theater, description: 'My Theater', expiration_date: '2099-11-01T09:00:00Z' }), theater.id]);
         const before = (await tasks(db)).find(t => t.id === theater.id);
-        assert.deepEqual(await batch(db, 'cran', null), { status: 'created', created: 9, preserved: 0, registered: 7 });
+        assert.deepEqual(await batch(db, 'cran', null), { status: 'created', created: 11, preserved: 0, registered: 9 });
         assert.ok(!(await tasks(db)).some(t => t.id === removed.id));
         assert.deepEqual((await tasks(db)).find(t => t.id === theater.id), before);
     });
 
     await scenario('Disabled games stay out; enabling a game later creates only its unregistered activities', async () => {
         await select(db, 'cran', [id('GI'), id('HSR')]);
-        assert.deepEqual(await batch(db, 'cran', null), { status: 'created', created: 4, preserved: 0, registered: 2 });
+        assert.deepEqual(await batch(db, 'cran', null), { status: 'created', created: 5, preserved: 0, registered: 3 });
         await select(db, 'cran', [id('HSR'), id('NTE')]);
-        assert.deepEqual(await batch(db), { status: 'created', created: 1, preserved: 0, registered: 1 });
+        assert.deepEqual(await batch(db), { status: 'created', created: 2, preserved: 0, registered: 2 });
         await select(db, 'cran', all);
         assert.deepEqual(await batch(db, 'cran', null), { status: 'created', created: 9, preserved: 0, registered: 7 });
-        assert.equal((await tasks(db)).filter(t => /^(weekly|endgame):/.test(t.shared_key)).length, 14);
+        assert.equal((await tasks(db)).filter(t => /^(weekly|endgame):/.test(t.shared_key)).length, 16);
     });
 
     await scenario('No games, invalid profile and duplicate enabled abbreviations reject without writes', async () => {
@@ -163,7 +163,7 @@ for (const migrated of [false, true]) test(`Unified task batch as anon: ${migrat
         await db.exec('rollback to savepoint rejected');
         assert.deepEqual(await snapshot(db), before);
         await db.exec('reset role; drop trigger fail_unified_batch on tasks; set local role anon');
-        assert.equal((await batch(db)).created, 14);
+        assert.equal((await batch(db)).created, 16);
         assert.equal((await batch(db, 'cran', null)).created, 0);
     });
 });

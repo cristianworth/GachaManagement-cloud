@@ -1,4 +1,4 @@
-// The native dialog owns keyboard focus; opening/cancelling performs no writes.
+// Opening/cancelling performs no writes. Each explicit submission owns one retry identity.
 import { fetchTaskBatchItems } from '../database/taskDB.js';
 import { getSelectedProfileId } from '../services/profileSession.js';
 import { setFeedback } from './feedback.js';
@@ -6,10 +6,12 @@ import { setFeedback } from './feedback.js';
 let offers = [];
 let actor = null;
 let busy = false;
-const eligible = item => ['never', 'deferred'].includes(item.state);
+let attempt = null;
+const isNew = item => ['never', 'deferred'].includes(item.state);
+const selectable = item => isNew(item) || item.can_replace === true;
 const stateLabels = {
     never: 'Disponível', deferred: 'Adiado', created: 'Já criado', preserved: 'Existente preservado',
-    excluded: 'Excluído — não será recriado', legacy: 'Protegido pelo lote anterior',
+    excluded: 'Excluído', legacy: 'Protegido pelo lote anterior',
     unavailable: 'Calendário da próxima fase pendente',
 };
 const el = id => document.getElementById(id);
@@ -28,6 +30,7 @@ export function initializeTaskBatchPicker(onLoad, updateControls) {
             const items = await fetchTaskBatchItems();
             if (getSelectedProfileId() !== actor) throw new Error('Profile changed while reading the batch.');
             offers = items;
+            attempt = null;
             renderOffers();
             setFeedback('taskBatchMessage');
             dialog.showModal();
@@ -39,7 +42,10 @@ export function initializeTaskBatchPicker(onLoad, updateControls) {
     });
     el('taskBatchCancel').addEventListener('click', () => { if (!busy) dialog.close(); });
     dialog.addEventListener('cancel', event => { if (busy) event.preventDefault(); });
-    dialog.addEventListener('close', () => el('chooseTaskBatchBtn').focus());
+    dialog.addEventListener('close', () => {
+        const trigger = el('chooseTaskBatchBtn');
+        (trigger.disabled ? el('taskListRetry') : trigger).focus();
+    });
     el('taskBatchSelectAll').addEventListener('change', event => {
         for (const box of boxes()) if (!box.disabled) box.checked = event.target.checked;
         updateSummary();
@@ -50,22 +56,33 @@ export function initializeTaskBatchPicker(onLoad, updateControls) {
         if (getSelectedProfileId() !== actor) {
             setFeedback('taskBatchMessage', 'O perfil mudou. Feche e abra a seleção novamente.', 'error'); return;
         }
-        const selected = boxes().filter(box => !box.disabled && box.checked).map(box => {
-            const item = offers[Number(box.dataset.offerIndex)];
-            return { abbreviation: item.abbreviation, definition_key: item.definition_key, calendar_key: item.calendar_key };
-        });
-        const available = boxes().filter(box => !box.disabled).length;
+        const chosen = boxes().filter(box => !box.disabled && box.checked)
+            .map(box => offers[Number(box.dataset.offerIndex)]);
+        const replacements = chosen.filter(item => !isNew(item));
+        if (replacements.length && !window.confirm(
+            `${replacements.length} item(ns) existente(s) ou excluído(s) será(ão) recriado(s) do zero neste perfil. `
+            + 'Prazos editados, conclusão, favoritos e capas personalizadas serão perdidos. Continuar?')) return;
+        // Confirmation may outlive a profile change; never submit for a different actor.
+        if (getSelectedProfileId() !== actor) {
+            setFeedback('taskBatchMessage', 'O perfil mudou. Feche e abra a seleção novamente.', 'error'); return;
+        }
+        const selected = chosen.map(item => ({
+            abbreviation: item.abbreviation, definition_key: item.definition_key, calendar_key: item.calendar_key,
+            ...(!isNew(item) ? { expected_task_id: item.task_id, expected_version: item.task_version } : {}),
+        }));
+        const signature = JSON.stringify(selected);
+        if (!attempt || attempt.signature !== signature) attempt = { signature, requestId: window.crypto.randomUUID() };
+        const deferredCount = boxes().filter(box => !box.checked && isNew(offers[Number(box.dataset.offerIndex)])).length;
         busy = true;
         const controls = [...dialog.querySelectorAll('input, button')];
         const previous = controls.map(control => control.disabled);
         controls.forEach(control => { control.disabled = true; });
         setFeedback('taskBatchMessage', 'Carregando escolhidos…');
         try {
-            const saved = await onLoad({ items: selected, deferredCount: available - selected.length });
+            const saved = await onLoad({ items: selected, deferredCount, requestId: attempt.requestId });
             if (saved) {
                 if (dialog.open) dialog.close();
-            }
-            else setFeedback('taskBatchMessage', 'Não foi possível carregar. Sua seleção foi mantida; tente novamente.', 'error');
+            } else setFeedback('taskBatchMessage', 'Não foi possível confirmar a carga. Sua seleção foi mantida; tente novamente. Se a tarefa mudou, feche e abra a seleção.', 'error');
         } finally {
             busy = false;
             controls.forEach((control, index) => { control.disabled = previous[index]; });
@@ -86,9 +103,11 @@ function renderOffers() {
         }
         const label = document.createElement('label'); label.className = 'task-batch-item';
         const box = document.createElement('input'); box.type = 'checkbox'; box.dataset.offerIndex = String(index);
-        box.disabled = !eligible(item); box.checked = eligible(item);
+        box.disabled = !selectable(item); box.checked = isNew(item);
         const text = document.createElement('span'); text.textContent = item.description;
-        const status = document.createElement('small'); status.textContent = stateLabels[item.state] ?? 'Indisponível';
+        const status = document.createElement('small');
+        status.textContent = item.state === 'legacy' && item.can_replace ? 'Já criado — lote anterior' : stateLabels[item.state] ?? 'Indisponível';
+        if (!isNew(item) && item.task_id && !item.can_replace) status.textContent += ' — substituição indisponível';
         text.append(status); label.append(box, text); field.append(label);
         box.addEventListener('change', updateSummary);
     });
@@ -96,12 +115,15 @@ function renderOffers() {
 }
 function updateSummary() {
     const available = boxes().filter(box => !box.disabled);
-    const selected = available.filter(box => box.checked).length;
+    const selected = available.filter(box => box.checked);
+    const replacements = selected.filter(box => !isNew(offers[Number(box.dataset.offerIndex)])).length;
+    const deferred = available.filter(box => !box.checked && isNew(offers[Number(box.dataset.offerIndex)])).length;
     const all = el('taskBatchSelectAll');
-    all.disabled = !available.length; all.checked = !!available.length && selected === available.length;
-    all.indeterminate = selected > 0 && selected < available.length;
+    all.disabled = !available.length; all.checked = !!available.length && selected.length === available.length;
+    all.indeterminate = selected.length > 0 && selected.length < available.length;
     el('taskBatchSummary').textContent = available.length
-        ? `${selected} escolhido(s); ${available.length - selected} ficará(ão) adiado(s).`
-        : 'Nenhum item elegível neste perfil.';
+        ? `${selected.length} escolhido(s); ${replacements} será(ão) recriado(s) do zero; ${deferred} ficará(ão) adiado(s).`
+        : 'Nenhum item disponível para carregar neste perfil.';
+    // An empty selection remains useful to defer new definitions without any deletion.
     el('taskBatchSubmit').disabled = !available.length;
 }

@@ -42,7 +42,7 @@ test('Batch picker uses enabled offers, stable identities and one actor/transact
         assert.equal(el('taskBatchSelectAll').indeterminate,true);changeAll(false);
         assert.match(el('taskBatchSummary').textContent,/0 escolhido.*3 ficará/);
         state.rpcResults.choose_profile_task_batch={created:0,preserved:0,registered:0};submit();await settled();
-        assert.deepEqual(calls('choose_profile_task_batch').at(-1).payload,{p_profile_id:'cran',p_items:[]});
+        assert.deepEqual(Object.fromEntries(Object.entries(calls('choose_profile_task_batch').at(-1).payload).filter(([key])=>key!=='p_request_id')),{p_profile_id:'cran',p_items:[]});
         assert.equal(el('taskBatchDialog').open,false);assert.match(el('taskListMessage').textContent,/3 item.*adiado/);
     });
     await t.test('Failure retains selection; retry blocks double submit and Escape during write',async()=>{
@@ -56,7 +56,7 @@ test('Batch picker uses enabled offers, stable identities and one actor/transact
         const escape=new dom.window.Event('cancel',{cancelable:true});el('taskBatchDialog').dispatchEvent(escape);
         assert.equal(escape.defaultPrevented,true);assert.equal(el('taskBatchSubmit').disabled,true);
         release();await settled();assert.equal(calls('choose_profile_task_batch').length,before+1);
-        assert.deepEqual(calls('choose_profile_task_batch').at(-1).payload,{p_profile_id:'cran',p_items:[{abbreviation:'HSR',definition_key:'echo-of-war',calendar_key:''}]});
+        assert.deepEqual(Object.fromEntries(Object.entries(calls('choose_profile_task_batch').at(-1).payload).filter(([key])=>key!=='p_request_id')),{p_profile_id:'cran',p_items:[{abbreviation:'HSR',definition_key:'echo-of-war',calendar_key:''}]});
         assert.equal(el('taskGameFilter').value,'11');state.beforeQuery=null;
     });
     await t.test('Profile change before submission invalidates the open selection',async()=>{
@@ -89,14 +89,14 @@ test('Batch picker uses enabled offers, stable identities and one actor/transact
         state.rpcResults.list_profile_task_batch=sample.map(i=>({...i,state:'legacy'}));await open();
         assert.equal(el('taskBatchSubmit').disabled,true);assert.equal(el('taskBatchSelectAll').disabled,true);el('taskBatchCancel').click();
     });
-    await t.test('Eight real covers render through the mapper and use lazy/error fallbacks without writes', async () => {
+    await t.test('Sixteen real covers render through the mapper and use lazy/error fallbacks without writes', async () => {
         const covers = JSON.parse(await readFile(new URL('../docs/task-batch-covers.json', import.meta.url), 'utf8'));
         state.tasks = covers.map((cover, index) => ({ id: 100 + index, game_id: 11, game_description: cover.abbreviation,
             description: cover.definition_key, refresh_type: 0, cover_url: cover.cover_url }));
         const writes = state.writes.length;
         await ui.displayAllTasks();
         const images = [...document.querySelectorAll('.task-cover')];
-        assert.equal(images.length, 8);
+        assert.equal(images.length, 16);
         for (const cover of covers) {
             const image = images.find(img => img.src === cover.cover_url);
             assert.ok(image);

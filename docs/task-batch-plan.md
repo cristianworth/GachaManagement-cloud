@@ -1,10 +1,14 @@
 # Lote único — inventário e entregas
 
-Atualizado em 08/10/2026. **Itens 1 e 2 implementados localmente:** Carregar Lote reúne 14 definições, incluindo os cinco desafios novos. Cristian validou a unificação anterior e autorizou esta expansão. O item 3 e as imagens foram validados por Cristian em 09/10/2026, com commit/1.11.0 autorizados; sem push ou SQL live. Fechamento em **1.10.0**, com commit/push autorizados por Cristian em 08/10/2026; sem aplicação no Supabase live. Continuidade em [handoff-task-batch-personalization.md](handoff-task-batch-personalization.md).
+Atualizado em 09/10/2026. **Entrega 1.12.0:** 16 definições/capas, Weekly Boss GI/NTE e recriação explícita por seleção; detalhes em [manutenção](task-batch-maintenance.md). O histórico abaixo registra as etapas anteriores. **Itens 1 e 2 implementados localmente:** Carregar Lote reúne 14 definições, incluindo os cinco desafios novos. Cristian validou a unificação anterior e autorizou esta expansão. O item 3 e as imagens foram validados por Cristian em 09/10/2026, com commit/1.11.0 autorizados; sem push ou SQL live. Fechamento em **1.10.0**, com commit/push autorizados por Cristian em 08/10/2026; sem aplicação no Supabase live. Continuidade em [handoff-task-batch-personalization.md](handoff-task-batch-personalization.md).
 
 ## Etapa 3 em revisão local — 09/10/2026
 
-Modal e decisões por definição/fase implementados sobre 1.10.0, com defaults reais dos oito endgames. Cristian validou a prévia e autorizou commit e versão 1.11.0; push/aplicação live continuam pendentes. Contratos, migrações, evidências, limites e **Para testar** em [task-batch-personalization.md](task-batch-personalization.md). Marcadores antigos e capas customizadas/null são preservados; não há backfill. Item 3 validado por Cristian; próximo recorte tratará atualização explícita de capas e restauração de itens excluídos.
+Modal e decisões por definição/fase implementados sobre 1.10.0, com defaults reais dos oito endgames. Cristian validou a prévia e autorizou commit e versão 1.11.0; push/aplicação live continuam pendentes. Contratos, migrações, evidências, limites e **Para testar** em [task-batch-personalization.md](task-batch-personalization.md). Marcadores antigos e capas customizadas/null são preservados; não há backfill. Item 3 validado por Cristian; recorte posterior de recriação explícita alinhado e implementado, aguardando validação visual.
+
+## Manutenção solicitada depois do commit 1.11.0
+
+Commit `868408a` concluído. Após diálogo, Cristian autorizou recriação do zero por seleção para existentes/excluídos somente no perfil atual, mantendo indicadores e removendo ações adicionais por item. Implementado no workspace; catálogo complementado com Weekly Boss GI/NTE e capas de todos os 16 itens, sem backfill. Fechamento 1.12.0 com commit/changelog autorizado. [Contrato, fontes e teste](task-batch-maintenance.md). Push/SQL live continuam sem autorização.
 
 ## Inventário central
 

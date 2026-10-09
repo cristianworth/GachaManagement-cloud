@@ -1,0 +1,29 @@
+[
+  {
+    "abbreviation": "GI",
+    "definition_key": "weekly-boss",
+    "repeat_days": 7,
+    "weekday": "Monday",
+    "reset_utc": "09:00",
+    "server_timezone": "UTC-5",
+    "server_time": "04:00",
+    "source_url": "https://game8.co/games/Genshin-Impact/archives/331384",
+    "checked_on": "2026-10-09"
+  },
+  {
+    "abbreviation": "NTE",
+    "definition_key": "weekly-boss",
+    "repeat_days": 7,
+    "weekday": "Monday",
+    "reset_utc": "09:00",
+    "server_timezone": "UTC-5",
+    "server_time": "04:00",
+    "confirmed_by": "Cristian",
+    "confirmed_on": "2026-10-09",
+    "confirmation": "6h de brasilia",
+    "reference_reset": "2026-10-12T09:00:00Z",
+    "source_url": "https://game8.co/games/Neverness-to-Everness/archives/594529",
+    "conflicting_general_source": "https://game8.co/games/Neverness-to-Everness/archives/598313",
+    "note": "Boss-specific in-game confirmation; NTE daily reset remains 05:00 server time."
+  }
+]

@@ -1,5 +1,7 @@
 # Handoff — Gacha Management 1.10.0 → etapa 3 do Lote
 
+> Atualização 1.12.0 (09/10/2026): recriação explícita de existentes/excluídos somente no perfil atual, Weekly Boss GI/NTE e 16 capas concluídos. Contrato, migrações, evidências e roteiro atual em [task-batch-maintenance.md](task-batch-maintenance.md). O restante deste handoff registra a etapa anterior.
+
 Data: 08/10/2026, Brasília. Destinatária: próxima IA Sol 6.1, trabalhando com Cristian. Este documento registra fatos, decisões e uma proposta para a próxima entrega; propostas não são contratos já implementados.
 
 ## Pedido e colaboração

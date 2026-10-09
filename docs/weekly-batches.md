@@ -4,6 +4,12 @@ Entrega da versão 1.5.0, datada de 05/10/2026, com commit e atualização do ch
 
 > Interface atual: as weeklies agora integram **Carregar Lote** junto dos desafios GI/NTE/ZZZ/WuWa. O fluxo unificado é transacional entre jogos e conserva os contratos e marcadores descritos neste histórico. Consulte [Lote único](task-batch-plan.md) para as migrações, comandos e roteiro atual; o botão por jogo citado abaixo pertence à entrega original.
 
+## Complemento 1.12.0
+
+Weekly Boss de GI e NTE integram os lotes por perfil, cada um com definição própria apesar do nome igual ao de WuWa. Ambos vencem na segunda às 09:00 UTC / 06:00 de Brasília. GI: [Game8 Trounce Domains](https://game8.co/games/Genshin-Impact/archives/331384), 04h do servidor América UTC-5. NTE: confirmado por Cristian no jogo em 09/10/2026, 06h de Brasília; a página [Game8 bosses](https://game8.co/games/Neverness-to-Everness/archives/594529) informa 04h, enquanto a página de reset geral informa 05h. A confirmação específica do boss prevalece; o reset diário de NTE não foi alterado. A migração de complemento preserva o boot de perfis existentes e mantém os novos itens elegíveis para carga explícita.
+
+Todas as 16 atividades têm capa padrão. [Fontes e decisões](task-batch-maintenance.md). As regras históricas abaixo descrevem a entrega inicial de três jogos.
+
 ## Catálogo e relógio
 
 | Sigla cadastrada | Definições do novo lote | Reset América |

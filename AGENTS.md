@@ -2,6 +2,9 @@
 
 Leia [docs/project-conventions.md](docs/project-conventions.md) antes de alterar integrações, testes ou banco. O pedido atual de Cristian prevalece sobre este contexto.
 
+- Perguntas sobre um problema, alternativas ou “qual seria a melhor forma?” pedem primeiro uma resposta e um diálogo. Não trate uma consulta como autorização para implementar a solução sugerida.
+- Quando houver dúvidas pendentes que afetem o comportamento, a interface ou o escopo, responda às perguntas, explique os trade-offs e alinhe a decisão com Cristian antes de alterar o código. Leituras necessárias para fundamentar a resposta são permitidas; não implemente enquanto o fluxo ainda estiver em discussão. Depois do alinhamento e do pedido de implementação, prossiga sem pedir confirmação para cada detalhe rotineiro.
+- Em pedidos mistos, respeite o escopo de cada autorização: autorizar o commit de uma entrega validada não autoriza implementar uma alternativa ainda em discussão para outro problema.
 - Projeto pessoal em JavaScript/HTML/CSS, sem framework. Preserve contratos e estados já existentes.
 - Use Game8 como referência para confirmar datas finais e horários do servidor América. Diferencie a edição atual de páginas antigas; não invente horário a partir de uma tabela que só informa datas.
 - Preferência de Cristian: importações de API, lotes e qualquer outro carregamento devem ser automáticos, sem solicitar datas ou prazos na interface. Datas confirmadas por ele dentro do jogo são evidência válida: registrar uma referência absoluta e sua procedência uma vez, calcular os próximos ciclos e não pedir a mesma informação novamente. Se faltar uma regra, esclarecer durante o desenvolvimento; não transferir a configuração do calendário para cada importação/perfil. Edição manual de uma tarefa existente continua disponível.

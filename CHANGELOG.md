@@ -10,7 +10,24 @@ O projeto segue o versionamento semântico (SemVer), no formato `MAJOR.MINOR.PAT
 
 ## [Não publicado]
 
-Sem alterações registradas.
+Nenhuma alteração pendente.
+
+## [1.12.0] - 2026-10-09
+
+### Corrigido
+
+- Selecionar um item já criado ou excluído em **Escolher itens…** recria a tarefa do zero, com novo ID e defaults do lote, somente no perfil atual. Só os ainda não criados começam marcados; indicadores permanecem, sem botões adicionais por item. Um aviso único confirma a perda do estado pessoal antes de substituir.
+- Carga geral preserva tarefas/exclusões; seleções parciais continuam adiando apenas novos desmarcados. Homônimos manuais/importados e história sem vínculo seguro ficam protegidos. Endstate vencido não recebe prazo/recorrência inventados.
+- Substituição transacional, verificação de ID/versão e recibo por tentativa evitam perda parcial, escrita sobre alvo alterado e segunda recriação quando a resposta se perde. Retry mantém a seleção/ator; refresh falho após gravar continua sendo informado como salvo.
+
+### Adicionado
+
+- Weekly Boss de GI e NTE acrescentados ao lote, com identidades por jogo e próximo reset de segunda às 06h de Brasília. Horário de NTE confirmado por Cristian no jogo; reset diário permanece separado. Marcadores de endgames antigos não bloqueiam os novos weeklies; o upgrade não cria tarefas automaticamente.
+- Catálogo completo de **16 atividades com 16 capas reais**: quinze Game8 e uma GameWith, com procedência registrada. Capas personalizadas e remoções anteriores permanecem na carga normal; seleção explícita recria com o default atual, sem backfill na migração.
+- Migração incremental posterior a seleção/capas, schema, testes e prévia em porta alternativa. [Contrato, decisões e Para testar](docs/task-batch-maintenance.md).
+- Orientação no AGENTS.md: responder perguntas e alinhar dúvidas de comportamento/interface antes de implementar uma alternativa.
+
+**Validação:** recorte de conclusão/seleção/lote/weekly/modal com 130 testes e expanded com 15 (com sobreposição); etapa 2 no fechamento MINOR: `npm test` passou **575 testes (69 Jest + 506 Node)**, sem falhas. SQL anon em instalação nova/upgrade e DOM real cobrem recriação, isolamento, retry, preservação e calendários. Arquivos novos de capas responderam HTTP 200 e foram inspecionados visualmente. Prévia final 5504 usa banco descartável; validação visual/PostgREST no destino continua pendente. Push e SQL live permanecem sem autorização.
 
 ## [1.11.0] - 2026-10-09
 

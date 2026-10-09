@@ -46,7 +46,7 @@ for (const migrated of [false, true]) test(`Extra challenge decisions: ${migrate
         })]);
         const original = (await list(db)).find(r => r.id === saved.id);
         const result = await batch(db);
-        assert.equal(result.created, 13);
+        assert.equal(result.created, 15);
         assert.equal(result.preserved, 1);
         assert.deepEqual((await list(db)).find(r => r.id === saved.id), original);
         await rpc(db, 'remove_profile_task', ['cran', saved.id]);
@@ -70,12 +70,12 @@ for (const migrated of [false, true]) test(`Extra challenge decisions: ${migrate
         for (const table of ['profile_task_batch_items', 'profile_weekly_batches', 'profile_endgame_batches'])
             assert.deepEqual((await db.query(`select to_jsonb(t) as row from ${table} t where profile_id='cran' order by to_jsonb(t)::text`)).rows, markers[table]);
         await db.exec('reset role; drop trigger fail_expanded_batch on tasks; set local role anon');
-        assert.equal((await batch(db)).created, 14);
+        assert.equal((await batch(db)).created, 16);
     });
 
     await scenario('Expired Endstate phase is not imported or extrapolated; other cycles still load', async () => {
         const result = await batch(db, 'cran', '2026-11-10T20:00:00Z');
-        assert.equal(result.created, 13);
+        assert.equal(result.created, 15);
         assert.equal(result.deferred, 1);
         assert.ok(!(await list(db)).some(r => r.description === 'Endstate Matrix'));
         assert.equal((await db.query("select count(*)::int as count from profile_task_batch_items where definition_key='endstate-matrix'")).rows[0].count, 0);
@@ -107,7 +107,7 @@ for (const migrated of [false, true]) test(`Extra challenge decisions: ${migrate
         await db.exec(await readProjectFile('db/seed.sql'));
         const ids = (await db.query('select id from games')).rows.map(g => g.id);
         await rpc(db, 'set_profile_games', ['cran', ids, false]);
-        assert.equal((await batch(db)).created, 14);
+        assert.equal((await batch(db)).created, 16);
     });
 });
 

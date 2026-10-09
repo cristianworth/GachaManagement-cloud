@@ -202,7 +202,7 @@ async function handleTaskFavorite(task, button) {
     }
 }
 
-async function handleLoadTaskBatch({ items, deferredCount = 0 } = {}) {
+async function handleLoadTaskBatch({ items, deferredCount = 0, requestId } = {}) {
     if (loadingTaskBatch || !batchDataLoaded) return;
     const profileId = getSelectedProfileId();
     if (!profileId) {
@@ -214,7 +214,7 @@ async function handleLoadTaskBatch({ items, deferredCount = 0 } = {}) {
     setFeedback('taskListMessage');
     try {
         return await withLoading('Carregando lote...', async () => {
-            const result = items === undefined ? await loadTaskBatch() : await chooseTaskBatch(items);
+            const result = items === undefined ? await loadTaskBatch() : await chooseTaskBatch(items, { requestId });
             if (getSelectedProfileId() !== profileId) {
                 if (items === undefined) throw new Error('Profile changed while loading the batch.');
                 document.getElementById('taskBatchDialog').close();
@@ -226,6 +226,7 @@ async function handleLoadTaskBatch({ items, deferredCount = 0 } = {}) {
                 : result.deferred ? 'Nenhuma nova tarefa foi criada.'
                     : 'Lote já registrado para os jogos selecionados. Nenhuma tarefa foi recriada.';
             if (items !== undefined && !result.registered) message = 'Seleção salva. Nenhuma nova tarefa foi criada.';
+            if (result.replaced) message += ` ${result.replaced} item(ns) recriado(s) do zero somente neste perfil.`;
             if (deferredCount) message += ` ${deferredCount} item(ns) adiado(s), disponível(is) para carregar depois.`;
             if (result.deferred) message += ' Endstate Matrix aguarda o calendário da próxima fase; nenhum prazo foi inventado.';
             if (items !== undefined) document.getElementById('taskBatchDialog').close();

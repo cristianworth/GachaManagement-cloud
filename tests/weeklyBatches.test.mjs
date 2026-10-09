@@ -2,9 +2,11 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { spawnSync } from 'node:child_process';
 import { createTestDatabase, readProjectFile } from './helpers/testDatabase.mjs';
-import { WEEKLY_BATCHES } from '../js/data/weeklyTasks.js';
+import { WEEKLY_BATCHES as CURRENT_WEEKLY_BATCHES } from '../js/data/weeklyTasks.js';
 import { getNextRecurringDeadline } from '../js/utils/dateUtils.js';
 
+// The global legacy RPC keeps its original three-game contract. New groups use profile RPCs.
+const WEEKLY_BATCHES = CURRENT_WEEKLY_BATCHES.filter(b=>['HSR','WuWa','ZZZ'].includes(b.abbreviation));
 const clock = '2026-10-04T12:00:00Z';
 const definitions = JSON.stringify(WEEKLY_BATCHES.find(batch => batch.abbreviation === 'ZZZ').definitions);
 async function createBatch(db, { abbreviation = 'ZZZ', explicit = true, now = clock, items = definitions, id } = {}) {

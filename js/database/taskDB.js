@@ -117,9 +117,10 @@ export async function fetchTaskBatchItems() {
     return (await profileRpc('list_profile_task_batch')) ?? [];
 }
 
-export async function chooseTaskBatch(items, { now } = {}) {
+export async function chooseTaskBatch(items, { now, requestId } = {}) {
     return profileRpc('choose_profile_task_batch', {
         p_items: items,
+        ...(requestId ? { p_request_id: requestId } : {}),
         ...(now !== undefined ? { p_now: new Date(now).toISOString() } : {}),
     });
 }

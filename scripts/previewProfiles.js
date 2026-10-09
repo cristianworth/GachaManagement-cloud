@@ -10,7 +10,11 @@ const root = fileURLToPath(new URL('../', import.meta.url));
 const db = await createTestDatabase();
 await db.exec('set role anon');
 const args = process.argv.slice(2);
-if (args.some(arg => arg !== '--events')) throw new Error('Use only --events to load synthetic event scenarios.');
+const portArg = args.find(arg => arg.startsWith('--port='));
+const port = portArg ? Number(portArg.slice(7)) : 5501;
+if (!Number.isInteger(port) || port < 1024 || port > 65535 || args.some(arg => arg !== '--events' && arg !== portArg)) {
+    throw new Error('Use --events and/or --port=1024..65535 for an isolated preview.');
+}
 if (args.includes('--events')) {
     await seedPreviewEventFixtures(db);
     console.log('Synthetic events: CRAN expired, Demo with a future manual deadline, Convidado recurring; next editions open.');
@@ -101,7 +105,7 @@ const server = createServer(async (request, response) => {
         send(response, error.code === 'ENOENT' ? 404 : 500, 'text/plain', 'Preview resource unavailable');
     }
 });
-server.listen(5501, '127.0.0.1', () => console.log('Prévia de perfis: http://127.0.0.1:5501 — banco descartável, sem acesso ao Supabase.'));
+server.listen(port, '127.0.0.1', () => console.log('Prévia de perfis: http://127.0.0.1:' + port + ' — banco descartável, sem acesso ao Supabase.'));
 async function stop() { server.close(); await db.close(); process.exit(); }
 process.on('SIGINT', stop);
 process.on('SIGTERM', stop);

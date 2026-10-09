@@ -59,7 +59,7 @@ test('real profile UI uses SQL contracts and only selected games', async t => {
     await waitFor(() => el('loadingOverlay').hidden);
     assert.equal(el('gameListBody').rows.length, 2);
     await tasks.displayAllTasks();
-    assert.equal(el('gameScheduleBody').rows.length, 2, 'Only ZZZ has weeklies in this selection');
+    assert.equal(el('gameScheduleBody').rows.length, 3, 'GI and ZZZ contribute their weekly definitions');
     assert.equal(el('taskGameFilter').options.length, 3);
     const ownerTask = (await repo.fetchAllTasks())[0];
     await repo.completeTask(ownerTask.id, true);

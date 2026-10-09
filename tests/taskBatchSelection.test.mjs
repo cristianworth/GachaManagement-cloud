@@ -25,10 +25,10 @@ for (const migrated of [false, true]) test(`Personal batch selection as anon: ${
     });
     await scenario('Reading is side effect free and inventories exactly enabled games and no HSR reserves', async () => {
         const before = await snapshot(db); const list = await offers(db);
-        assert.equal(list.length, 14); assert.ok(list.every(i=>i.state==='never'));
-        assert.equal(list.filter(i=>i.cover_url).length,8); assert.deepEqual(await snapshot(db),before);
+        assert.equal(list.length, 16); assert.ok(list.every(i=>i.state==='never'));
+        assert.equal(list.filter(i=>i.cover_url).length,16); assert.deepEqual(await snapshot(db),before);
         await rpc(db,'set_profile_games',['cran',[id('GI')],false]);
-        assert.deepEqual((await offers(db)).map(i=>i.definition_key),['imaginarium-theater','spiral-abyss']);
+        assert.deepEqual((await offers(db)).map(i=>i.definition_key),['imaginarium-theater','spiral-abyss','weekly-boss']);
     });
     await scenario('One weekly and one endgame never close their groups; unchecked items remain loadable', async () => {
         const result = await choose(db,[identity('HSR','echo-of-war'),identity('GI','spiral-abyss')]);
@@ -43,7 +43,7 @@ for (const migrated of [false, true]) test(`Personal batch selection as anon: ${
         const definitions=[{key:'echo-of-war',description:'Echo of War'},{key:'simulated-universe',description:'Simulated Universe'}];
         assert.equal((await rpc(db,'create_profile_weekly_batch',['cran','HSR',id('HSR'),JSON.stringify(definitions),false,clock])).created,0);
         assert.equal((await choose(db,[identity('GI','imaginarium-theater')])).created,1);
-        assert.equal((await rpc(db,'create_profile_task_batch',['cran',null,clock])).created,11);
+        assert.equal((await rpc(db,'create_profile_task_batch',['cran',null,clock])).created,13);
         assert.equal((await rpc(db,'create_profile_extra_challenges',['cran',clock])).deferred,0);
         const before=await snapshot(db); assert.equal((await rpc(db,'create_profile_task_batch',['cran',null,clock])).created,0);
         assert.deepEqual(await snapshot(db),before);
@@ -52,7 +52,7 @@ for (const migrated of [false, true]) test(`Personal batch selection as anon: ${
     await scenario('Empty explicit selection defers without creating, deleting or closing the batch', async () => {
         const before=await tasks(db); assert.equal((await choose(db,[])).created,0);
         assert.deepEqual(await tasks(db),before); assert.ok((await offers(db)).every(i=>i.state==='deferred'));
-        assert.equal((await rpc(db,'create_profile_task_batch',['cran',null,clock])).created,14);
+        assert.equal((await rpc(db,'create_profile_task_batch',['cran',null,clock])).created,16);
     });
     await scenario('Deletion, rename, homonyms and personal fields survive partial and full retries', async () => {
         const original=await rpc(db,'save_profile_task',['cran',JSON.stringify({description:'Spiral Abyss',game_id:id('GI'),
@@ -76,7 +76,7 @@ for (const migrated of [false, true]) test(`Personal batch selection as anon: ${
         const before=await snapshot(db);const list=await offers(db);
         assert.equal(list.filter(i=>i.state==='legacy').length,5);assert.deepEqual(await snapshot(db),before);
         assert.equal((await choose(db,[identity('HSR','echo-of-war'),identity('GI','spiral-abyss'),identity('ZZZ','deadly-assault'),identity('ZZZ','shiyu-defense')])).created,1);
-        assert.equal((await rpc(db,'create_profile_task_batch',['cran',null,clock])).created,8);
+        assert.equal((await rpc(db,'create_profile_task_batch',['cran',null,clock])).created,10);
         assert.ok(!(await tasks(db)).some(x=>['Echo of War','Spiral Abyss','Deadly Assault'].includes(x.description)));
     });
     for(const [name,items] of [['null',null],['unknown',[identity('HSR','pure-fiction')]],['duplicate',[identity('GI','spiral-abyss'),identity('GI','spiral-abyss')]],
@@ -98,7 +98,7 @@ for (const migrated of [false, true]) test(`Personal batch selection as anon: ${
         const now='2026-11-10T20:00:00Z';assert.equal((await offers(db,'cran',now)).find(x=>x.definition_key==='endstate-matrix').state,'unavailable');
         assert.equal((await choose(db,[identity('WuWa','endstate-matrix','3.7')],'cran',now)).deferred,1);
         assert.ok(!(await tasks(db)).some(x=>x.description==='Endstate Matrix'));
-        assert.equal((await rpc(db,'create_profile_task_batch',['cran',null,now])).created,13);
+        assert.equal((await rpc(db,'create_profile_task_batch',['cran',null,now])).created,15);
     });
     await scenario('A late error rolls back tasks AND unchecked deferrals; retry succeeds',async()=>{
         await db.exec(`reset role; create function reject_selected() returns trigger language plpgsql as $$ begin
@@ -110,11 +110,11 @@ for (const migrated of [false, true]) test(`Personal batch selection as anon: ${
         await db.exec('reset role; drop trigger reject_selected on tasks; set local role anon');
         assert.equal((await choose(db,[identity('GI','spiral-abyss'),identity('ZZZ','shiyu-defense')])).created,2);
     });
-    await scenario('Default covers reach eight new definitions; custom and explicitly removed covers survive reuse by another profile',async()=>{
-        const covers=await rpc(db,'task_batch_cover_catalogue');assert.equal(covers.length,8);
+    await scenario('Default covers reach sixteen new definitions; custom and explicitly removed covers survive reuse by another profile',async()=>{
+        const covers=await rpc(db,'task_batch_cover_catalogue');assert.equal(covers.length,16);
         assert.deepEqual(covers, JSON.parse(await readProjectFile('docs/task-batch-covers.json')));
         await rpc(db,'create_profile_task_batch',['cran',null,clock]);
-        const rows=await tasks(db);assert.equal(rows.filter(x=>x.cover_url).length,8);
+        const rows=await tasks(db);assert.equal(rows.filter(x=>x.cover_url).length,16);
         const theater=rows.find(x=>x.description==='Imaginarium Theater');const abyss=rows.find(x=>x.description==='Spiral Abyss');
         await rpc(db,'save_profile_task',['cran',JSON.stringify({...theater,cover_url:'https://example.com/custom.png'}),theater.id]);
         await rpc(db,'save_profile_task',['cran',JSON.stringify({...abyss,cover_url:null}),abyss.id]);
@@ -140,16 +140,16 @@ test('Selection and cover upgrades preserve 1.10.0 history, custom/null covers a
     await db.exec('reset role');
     for(const file of migrations.slice(migrations.indexOf('2026-10-09-task-batch-selection.sql')))await db.exec(await readProjectFile('db/migrations/'+file));
     await db.exec('set role anon');assert.deepEqual(await tasks(db),before);
-    assert.ok((await offers(db)).every(i=>i.state==='legacy'));
+    assert.ok((await offers(db)).filter(i=>i.definition_key!=='weekly-boss'||!['GI','NTE'].includes(i.abbreviation)).every(i=>['legacy','excluded'].includes(i.state)));
     assert.equal((await choose(db,[identity('HSR','echo-of-war'),identity('WuWa','tower-of-adversity')])).created,0);
-    assert.equal((await rpc(db,'create_profile_task_batch',['cran',null,clock])).created,0);assert.deepEqual(await tasks(db),before);
+    assert.equal((await rpc(db,'create_profile_task_batch',['cran',null,clock])).created,2);const after=await tasks(db);assert.deepEqual(after.filter(x=>before.some(b=>b.id===x.id)),before);assert.equal(after.length,before.length+2);
 });
 
 
 test('Fresh schema embeds selection and cover migrations in upgrade order', async () => {
     const schema = (await readProjectFile('db/schema.sql')).replace(/\r\n/g, '\n');
     let previous = -1;
-    for (const file of ['2026-10-09-task-batch-selection.sql', '2026-10-09-task-batch-covers.sql']) {
+    for (const file of ['2026-10-09-task-batch-selection.sql', '2026-10-09-task-batch-covers.sql', '2026-10-09-task-batch-maintenance.sql', '2026-10-09-task-batch-completion.sql']) {
         const sql = (await readProjectFile('db/migrations/' + file)).replace(/\r\n/g, '\n');
         const position = schema.indexOf(sql);
         assert.ok(position > previous);
