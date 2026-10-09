@@ -1,6 +1,6 @@
 # Recriação de itens pela seleção do Lote
 
-Base: commit `868408a`, versão 1.11.0. Entrega 1.12.0: commit e changelog autorizados por Cristian; **sem push ou aplicação no Supabase**. Em 09/10/2026, após discutir o fluxo, Cristian autorizou implementar: marcar somente os itens ainda não criados por padrão; permitir selecionar existentes/excluídos para recriar do zero apenas no perfil atual; manter indicadores e remover botões adicionais por item.
+Base: commit `868408a`, versão 1.11.0. Entrega 1.12.0: commit, changelog e push autorizados por Cristian em 09/10/2026; **sem aplicação no Supabase**. Em 09/10/2026, após discutir o fluxo, Cristian autorizou implementar: marcar somente os itens ainda não criados por padrão; permitir selecionar existentes/excluídos para recriar do zero apenas no perfil atual; manter indicadores e remover botões adicionais por item.
 
 ## Comportamento acordado
 
@@ -78,4 +78,8 @@ Abra [a prévia atual](http://127.0.0.1:5504/tasks) e selecione **CRAN**. As pr�
 
 Para iniciar outro banco descartável: `npm run preview:profiles -- --port=5504` (a porta precisa estar livre). Dados somem ao encerrar esse servidor. Não aplicar a migração no Supabase nem usar reset live sem autorização.
 
-**Workflow:** fluxo alinhado e implementação concluída, versão 1.12.0/changelog/commit autorizados. Testes locais completos aprovados; validação visual e aplicação no destino permanecem pendentes. Sem push ou SQL live.
+**Workflow:** fluxo alinhado e implementação concluída, versão 1.12.0/changelog/commit autorizados. Testes locais completos aprovados; validação visual e aplicação no destino permanecem pendentes. Push autorizado; SQL live sem autorização.
+
+## Continuidade
+
+Cristian adiou SweetAlert2 em 09/10/2026. A confirmação atual continua com `window.confirm`; a discussão de mensagens estilizadas não gerou dependência nem alteração de código. Publicação desta entrega conserva 1.12.0, sem incrementar a versão por um registro documental.

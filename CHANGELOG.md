@@ -27,7 +27,7 @@ Nenhuma alteração pendente.
 - Migração incremental posterior a seleção/capas, schema, testes e prévia em porta alternativa. [Contrato, decisões e Para testar](docs/task-batch-maintenance.md).
 - Orientação no AGENTS.md: responder perguntas e alinhar dúvidas de comportamento/interface antes de implementar uma alternativa.
 
-**Validação:** recorte de conclusão/seleção/lote/weekly/modal com 130 testes e expanded com 15 (com sobreposição); etapa 2 no fechamento MINOR: `npm test` passou **575 testes (69 Jest + 506 Node)**, sem falhas. SQL anon em instalação nova/upgrade e DOM real cobrem recriação, isolamento, retry, preservação e calendários. Arquivos novos de capas responderam HTTP 200 e foram inspecionados visualmente. Prévia final 5504 usa banco descartável; validação visual/PostgREST no destino continua pendente. Push e SQL live permanecem sem autorização.
+**Validação:** recorte de conclusão/seleção/lote/weekly/modal com 130 testes e expanded com 15 (com sobreposição); etapa 2 no fechamento MINOR: `npm test` passou **575 testes (69 Jest + 506 Node)**, sem falhas. SQL anon em instalação nova/upgrade e DOM real cobrem recriação, isolamento, retry, preservação e calendários. Arquivos novos de capas responderam HTTP 200 e foram inspecionados visualmente. Prévia final 5504 usa banco descartável; validação visual/PostgREST no destino continua pendente. Commit e push autorizados por Cristian; aplicação SQL live permanece pendente de autorização.
 
 ## [1.11.0] - 2026-10-09
 
