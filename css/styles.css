@@ -589,3 +589,10 @@ textarea::placeholder {
 #taskBatchDialog input[type="checkbox"] { width: auto; flex-shrink: 0; margin-top: 3px; }
 .task-batch-item small { display: block; margin-top: 4px; }
 .task-batch-actions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 10px; }
+
+/* Shared SweetAlert2 presentation follows the application's existing buttons and colors. */
+.app-dialog-popup { border: 1px solid #d0d5dd; border-radius: 12px; font: inherit; }
+.app-dialog-title { color: var(--main-blue); font-size: 1.5rem; }
+.app-dialog-text { white-space: pre-line; overflow-wrap: anywhere; line-height: 1.5; }
+.app-dialog-popup .swal2-actions { gap: 12px; }
+.app-dialog-popup .swal2-actions button { margin: 0; }

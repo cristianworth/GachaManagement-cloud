@@ -12,6 +12,21 @@ O projeto segue o versionamento semântico (SemVer), no formato `MAJOR.MINOR.PAT
 
 Nenhuma alteração pendente.
 
+## [1.12.1] - 2026-10-10
+
+### Melhorado
+
+- SweetAlert2 11.26.25 com versão fixa e assets locais substitui a única confirmação nativa existente. O aviso do lote mostra nomes/jogos, Cancelar/Recriar e segue o estilo da aplicação. `showDialog` centraliza a configuração para confirmações/avisos futuros. O Git preserva LF nos assets locais para manter igualdade com o pacote também no Windows.
+- Confirmação assíncrona permanece dentro do modal nativo, preserva seleção/ator/foco e impede envio duplicado enquanto o aviso está aberto. Escape/cancelamento não gravam; falha libera os controles e mantém a seleção.
+
+### Documentado
+
+- Contexto pessoal, usuário frequente único, dados de baixa criticidade e preferência por mudanças pequenas registrados em AGENTS.md e convenções.
+- Roadmap/tierlist reordenados para uso cotidiano: S com paginação visual de 20/10 itens e estimativa local de resina por minuto; A com leitura silenciosa a cada 6 minutos e menu lateral. Paginação SQL depende de volume/lentidão reais. Critérios e limites registrados no TODO, sem implementar as propostas.
+- SQL incremental até 1.12.0 aplicado por Cristian no Supabase em 09/10/2026; catálogos/leitura do lote conferidos por PostgREST. Esta versão não altera o banco.
+
+**Validação:** os 64 testes focados da implementação passaram, incluindo SweetAlert2 real no DOM, cancelamento/Escape, bloqueio de confirmação concorrente, troca de perfil, falha/retry e igualdade dos assets com o pacote instalado. No fechamento, o teste de diálogos/assets foi repetido e seus quatro testes passaram após conferir as quebras de linha no Git. Suíte completa não repetida no fechamento PATCH, conforme convenções. Conferência visual em navegador continua pendente porque a automação falhou na inicialização.
+
 ## [1.12.0] - 2026-10-09
 
 ### Corrigido
@@ -27,7 +42,7 @@ Nenhuma alteração pendente.
 - Migração incremental posterior a seleção/capas, schema, testes e prévia em porta alternativa. [Contrato, decisões e Para testar](docs/task-batch-maintenance.md).
 - Orientação no AGENTS.md: responder perguntas e alinhar dúvidas de comportamento/interface antes de implementar uma alternativa.
 
-**Validação:** recorte de conclusão/seleção/lote/weekly/modal com 130 testes e expanded com 15 (com sobreposição); etapa 2 no fechamento MINOR: `npm test` passou **575 testes (69 Jest + 506 Node)**, sem falhas. SQL anon em instalação nova/upgrade e DOM real cobrem recriação, isolamento, retry, preservação e calendários. Arquivos novos de capas responderam HTTP 200 e foram inspecionados visualmente. Prévia final 5504 usa banco descartável; validação visual/PostgREST no destino continua pendente. Commit e push autorizados por Cristian; aplicação SQL live permanece pendente de autorização.
+**Validação:** recorte de conclusão/seleção/lote/weekly/modal com 130 testes e expanded com 15 (com sobreposição); etapa 2 no fechamento MINOR: `npm test` passou **575 testes (69 Jest + 506 Node)**, sem falhas. SQL anon em instalação nova/upgrade e DOM real cobrem recriação, isolamento, retry, preservação e calendários. Arquivos novos de capas responderam HTTP 200 e foram inspecionados visualmente. Prévia final 5504 usa banco descartável; conferência visual no destino continua pendente. Em 09/10/2026 Cristian executou o SQL incremental no Supabase com sucesso; PostgREST respondeu 200 para os catálogos de 16 definições/16 capas e a leitura das 16 ofertas do CRAN. Commit e push autorizados por Cristian; atualização SQL live executada por Cristian e contratos de leitura conferidos.
 
 ## [1.11.0] - 2026-10-09
 

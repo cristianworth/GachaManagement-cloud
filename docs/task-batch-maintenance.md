@@ -1,6 +1,6 @@
 # Recriação de itens pela seleção do Lote
 
-Base: commit `868408a`, versão 1.11.0. Entrega 1.12.0: commit, changelog e push autorizados por Cristian em 09/10/2026; **sem aplicação no Supabase**. Em 09/10/2026, após discutir o fluxo, Cristian autorizou implementar: marcar somente os itens ainda não criados por padrão; permitir selecionar existentes/excluídos para recriar do zero apenas no perfil atual; manter indicadores e remover botões adicionais por item.
+Base: commit `868408a`, versão 1.11.0. Entrega 1.12.0: commit, changelog e push autorizados por Cristian em 09/10/2026; **SQL incremental aplicado por Cristian em 09/10/2026**, após autorização explícita. Em 09/10/2026, após discutir o fluxo, Cristian autorizou implementar: marcar somente os itens ainda não criados por padrão; permitir selecionar existentes/excluídos para recriar do zero apenas no perfil atual; manter indicadores e remover botões adicionais por item.
 
 ## Comportamento acordado
 
@@ -26,7 +26,7 @@ O modal gera um identificador por tentativa e o mantém no retry da mesma seleç
 
 ## Contratos públicos e migração
 
-Migrações incrementais: `db/migrations/2026-10-09-task-batch-maintenance.sql` → `db/migrations/2026-10-09-task-batch-completion.sql`, após seleção → capas. Reproduzida no final de `db/schema.sql` e na ordem de `tests/helpers/testDatabase.mjs`. Está somente local e não faz backfill nem altera tarefas ao ser aplicada.
+Migrações incrementais: `db/migrations/2026-10-09-task-batch-maintenance.sql` → `db/migrations/2026-10-09-task-batch-completion.sql`, após seleção → capas. Reproduzida no final de `db/schema.sql` e na ordem de `tests/helpers/testDatabase.mjs`. Foi aplicada no Supabase pelo pacote incremental em 09/10/2026; não faz backfill nem altera tarefas existentes ao ser aplicada.
 
 - `list_profile_task_batch(profile, now)` acrescenta `task_id`, `task_version`, `can_replace` e metadados de origem/capa. Sua leitura continua sem escrita.
 - `choose_profile_task_batch(profile, items, now default now(), request_id uuid default null)` conserva a posição dos três argumentos anteriores e acrescenta o identificador opcional da tentativa.
@@ -66,7 +66,7 @@ Fechamento 1.12.0: recorte de conclusão/seleção/lote/weekly/modal passou 130 
 
 ## Para testar
 
-Abra [a prévia atual](http://127.0.0.1:5504/tasks) e selecione **CRAN**. As prévias anteriores foram preservadas; elas não têm a nova migração em memória. Nesta prévia foram preparados Echo personalizado/concluído/favorito com prazo manual e sem capa, SU excluído e 14 definições adiadas.
+Abra [a prévia atual](http://127.0.0.1:5504/tasks) e selecione **CRAN**. Os cenários abaixo usaram Echo personalizado/concluído/favorito com prazo manual e sem capa, SU excluído e 14 definições adiadas. Esses dados de teste eram descartáveis e desapareceram com o reinício do PC. Em uma prévia nova, habilite os jogos, carregue o lote e prepare os estados descritos antes de reproduzir os cenários.
 
 1. Abra **Escolher itens…**. Confira Echo como **Já criado** e SU como **Excluído**, ambos habilitados/desmarcados. Os 14 ainda não criados começam marcados. Não há botões adicionais nas linhas.
 2. Desmarque todos e marque apenas Echo e SU. Confira duas recriações no resumo. Clique **Carregar escolhidos** e cancele o aviso: nada muda e a seleção fica aberta.
@@ -78,8 +78,12 @@ Abra [a prévia atual](http://127.0.0.1:5504/tasks) e selecione **CRAN**. As pr�
 
 Para iniciar outro banco descartável: `npm run preview:profiles -- --port=5504` (a porta precisa estar livre). Dados somem ao encerrar esse servidor. Não aplicar a migração no Supabase nem usar reset live sem autorização.
 
-**Workflow:** fluxo alinhado e implementação concluída, versão 1.12.0/changelog/commit autorizados. Testes locais completos aprovados; validação visual e aplicação no destino permanecem pendentes. Push autorizado; SQL live sem autorização.
+**Workflow:** fluxo alinhado e implementação concluída, versão 1.12.0/changelog/commit autorizados. Testes locais completos aprovados; validação visual permanece pendente. Push concluído; SQL live aplicado por Cristian em 09/10/2026.
 
 ## Continuidade
 
-Cristian adiou SweetAlert2 em 09/10/2026. A confirmação atual continua com `window.confirm`; a discussão de mensagens estilizadas não gerou dependência nem alteração de código. Publicação desta entrega conserva 1.12.0, sem incrementar a versão por um registro documental.
+Cristian adiou SweetAlert2 inicialmente e depois autorizou a integração em 09/10/2026. O recorte atual instala a versão 11.26.25 com assets locais e usa `showDialog` de `js/ui/dialogs.js`; a confirmação do lote tornou-se assíncrona, sem adicionar ações por item. 64 testes focados passaram; conferência visual pendente. O registro documental anterior conservou 1.12.0; SweetAlert2 e o roadmap fecham em 1.12.1 em 10/10/2026.
+
+### Conferência do Supabase
+
+Após Cristian informar “Success. No rows returned.” no SQL Editor do projeto `zzcxhtblbmiakuvdakic`, consultas públicas sem escrita confirmaram HTTP 200 para `task_batch_catalogue` (16), `task_batch_cover_catalogue` (16) e `list_profile_task_batch` do CRAN (16: dez novos e seis protegidos pelo lote anterior). A API também respondeu à leitura dos jogos. Nenhuma recriação/seleção foi executada pelo agente no banco real nessa conferência.

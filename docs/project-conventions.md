@@ -1,5 +1,9 @@
 # Convenções do Gacha Management
 
+## Escopo pessoal e decisões proporcionais
+
+Cristian é o único usuário frequente; o projeto atende ao seu uso pessoal, sem objetivo comercial. Demonstrações ocasionais não implicam uma base empresarial de usuários. Os dados têm baixa criticidade e podem ser recriados ou reformulados quando isso for combinado. Preferir ajustes locais e a estrutura existente em correções/melhorias; não presumir necessidade de conversores, arquitetura de escala ou preservação histórica extensa. As decisões devem respeitar o fluxo solicitado e as autorizações do momento. Contexto detalhado em [AGENTS.md](../AGENTS.md).
+
 Este documento registra decisões verificadas do projeto e preferências de Cristian. Não autoriza novas entregas, publicação ou alterações em serviços externos por si só.
 
 ## Implementação

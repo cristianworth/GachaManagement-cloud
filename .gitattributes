@@ -1,2 +1,6 @@
 # Fixture hashes must not depend on the checkout's line-ending preferences.
 tests/fixtures/*.json text eol=lf
+
+# Preserve vendored assets exactly as distributed by the locked dependency.
+js/vendor/sweetalert2/* text eol=lf
+css/sweetalert2.min.css text eol=lf

@@ -1,6 +1,6 @@
 # Favorite tasks — estrelas por perfil
 
-Entrega da versão 1.9.0, com commit e push autorizados por Cristian em 07/10/2026. Frontend, schema, migração e testes estão preparados; **a migração não foi aplicada ao Supabase live**. A publicação do código não executa o SQL no destino.
+Entrega da versão 1.9.0, com commit e push autorizados por Cristian em 07/10/2026. Frontend, schema, migração e testes entregues; **a migração foi aplicada por Cristian no pacote incremental do Supabase em 09/10/2026**. A publicação do código não executa o SQL no destino.
 
 ## Comportamento
 

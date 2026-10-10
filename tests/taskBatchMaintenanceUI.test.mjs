@@ -7,14 +7,15 @@ test('Selection replaces existing and excluded items through the same batch subm
     t.mock.method(console, 'log', () => {}); t.mock.method(console, 'error', () => {});
     t.mock.method(globalThis, 'fetch', () => { throw new Error('Offline batch UI tests'); });
     let approved = true; const confirmations = [];
-    t.mock.method(dom.window, 'confirm', message => { confirmations.push(message); return approved; });
+    const {default: Swal} = await import('../js/vendor/sweetalert2/sweetalert2.esm.min.js');
+    t.mock.method(Swal, 'fire', options => { confirmations.push(options.titleText + '\n' + options.text); return Promise.resolve({isConfirmed:approved}); });
     const ui = await import('../js/ui/taskUI.js');
     const {selectProfile} = await import('../js/services/profileSession.js');
     const el = id => document.getElementById(id);
     const boxes = () => [...el('taskBatchGroups').querySelectorAll('input')];
     const calls = () => state.rpcCalls.filter(c => c.name === 'choose_profile_task_batch');
     const submit = () => el('taskBatchSelectionForm').dispatchEvent(new dom.window.Event('submit', {cancelable:true}));
-    const settled = () => waitFor(() => el('loadingOverlay').hidden);
+    const settled = () => waitFor(() => el('loadingOverlay').hidden && !el('taskBatchCancel').disabled);
     const changeAll = checked => { el('taskBatchSelectAll').checked = checked; el('taskBatchSelectAll').dispatchEvent(new dom.window.Event('change')); };
     const offers = [
         {abbreviation:'HSR', definition_key:'echo-of-war', calendar_key:'', game_description:'Star Rail', description:'Echo of War',
@@ -50,8 +51,31 @@ test('Selection replaces existing and excluded items through the same batch subm
         assert.match(el('taskBatchSummary').textContent, /5 escolhido.*3 será.*0 ficará/);
         approved = false; const before = calls().length; submit();
         assert.equal(calls().length, before); assert.equal(el('taskBatchDialog').open, true);
-        assert.match(confirmations.at(-1), /3 item.*do zero.*conclusão.*favoritos/s);
-        assert.equal(boxes()[0].checked, true); approved = true; el('taskBatchCancel').click();
+        assert.match(confirmations.at(-1), /3 itens.*do zero.*conclusão.*favoritos/s);
+        assert.equal(boxes()[0].checked, true); await settled(); approved = true; el('taskBatchCancel').click();
+    });
+    await t.test('An open async confirmation blocks duplicate submission and cancels without a write', async () => {
+        await open(); changeAll(false); boxes()[0].checked = true;
+        let release; const gate = new Promise(resolve => { release = resolve; });
+        const mock = t.mock.method(Swal, 'fire', () => gate);
+        const before = calls().length; submit(); submit();
+        assert.equal(mock.mock.callCount(), 1); assert.equal(calls().length, before);
+        assert.equal(el('taskBatchCancel').disabled, true);
+        const escape = new dom.window.Event('cancel', {cancelable:true}); el('taskBatchDialog').dispatchEvent(escape);
+        assert.equal(escape.defaultPrevented, true);
+        release({isConfirmed:false}); await settled();
+        assert.equal(calls().length, before); assert.equal(boxes()[0].checked, true);
+        assert.equal(el('taskBatchDialog').open, true); assert.equal(document.activeElement, el('taskBatchSubmit'));
+        mock.mock.restore(); el('taskBatchCancel').click();
+    });
+    await t.test('A popup failure preserves selection, releases controls and never sends a replacement', async () => {
+        await open(); changeAll(false); boxes()[0].checked = true;
+        const mock = t.mock.method(Swal, 'fire', () => { throw new Error('Popup unavailable'); });
+        const before = calls().length; submit(); await settled();
+        assert.equal(calls().length, before); assert.equal(boxes()[0].checked, true);
+        assert.match(el('taskBatchMessage').textContent, /seleção foi mantida/);
+        assert.equal(el('taskBatchDialog').open, true);
+        mock.mock.restore(); el('taskBatchCancel').click();
     });
     await t.test('Existing and excluded selections share one request; failures preserve selection and reuse the request ID', async () => {
         await open(); changeAll(false); boxes()[0].checked = true; boxes()[1].checked = true;
@@ -88,15 +112,16 @@ test('Selection replaces existing and excluded items through the same batch subm
     await t.test('Changing the profile during confirmation aborts before saving', async () => {
         await open(); changeAll(false); boxes()[0].checked = true;
         const before = calls().length;
-        const mock = t.mock.method(dom.window, 'confirm', () => { selectProfile('demo'); return true; });
-        submit(); assert.equal(calls().length, before); assert.match(el('taskBatchMessage').textContent, /perfil mudou/);
+        const mock = t.mock.method(Swal, 'fire', () => { selectProfile('demo'); return Promise.resolve({isConfirmed:true}); });
+        submit(); await settled(); assert.equal(calls().length, before); assert.match(el('taskBatchMessage').textContent, /perfil mudou/);
         mock.mock.restore(); el('taskBatchCancel').click(); selectProfile('cran');
     });
     await t.test('A profile change during saving keeps the captured actor and skips another profile refresh', async () => {
         await open(); changeAll(false); boxes()[0].checked = true;
         let release; const gate = new Promise(r => { release = r; });
         state.beforeQuery = ({name}) => name === 'choose_profile_task_batch' ? gate : undefined;
-        submit(); const count = state.rpcCalls.length; selectProfile('demo'); release(); await settled();
+        const before = calls().length; submit(); await waitFor(() => calls().length > before);
+        const count = state.rpcCalls.length; selectProfile('demo'); release(); await settled();
         assert.equal(calls().at(-1).payload.p_profile_id, 'cran'); assert.equal(state.rpcCalls.length, count);
         assert.equal(el('taskBatchDialog').open, false); state.beforeQuery = null; selectProfile('cran');
     });

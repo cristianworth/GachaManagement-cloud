@@ -2,6 +2,17 @@
 
 Leia [docs/project-conventions.md](docs/project-conventions.md) antes de alterar integrações, testes ou banco. O pedido atual de Cristian prevalece sobre este contexto.
 
+## Público, criticidade e tamanho das mudanças
+
+- Gacha Management é um projeto pessoal para o uso de Cristian, sem objetivo empresarial, comercial ou de lucro. Cristian é o único usuário frequente; outras pessoas podem experimentar o sistema ocasionalmente.
+- Expressões como “quando o usuário fizer X” são linguagem habitual de desenvolvimento. Não pressupor, a partir delas, uma base de clientes, requisitos empresariais, alta disponibilidade ou escala de múltiplos usuários simultâneos.
+- Os dados têm baixa criticidade para Cristian. Reformulações do banco, recriação e perda de dados podem ser aceitáveis quando fazem parte do fluxo combinado. Não priorizar conversores, compatibilidade histórica extensa ou planos complexos de preservação apenas por hipótese de dados críticos.
+- Ao escolher entre migração e reinstalação, considerar primeiro a solução mais simples para o estado real do projeto e o pedido atual. Explicar uma perda de dados relevante de forma breve quando a escolha depender dela; respeitar autorizações e restrições já dadas. Este contexto não autoriza por si só executar um reset ou modificar o Supabase.
+- Em bugs e melhorias, preferir o menor ajuste coerente e preservar a estrutura padrão existente. Não adicionar framework, camadas, dependências ou reorganizações amplas sem uma necessidade concreta alinhada com Cristian.
+- Manter as garantias necessárias ao comportamento combinado, como atuar no perfil selecionado, calcular calendários corretamente e não deixar uma operação pela metade. Propor proteções adicionais somente quando houver um risco concreto proporcional ao uso pessoal.
+
+## Colaboração e convenções
+
 - Perguntas sobre um problema, alternativas ou “qual seria a melhor forma?” pedem primeiro uma resposta e um diálogo. Não trate uma consulta como autorização para implementar a solução sugerida.
 - Quando houver dúvidas pendentes que afetem o comportamento, a interface ou o escopo, responda às perguntas, explique os trade-offs e alinhe a decisão com Cristian antes de alterar o código. Leituras necessárias para fundamentar a resposta são permitidas; não implemente enquanto o fluxo ainda estiver em discussão. Depois do alinhamento e do pedido de implementação, prossiga sem pedir confirmação para cada detalhe rotineiro.
 - Em pedidos mistos, respeite o escopo de cada autorização: autorizar o commit de uma entrega validada não autoriza implementar uma alternativa ainda em discussão para outro problema.

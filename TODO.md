@@ -20,6 +20,21 @@ Complexidade estimada para este projeto (HTML, CSS, JavaScript e Supabase): **ba
 - **Concluído quando:** atualizações salvas em outra aba/dispositivo aparecem com um clique, sem perda dos rascunhos, sem escritas e com recuperação após falha. Jogo removido com rascunho interrompe a substituição da lista e mostra aviso para copiar o texto antes de recarregar.
 - **Teste local:** comandos e cenários em [docs/refresh-games.md](docs/refresh-games.md). Alertas continuam como entrega independente no TODO 6.
 
+### 1.2. Atualizar automaticamente a estimativa de resina
+
+- [ ] Recalcular a estimativa a cada minuto enquanto Games estiver visível e ao retornar à tela, usando o horário atual, previsão salva e minutos por unidade do jogo.
+- [ ] Atualizar apenas o número estimado/tempo restante, sem consultar ou gravar no Supabase a cada tick e sem alterar resina/anotações em edição.
+- **Complexidade: baixa.** Reaproveitar o cálculo existente; manter valor indisponível quando faltar previsão válida. Tier S, depois da paginação visual.
+- **Concluído quando:** o tempo decorrido aparece sem clique manual, respeitando o limite, parâmetros próprios do jogo e retorno de uma aba inativa.
+
+### 1.3. Buscar dados salvos periodicamente
+
+- [ ] Ler o Supabase a cada 6 minutos na tela visível e ao retornar quando os dados estiverem antigos; pausar consultas em segundo plano.
+- [ ] Atualizar silenciosamente o contexto atual, preservando rascunhos, filtros e paginação, sem overlay global nem requisições sobrepostas.
+- [ ] Adiar reconstrução durante edição/modal/gravação, conferir perfil/rota e manter os dados exibidos quando a leitura falhar.
+- **Complexidade: média.** Evoluir a atualização manual existente. Isso lê o banco; não sincroniza APIs de eventos e não salva automaticamente resina.
+- **Concluído quando:** alterações de outra aba/celular aparecem sem perder trabalho local. Estimativa por minuto e leitura a cada 6 minutos têm responsabilidades distintas.
+
 ## 2. Usar imagem por URL para jogos novos
 
 - [x] Adicionar ao formulário de jogo um campo opcional de URL da imagem. Quando estiver vazio, manter `img/default-icon.png` como imagem padrão.
@@ -115,7 +130,7 @@ Complexidade estimada para este projeto (HTML, CSS, JavaScript e Supabase): **ba
 
 ## 9.1. Evolução: Lote único de weeklies e desafios
 
-Planejamento pedido em 08/10/2026. Inventário completo, contadores fornecidos, referências e sequência em [docs/task-batch-plan.md](docs/task-batch-plan.md). Itens 1 e 2 fechados em 1.10.0, com commit/push autorizados e migrações live pendentes. Item 3 e imagens implementados localmente em 09/10, em revisão: [recorte](docs/task-batch-personalization.md). Contexto anterior: [handoff](docs/handoff-task-batch-personalization.md).
+Planejamento pedido em 08/10/2026. Inventário completo, contadores fornecidos, referências e sequência em [docs/task-batch-plan.md](docs/task-batch-plan.md). Itens 1 e 2 fechados em 1.10.0; seleção/imagens e recriação fechadas até 1.12.0. SQL incremental aplicado por Cristian em 09/10/2026. Conferência visual documentada em: [recorte](docs/task-batch-personalization.md). Contexto anterior: [handoff](docs/handoff-task-batch-personalization.md).
 
 - [x] Unificar os nove itens já implementados em uma entrada **Carregar Lote**, usando os jogos habilitados no perfil e operação SQL transacional. Manter categorias e recorrências internas, tarefas existentes e exclusões.
 - [x] Acrescentar Deadly Assault e Shiyu Defense do ZZZ; fase 3.7 do Endstate Matrix, Whimpering Wastes e Hazard Zone de Tower of Adversity do WuWa. Calendário América, referência global Endstate aceita por Cristian e registro por definição preservando lotes antigos.
@@ -147,14 +162,17 @@ Planejamento pedido em 08/10/2026. Inventário completo, contadores fornecidos, 
 
 ## 12. Paginar a lista de atividades
 
-- [ ] Avaliar paginação quando o filtro por jogo não for suficiente para reduzir a rolagem. A primeira melhoria da versão 1.2 é o filtro por jogo.
-- [ ] Paginar a consulta no Supabase, aplicando filtro por jogo antes do limite e ordenação por favorita, prazo e ID. Mostrar quantidade total e estados sem resultados/erro.
-- [ ] Voltar à primeira página ao trocar de jogo e manter a página válida após ignorar/excluir uma atividade.
-- **Complexidade: média.** Envolve consultas, navegação e tratamento das alterações na lista; esconder linhas no navegador não reduz a quantidade carregada do banco.
+- [ ] Primeiro recorte: paginação visual no navegador, 20 itens por página e opção de 10, reaproveitando a consulta completa do perfil.
+- [ ] Filtrar por jogo/intervalo/conclusão e ordenar por favorita, prazo e ID antes de paginar. Mostrar intervalo/total e Anterior/Próxima.
+- [ ] Voltar à primeira página ao mudar filtros/tamanho; manter uma página válida após concluir, favoritar, ignorar ou excluir, recuando se ficar vazia.
+- **Complexidade inicial: baixa/média.** Prioridade S. Diminui a rolagem, sem reduzir a quantidade consultada no banco.
+- **Concluído quando:** a lista pode ser percorrida e filtrada sem perder ordenação, tarefas ou estado das ações.
+- [ ] Segundo recorte condicionado: paginar a consulta no Supabase somente se volume/lentidão reais justificarem, com filtros, ordenação e contagem na RPC pública antes do limite.
+- [ ] Busca por nome é complemento opcional, separado da primeira entrega.
 
 ## 13. Favorite tasks — favoritas no topo
 
-**Entregue em 1.9.0:** removido da lista de trabalho pendente. A aplicação da migração no Supabase live continua pendente; comandos e cenários em [docs/favorite-tasks.md](docs/favorite-tasks.md).
+**Entregue em 1.9.0:** removido da lista de trabalho pendente. A migração foi aplicada por Cristian no pacote incremental de 09/10/2026; comandos e cenários em [docs/favorite-tasks.md](docs/favorite-tasks.md).
 
 - [x] Permitir marcar/desmarcar uma tarefa por uma estrela na lista de Tasks, com estado visual, nome acessível e operação por teclado.
 - [x] Persistir a preferência por perfil, sem alterar a definição compartilhada. Recarregar ou ocultar/reselecionar um jogo conserva a escolha; outro perfil tem suas próprias favoritas.
@@ -164,3 +182,11 @@ Planejamento pedido em 08/10/2026. Inventário completo, contadores fornecidos, 
 - [x] Testar isolamento dos perfis, persistência, ordenação, filtros, desfavoritar e falha de gravação sem deixar a estrela em um estado que não foi salvo.
 - **Complexidade: baixa a média.** Reaproveita os contratos pessoais, mas exige persistência no banco e mudança na ordenação e na ação da lista.
 - **Concluído quando:** a estrela persiste apenas no perfil escolhido, as favoritas visíveis ficam no topo e as demais regras da lista continuam funcionando.
+
+## 14. Menu lateral e controle de perfil
+
+- [ ] Reunir Games, Tasks, Revisar eventos, perfil ativo/Trocar perfil e Selecionar jogos na lateral, com ícones SVG simples e texto.
+- [ ] Destacar a seção atual, mostrar versão discreta e recolher o menu no celular. Reaproveitar Router e perfis públicos; não acrescentar login real.
+- [ ] Remover navegação repetida entre Games/Tasks; manter ações de criação, lote e filtros na página correspondente.
+- **Complexidade: média.** Tier A. Sem framework ou biblioteca adicional de ícones.
+- **Concluído quando:** navegar/trocar perfil continua claro no desktop/celular, com espaço útil para o conteúdo e sem duplicar botões.

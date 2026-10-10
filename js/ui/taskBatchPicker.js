@@ -2,6 +2,7 @@
 import { fetchTaskBatchItems } from '../database/taskDB.js';
 import { getSelectedProfileId } from '../services/profileSession.js';
 import { setFeedback } from './feedback.js';
+import { showDialog } from './dialogs.js';
 
 let offers = [];
 let actor = null;
@@ -59,33 +60,47 @@ export function initializeTaskBatchPicker(onLoad, updateControls) {
         const chosen = boxes().filter(box => !box.disabled && box.checked)
             .map(box => offers[Number(box.dataset.offerIndex)]);
         const replacements = chosen.filter(item => !isNew(item));
-        if (replacements.length && !window.confirm(
-            `${replacements.length} item(ns) existente(s) ou excluído(s) será(ão) recriado(s) do zero neste perfil. `
-            + 'Prazos editados, conclusão, favoritos e capas personalizadas serão perdidos. Continuar?')) return;
-        // Confirmation may outlive a profile change; never submit for a different actor.
-        if (getSelectedProfileId() !== actor) {
-            setFeedback('taskBatchMessage', 'O perfil mudou. Feche e abra a seleção novamente.', 'error'); return;
-        }
-        const selected = chosen.map(item => ({
-            abbreviation: item.abbreviation, definition_key: item.definition_key, calendar_key: item.calendar_key,
-            ...(!isNew(item) ? { expected_task_id: item.task_id, expected_version: item.task_version } : {}),
-        }));
-        const signature = JSON.stringify(selected);
-        if (!attempt || attempt.signature !== signature) attempt = { signature, requestId: window.crypto.randomUUID() };
         const deferredCount = boxes().filter(box => !box.checked && isNew(offers[Number(box.dataset.offerIndex)])).length;
         busy = true;
         const controls = [...dialog.querySelectorAll('input, button')];
         const previous = controls.map(control => control.disabled);
         controls.forEach(control => { control.disabled = true; });
-        setFeedback('taskBatchMessage', 'Carregando escolhidos…');
         try {
+            if (replacements.length) {
+                const decision = await showDialog({
+                    titleText: `Recriar ${replacements.length} ${replacements.length === 1 ? 'item' : 'itens'} do zero?`,
+                    text: replacements.map(item => item.game_description + ' — ' + item.description).join('\n')
+                        + '\n\nSomente neste perfil. Prazos editados, conclusão, favoritos e capas personalizadas serão perdidos.',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: 'Recriar itens',
+                    focusCancel: true,
+                    customClass: {confirmButton: 'button-delete'},
+                });
+                if (!decision.isConfirmed) return;
+            }
+            // The async confirmation may outlive a profile change; recheck before submitting.
+            if (getSelectedProfileId() !== actor) {
+                setFeedback('taskBatchMessage', 'O perfil mudou. Feche e abra a seleção novamente.', 'error'); return;
+            }
+            const selected = chosen.map(item => ({
+                abbreviation: item.abbreviation, definition_key: item.definition_key, calendar_key: item.calendar_key,
+                ...(!isNew(item) ? { expected_task_id: item.task_id, expected_version: item.task_version } : {}),
+            }));
+            const signature = JSON.stringify(selected);
+            if (!attempt || attempt.signature !== signature) attempt = { signature, requestId: window.crypto.randomUUID() };
+            setFeedback('taskBatchMessage', 'Carregando escolhidos…');
             const saved = await onLoad({ items: selected, deferredCount, requestId: attempt.requestId });
             if (saved) {
                 if (dialog.open) dialog.close();
             } else setFeedback('taskBatchMessage', 'Não foi possível confirmar a carga. Sua seleção foi mantida; tente novamente. Se a tarefa mudou, feche e abra a seleção.', 'error');
+        } catch (error) {
+            console.error('Failed to confirm task batch:', error);
+            setFeedback('taskBatchMessage', 'Não foi possível concluir a carga. Sua seleção foi mantida; tente novamente.', 'error');
         } finally {
             busy = false;
             controls.forEach((control, index) => { control.disabled = previous[index]; });
+            if (dialog.open) el('taskBatchSubmit').focus();
         }
     });
 }
