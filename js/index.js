@@ -8,8 +8,10 @@ import { initializeNumberInputValidation } from './ui/inputValidation.js';
 import { withLoading } from './ui/loadingState.js';
 import { initializeProfiles } from './ui/profileUI.js';
 import { populateInitialGames } from './database/gameDB.js';
+import { initializeAppShell } from './ui/appShell.js';
 
 document.addEventListener('DOMContentLoaded', async function () {
+  initializeAppShell();
   if (!isSupabaseConfigured()) {
     showConfigWarning();
     return;

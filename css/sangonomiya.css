@@ -1,0 +1,261 @@
+/* Sangonomiya theme, loaded after the shared application styles. */
+:root {
+    --ink: #243b57;
+    --muted-ink: #586b83;
+    --lagoon: #386f91;
+    --lagoon-deep: #295570;
+    --lagoon-wash: #e5eef5;
+    --paper: #f4f7fcf5;
+    --line: #d4dfea;
+    --pink: #f3dde8;
+    --main-blue: var(--lagoon-deep);
+}
+html { background: #dcecf6; }
+body {
+    width: 100%; max-width: none; margin: 0; padding: 0;
+    color: var(--ink); font-family: 'Trebuchet MS', 'Segoe UI', sans-serif;
+    font-size: 15px; line-height: 1.5;
+    background: linear-gradient(180deg, #e6eff814, #dcecf61a), url('../img/sangonomiya.png') center center / cover fixed;
+    min-height: 100vh;
+}
+[hidden] { display: none !important; }
+button, input, select, textarea { font: inherit; }
+button {
+    border-radius: 9px; padding: 9px 14px; min-height: 40px;
+    font-weight: 600; transition: background-color 120ms ease, border-color 120ms ease;
+    box-shadow: none;
+}
+button:hover { transform: none; }
+button:disabled { opacity: .5; cursor: default; }
+button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible, a:focus-visible {
+    outline: 3px solid #407a9e; outline-offset: 3px;
+}
+button.button-add, button.button-save { background: var(--lagoon); color: #fff; }
+button.button-add:hover, button.button-save:hover { background: var(--lagoon-deep); }
+button.button-neutral { background: var(--lagoon-wash); color: var(--lagoon-deep); border-color: var(--line); }
+button.button-neutral:hover { background: #d4e5f0; }
+button.button-edit { background: #eaf0f8; color: var(--lagoon-deep); border-color: var(--line); }
+button.button-edit:hover { background: #d4e5f0; }
+button.button-delete { background: #f7e9ef; color: #9a4967; border-color: #e9ceda; }
+button.button-delete:hover { background: #efd5e1; }
+input:not([type='checkbox']), select, textarea {
+    background: #fffdfd; border: 1px solid var(--line); color: var(--ink);
+    border-radius: 8px; padding: 10px 12px;
+}
+input[type='checkbox'] { accent-color: var(--lagoon); width: 18px; height: 18px; }
+textarea { font-family: inherit; box-shadow: none; }
+textarea:focus { outline: 3px solid #407a9e; outline-offset: 3px; box-shadow: none; border-color: var(--lagoon); }
+textarea::placeholder { color: var(--muted-ink); }
+a { color: var(--lagoon-deep); }
+h1, h2, h3 { color: var(--ink); }
+h1 { text-align: left; font-family: Georgia, 'Times New Roman', serif; font-weight: 400; font-size: 32px; line-height: 1.2; margin: 0 0 10px; }
+h2 { font-size: 21px; font-weight: 600; }
+h3 { font-size: 18px; }
+.app-layout { display: grid; grid-template-columns: 180px minmax(0, 1fr); min-height: calc(100vh - 64px); width:calc(100% - 96px); max-width:1240px; margin:32px auto; align-items:start; }
+.app-sidebar {
+    display: flex; flex-direction: column; gap: 26px; padding: 30px 18px;
+    background: #eff3fbdc; border: 1px solid #e2eaf2; border-radius:16px 0 0 16px;
+    min-height:calc(100vh - 64px); backdrop-filter:blur(10px);
+}
+.app-brand { display:flex; gap: 9px; align-items: center; text-decoration: none; color: var(--lagoon-deep); }
+.app-brand-mark { font-family: Georgia, serif; font-size: 38px; color: #ad6d94; }
+.app-brand-name { font-family: Georgia, serif; font-size: 22px; line-height: 1.1; }
+.app-brand-name small { display: block; font: 12px 'Trebuchet MS', sans-serif; color: var(--muted-ink); margin-top: 7px; }
+.app-brand-name .version-badge { padding:0; border:0; background:none; color:var(--muted-ink); }
+.app-project-link { display:inline-block; margin-top:8px; font-size:12px; }
+.app-nav { display: grid; gap: 7px; }
+.app-nav a { display:flex; gap:10px; align-items:center; padding: 11px 13px; border-radius: 9px; color:var(--muted-ink); text-decoration:none; }
+.app-nav a[aria-current='page'] { background: #dce9f2; color: var(--lagoon-deep); font-weight: 700; }
+.app-nav a:hover { background: #e5edf6; color: var(--lagoon-deep); }
+.app-nav-symbol { width: 22px; text-align:center; font-size: 19px; }
+.app-sidebar-note { margin-top:auto; font-size:12px; color:var(--muted-ink); padding:0 12px; }
+.app-main { min-width:0; padding: 0 0 36px; }
+.app-topbar { display:flex; align-items:center; justify-content:space-between; gap:16px; flex-wrap:wrap; min-height:64px; padding:14px 24px; background:#eff5fbea; border:1px solid #e2eaf2; border-left:0; border-radius:0 16px 0 0; }
+.app-topbar:has(.profile-bar[hidden]) { display:none; }
+.profile-bar { padding:0; gap:10px; margin-left:auto; }
+.profile-bar strong { font-weight:600; margin-right:4px; }
+.profile-bar button { font-size:12px; min-height:34px; padding:7px 10px; }
+.app-content > [data-page] > section, #profileEntry {
+    background: var(--paper); border:1px solid var(--line); border-radius:16px;
+    padding:26px; box-shadow: 0 8px 32px #243b5710;
+}
+.app-content > [data-page] > section { border-radius:0 0 16px 0; }
+.app-content > [data-page] > section > p, #profileEntry > p { color:var(--muted-ink); max-width:78ch; }
+.main-title, .main-title a { color:var(--ink); }
+.version-badge { background:#e9e1f4; color:var(--lagoon-deep); border-color:var(--line); font:12px 'Trebuchet MS',sans-serif; vertical-align:middle; }
+.app-page-description { margin:0 0 22px; color:var(--muted-ink); }
+.app-actions { display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin-bottom:20px; }
+.app-daily-header { display:flex; align-items:flex-start; justify-content:space-between; gap:16px; flex-wrap:wrap; margin-bottom:20px; }
+.app-daily-title { min-width:0; flex:1 1 280px; }
+.app-daily-header h1 { font-size:30px; margin-bottom:6px; }
+.app-daily-header .app-page-description { font-size:13px; margin-bottom:0; max-width:48ch; }
+.app-daily-header .app-actions { margin-bottom:0; gap:8px; flex-wrap:wrap; padding-top:4px; }
+.app-daily-header button { font-size:12px; padding:8px 11px; }
+.table-container { margin-top:18px; }
+table { white-space:normal; }
+th, td { border:0; border-bottom:1px solid var(--line); padding:14px 12px; }
+th { background:var(--lagoon-wash); color:var(--muted-ink); font-size:12px; font-weight:600; }
+td { text-align:left; }
+/* Keep real table rows so current closest('tr') handlers continue to work. */
+#gameList { display:block; }
+#gameList thead { position:absolute; width:1px; height:1px; overflow:hidden; clip-path:inset(50%); }
+#gameListBody { display:grid; gap:10px; }
+#gameListBody tr {
+    display:grid; grid-template-columns:52px minmax(150px, .9fr) minmax(190px, 1.25fr) 180px;
+    grid-template-areas:'icon name notes actions' 'icon forecast notes stamina';
+    gap:6px 12px; padding:14px; background:#fcfdff; border:1px solid var(--line); border-radius:10px;
+    align-items:center;
+}
+#gameListBody td { border:0; padding:0; min-width:0; text-align:left; }
+#gameListBody td:nth-child(1) { grid-area:icon; align-self:start; padding-top:4px; }
+#gameListBody td:nth-child(2) { grid-area:name; align-self:start; font-weight:700; padding-top:7px; }
+#gameListBody td:nth-child(3) { grid-area:notes; }
+#gameListBody td:nth-child(4) { grid-area:stamina; }
+#gameListBody td:nth-child(5) { grid-area:forecast; align-self:start; }
+#gameListBody td:nth-child(6) { grid-area:actions; align-self:start; }
+#gameListBody td:nth-child(3)::before { content:'To-do'; display:block; font-size:12px; color:var(--muted-ink); margin-bottom:5px; }
+#gameListBody td:nth-child(4)::before { content:'Stamina'; display:block; font-size:12px; color:var(--muted-ink); margin-bottom:5px; }
+.icon { border-radius:12px; width:48px; height:48px; object-fit:cover; }
+.pending-task-editor { width:100%; height:72px; min-height:72px; font-size:13px; line-height:1.5; padding:8px 10px; background:#f2f6fb; resize:vertical; }
+.game-stamina-controls { flex-direction:row; width:auto; gap:8px; }
+.game-stamina-controls > input { width:72px; min-height:38px; padding:7px; }
+.game-stamina-controls > button { width:auto; height:auto; min-height:38px; padding:7px 12px; }
+.game-stamina-estimate { align-items:flex-start; margin:0; gap:3px; font-size:12px; }
+.game-stamina-estimate > output { font-weight:500; }
+.red-text { color:#95657b; }
+.list-actions { grid-template-columns:repeat(2, auto); gap:8px; margin:0; justify-content:start; }
+.list-actions > button { width:auto; height:auto; min-height:36px; padding:7px 10px; font-size:12px; }
+.list-actions > .button-neutral { grid-column:1 / -1; justify-self:start; }
+#gameSchedule { min-width:760px; table-layout:fixed; width:100%; }
+#gameSchedule th, #gameSchedule td { padding:12px 8px; font-size:12px; vertical-align:middle; overflow-wrap:anywhere; }
+#gameSchedule th { background:#e9f0f7; text-align:left; padding-top:10px; padding-bottom:10px; }
+#gameSchedule th:nth-child(2) { width:52px; white-space:nowrap; }
+#gameSchedule th:nth-child(3) { width:112px; }
+#gameSchedule th:nth-child(5) { width:96px; }
+#gameSchedule th:nth-child(6) { width:124px; }
+#gameSchedule th:nth-child(7) { width:148px; }
+#gameSchedule .list-actions { grid-template-columns:repeat(2,auto); gap:5px; }
+#gameSchedule .list-actions > button { min-height:30px; padding:5px 8px; font-size:11px; }
+#gameScheduleBody tr { background:transparent !important; }
+#gameScheduleBody tr:hover { background:#eaf2f9 !important; }
+#gameScheduleBody tr:has(input[type='checkbox']:checked) .task-summary > span { text-decoration:line-through; color:var(--muted-ink); }
+.task-favorite > td:first-child { box-shadow:inset 3px 0 #c985ab; }
+.task-favorite-toggle { background:transparent; color:#9f798e; font-size:22px; min-width:30px; min-height:36px; }
+.task-favorite-toggle[aria-pressed='true'] { background:#f6e9ef; }
+.task-cover { width:60px; height:40px; border-radius:7px; }
+.task-summary { gap:7px; align-items:center; }
+.task-summary > span { min-width:0; font-size:13px; line-height:1.4; }
+.task-description { min-width:0; }
+.task-game-description { font-size:12px; color:var(--muted-ink); }
+.task-start, .task-deadline-note { color:var(--muted-ink); font-size:12px; }
+.task-filters { gap:12px 16px; margin:16px 0 12px; padding:12px 14px; border-radius:10px; background:#e9f0f7; }
+.app-filter-field { display:grid; gap:4px; flex:1 1 180px; max-width:230px; }
+.app-filter-field label { font-size:12px; font-weight:600; color:var(--muted-ink); }
+.app-filter-field select { width:100%; }
+.task-completed-filter { display:flex; align-items:center; gap:7px; font-size:12px; margin-top:20px; }
+.task-filters > label { font-size:12px; font-weight:600; }
+.task-filters select { background:var(--paper); font-size:13px; max-width:220px; }
+#taskListStatus { margin-left:auto; color:var(--muted-ink); font-size:12px; margin-top:20px; }
+#taskBatchHint { font-size:12px; }
+.app-batch-tools { display:flex; align-items:center; gap:14px; flex-wrap:wrap; border-bottom:1px solid var(--line); padding:0 0 14px; margin-bottom:12px; }
+.app-batch-tools .app-actions { margin:0; gap:7px; flex-shrink:0; }
+.app-batch-tools button { font-size:12px; min-height:34px; padding:6px 10px; }
+.app-batch-tools #loadTaskBatchBtn { background:var(--lagoon-wash); color:var(--lagoon-deep); border:1px solid var(--line); }
+.app-batch-tools #loadTaskBatchBtn:hover { background:#d4e5f0; }
+.app-batch-tools #taskBatchHint { margin:0; flex:1 1 290px; max-width:72ch; font-size:11px; line-height:1.5; color:var(--muted-ink); }
+#game-form, #task-form { width:min(100%, 42rem); margin:24px 0 0; gap:10px; }
+[data-page='createGame'] > section, [data-page='createTask'] > section { max-width:850px; margin:0 auto; }
+#game-form label:not([hidden]), #task-form label:not([hidden]) { font-size:13px; color:var(--muted-ink); margin-top:8px; }
+#game-form small, #task-form small { color:var(--muted-ink); font-size:12px; }
+#game-form input:not([hidden]), #task-form input:not([type='checkbox']):not([hidden]), #task-form select { min-height:44px; padding:10px 12px; }
+#game-form input:disabled, #task-form input:disabled, #task-form select:disabled { background:var(--lagoon-wash); color:var(--muted-ink); }
+#divExpirationDayAndHour, #divExpirationDate, #taskRepeatDaysFields { padding:14px; border:1px solid var(--line); border-radius:10px; background:#eaf1f8; }
+#task-form #divExpirationDayAndHour label, #task-form #divExpirationDate label, #task-form #taskRepeatDaysFields label { margin-top:0; }
+#task-form .task-date-toggle { margin-top:18px; color:var(--ink); }
+#submitGameForm, #submitTaskForm { align-self:flex-start; margin-top:14px; min-width:160px; }
+#profileEntry { margin:50px auto; max-width:780px; }
+#profileEntry h1 { margin-bottom:18px; }
+#profileChoices { display:grid; grid-template-columns:repeat(3,1fr); gap:14px; margin-top:28px; }
+#profileChoices button { min-height:86px; font:22px Georgia,serif; background:var(--lagoon-wash); color:var(--lagoon-deep); border:1px solid var(--line); }
+#profileChoices button:hover { background:#d4e5f0; }
+.profile-game-choices { grid-template-columns:repeat(2,minmax(0,1fr)); }
+.profile-game-choices label { padding:16px; background:#eaf1f8; border:1px solid var(--line); border-radius:10px; cursor:pointer; }
+.profile-game-choices label:has(input:checked) { background:#e1edf6; border-color:#90b2ca; }
+.profile-weekly-option { display:flex; align-items:flex-start; gap:10px; }
+.profile-weekly-option input { flex-shrink:0; margin-top:4px; }
+.event-games-list { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; }
+.event-games-list button { background:var(--lagoon-wash); color:var(--lagoon-deep); border:1px solid var(--line); text-align:left; padding:18px; min-height:72px; }
+.event-candidate { background:#fffdfd; border-color:var(--line); border-radius:12px; padding:22px; }
+.event-candidate a { display:inline-block; margin-right:14px; }
+.event-candidate p { color:var(--muted-ink); }
+.event-candidate h3 { margin-bottom:12px; }
+.event-candidate label { color:var(--ink); font-size:13px; font-weight:600; }
+.event-candidate button { margin-top:8px; }
+.event-candidate p.event-review-remaining { color:var(--lagoon-deep); }
+.event-candidate-cover { border-radius:10px; }
+.event-candidate .event-review-warning, .event-candidate .event-review-message { color:#885233; }
+.operation-feedback { background:#ecf3ef; border-color:#cbdfd2; color:#426752; border-radius:9px; }
+.operation-feedback[data-kind='error'] { background:#f9eaf0; border-color:#eccbd7; color:#91435e; }
+.loading-overlay { background:#dcecf6b8; backdrop-filter:blur(4px); }
+.loading-content { background:var(--paper); border-color:var(--line); color:var(--ink); border-radius:12px; }
+.loading-spinner { border-color:var(--line); border-top-color:var(--lagoon); }
+#taskBatchDialog { color:var(--ink); background:var(--paper); border:1px solid var(--line); border-radius:16px; }
+#taskBatchDialog::backdrop { background:#243b5766; backdrop-filter:blur(4px); }
+#taskBatchGroups fieldset { background:#eaf1f8; border-color:var(--line); border-radius:9px; padding:12px 16px; }
+#taskBatchInstructions, .task-batch-item small { color:var(--muted-ink); font-size:13px; }
+#taskBatchDialog h2 { margin-top:0; font:26px Georgia,serif; }
+.task-batch-actions { position:sticky; bottom:-24px; background:var(--paper); border-top:1px solid var(--line); padding:14px 0; }
+.app-dialog-popup { background:var(--paper); color:var(--ink); border-color:var(--line); border-radius:16px; }
+.app-dialog-title { color:var(--lagoon-deep); font-family:Georgia,serif; font-weight:400; }
+.app-dialog-text { color:var(--muted-ink); }
+@media(min-width:1500px) { .app-layout { margin-left:max(48px, calc((100vw - 1440px) / 2)); margin-right:0; } }
+@media(max-width:1150px) {
+    .app-layout { grid-template-columns:160px minmax(0,1fr); width:calc(100% - 40px); margin:20px auto; }
+    .app-main { padding:0 0 20px; }
+    .app-sidebar { padding:24px 12px; }
+    .app-content > [data-page] > section { padding:20px; }
+    #gameListBody tr { grid-template-columns:44px minmax(130px,1fr) 170px; grid-template-areas:'icon name actions' 'icon forecast stamina' 'notes notes notes'; }
+    .pending-task-editor { min-height:76px; }
+}
+@media(max-width:720px) {
+    .app-layout { display:block; width:100%; margin:0; }
+    .app-sidebar { flex-direction:row; align-items:center; gap:14px; padding:12px; border:0; border-bottom:1px solid var(--line); border-radius:0; min-height:0; flex-wrap:wrap; }
+    .app-brand-name { font-size:18px; }
+    .app-brand-mark { font-size:30px; }
+    .app-brand-name small, .app-sidebar-note { display:none; }
+    .app-nav { display:flex; flex-wrap:wrap; gap:4px; }
+    .app-nav a { padding:8px 10px; font-size:13px; }
+    .app-nav-symbol { display:none; }
+    .app-main { padding:12px; }
+    .app-topbar { margin-bottom:14px; gap:8px; min-height:64px; }
+    .profile-bar { margin-left:0; }
+    .app-content > [data-page] > section, #profileEntry { padding:16px; border-radius:12px; }
+    h1, .main-title { font-size:27px; }
+    .app-actions > button, section > button { width:auto; }
+    table { min-width:0; white-space:normal; }
+    #gameListBody tr { padding:14px; grid-template-columns:44px minmax(0,1fr); grid-template-areas:'icon name' 'forecast forecast' 'notes notes' 'stamina stamina' 'actions actions'; gap:12px; }
+    #gameListBody td:nth-child(2) { padding-top:6px; }
+    .game-stamina-controls { justify-content:space-between; }
+    .game-stamina-controls > input { width:110px; }
+    .game-stamina-controls > button { flex:1; }
+    .list-actions { width:100%; grid-template-columns:repeat(2,minmax(0,1fr)); }
+    .list-actions > button { min-height:42px; }
+    .task-filters { align-items:flex-start; }
+    .app-filter-field { max-width:none; flex-basis:100%; }
+    .task-completed-filter, #taskListStatus { margin-top:0; }
+    .app-daily-header { gap:12px; }
+    .app-daily-header .app-actions { padding:0; }
+    .task-filters select { max-width:100%; }
+    #taskListStatus { width:100%; margin-left:0; }
+    #profileChoices { grid-template-columns:1fr; }
+    #profileChoices button { min-height:60px; }
+    .profile-game-choices { grid-template-columns:1fr; }
+    .event-games-list { grid-template-columns:1fr; }
+    .event-candidate { padding:16px; overflow-wrap:anywhere; }
+    .event-candidate button { margin-bottom:4px; }
+    .task-batch-actions { bottom:-18px; }
+    #divExpirationDayAndHour, #divExpirationDate, #taskRepeatDaysFields { padding:10px; }
+    input:not([type='checkbox']), select, textarea { font-size:16px; }
+    #taskBatchDialog { padding:18px; width:calc(100vw - 24px); }
+}
+@media(prefers-reduced-motion:reduce) { *, *::before, *::after { animation:none !important; transition:none !important; scroll-behavior:auto !important; } }

@@ -4,7 +4,13 @@ As melhorias planejadas e suas estimativas de complexidade estão em [TODO.md](T
 
 O **Gacha Management** é uma aplicação projetada para ajudar jogadores de **gacha games** a gerenciar sua **resina/stamina** e acompanhar **tarefas recorrentes** nos jogos. Ele oferece ferramentas para rastrear a regeneração da stamina, organizar atividades programadas e facilitar o planejamento dentro dos jogos.
 
-Versão atual: **1.12.1**. Consulte o [CHANGELOG](CHANGELOG.md) para ver as alterações de cada versão e as regras de versionamento utilizadas.
+Versão atual: **1.13.0**. Consulte o [CHANGELOG](CHANGELOG.md) para ver as alterações de cada versão e as regras de versionamento utilizadas.
+
+### Design Sangonomiya — 1.13.0
+
+Tema anime com paisagem original inspirada em Sangonomiya, navegação lateral no computador e painéis claros em azul lagoa. Games, Tasks, perfis, formulários, eventos e diálogos preservam suas funções e páginas separadas. No celular, a navegação fica no topo e a tabela de tarefas rola dentro do painel.
+
+Para experimentar com dados descartáveis, execute `node scripts/previewProfiles.js --design --port=5502` e abra `http://127.0.0.1:5502`. O ambiente reutiliza o frontend real e não acessa Supabase. [Etapas e validação](docs/sangonomiya-design-plan.md).
 
 **Perfis da versão 1.6.0, validados localmente:** CRAN, Demo e Convidado, seleção de jogos e progresso pessoal. Perfis são públicos, sem autenticação. Aplicar modelo e contratos antes de usar este frontend no destino. Roteiro em [docs/profiles-phases.md](docs/profiles-phases.md).
 

@@ -6,15 +6,18 @@ import { createTestDatabase } from '../tests/helpers/testDatabase.mjs';
 import { seedPreviewEventFixtures } from './previewEventFixtures.js';
 
 // Serve the real frontend against disposable SQL, without loading the production client/config.
-const root = fileURLToPath(new URL('../', import.meta.url));
+const projectRoot = fileURLToPath(new URL('../', import.meta.url));
+const args = process.argv.slice(2);
+const design = args.includes('--design');
+const root = design ? await import('./buildDesignPreview.js').then(module => module.buildDesignPreview()) : projectRoot;
 const db = await createTestDatabase();
 await db.exec('set role anon');
-const args = process.argv.slice(2);
 const portArg = args.find(arg => arg.startsWith('--port='));
 const port = portArg ? Number(portArg.slice(7)) : 5501;
-if (!Number.isInteger(port) || port < 1024 || port > 65535 || args.some(arg => arg !== '--events' && arg !== portArg)) {
-    throw new Error('Use --events and/or --port=1024..65535 for an isolated preview.');
+if (!Number.isInteger(port) || port < 1024 || port > 65535 || args.some(arg => arg !== '--events' && arg !== '--design' && arg !== portArg)) {
+    throw new Error('Use --events, --design and/or --port=1024..65535 for an isolated preview.');
 }
+if (design) await import('./seedDesignPreview.js').then(module => module.seedDesignPreview(db));
 if (args.includes('--events')) {
     await seedPreviewEventFixtures(db);
     console.log('Synthetic events: CRAN expired, Demo with a future manual deadline, Convidado recurring; next editions open.');
@@ -88,13 +91,13 @@ const server = createServer(async (request, response) => {
                 export const SUPABASE_ANON_KEY = 'preview'; export const isSupabaseConfigured = () => true;`);
             return;
         }
-        const asset = /^\/(js|css|img)\//.test(pathname);
+        const asset = /^\/(js|css|img|design-preview)\//.test(pathname);
         const path = resolve(root, asset ? pathname.slice(1) : 'index.html');
         if (!path.startsWith(resolve(root) + sep) || (asset && !contentTypes[extname(path)])) {
             send(response, 404, 'text/plain', 'Not found'); return;
         }
         let content = await readFile(path);
-        if (!asset) {
+        if (!asset && !design) {
             content = content.toString()
                 .replace('<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>', '<script src="/__preview/client.js"></script>')
                 .replace(/^.*<link[^>]+https:\/\/fonts\.[^>]+>.*$/gm, '')
@@ -105,7 +108,7 @@ const server = createServer(async (request, response) => {
         send(response, error.code === 'ENOENT' ? 404 : 500, 'text/plain', 'Preview resource unavailable');
     }
 });
-server.listen(port, '127.0.0.1', () => console.log('Prévia de perfis: http://127.0.0.1:' + port + ' — banco descartável, sem acesso ao Supabase.'));
+server.listen(port, '127.0.0.1', () => console.log((design ? 'Prévia anime: ' : 'Prévia de perfis: ') + 'http://127.0.0.1:' + port + ' — banco descartável, sem acesso ao Supabase.'));
 async function stop() { server.close(); await db.close(); process.exit(); }
 process.on('SIGINT', stop);
 process.on('SIGTERM', stop);

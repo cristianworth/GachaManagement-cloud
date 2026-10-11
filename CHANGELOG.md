@@ -12,6 +12,23 @@ O projeto segue o versionamento semântico (SemVer), no formato `MAJOR.MINOR.PAT
 
 Nenhuma alteração pendente.
 
+## [1.13.0] - 2026-10-10
+
+### Adicionado
+
+- Navegação lateral para Games, Tasks, Eventos e Jogos do perfil, com indicação da página atual e suporte ao caminho base do GitHub Pages. Os controles, páginas e handlers originais continuam em uso.
+- Tema Sangonomiya com ilustração original local, ações em azul lagoa, detalhes coral e painéis claros. Layout responsivo para listas, perfis, formulários, revisão de eventos, seleção de lote e confirmações; foco visível e preferência de movimento reduzido respeitados.
+- Skill frontend-design instalada para Claude Code e Codex, com origem e licença registradas. Plano visual e execução em nove etapas documentados.
+- Ambiente de avaliação `--design` com exemplos fictícios em PostgreSQL descartável. O build reutiliza os mesmos arquivos do frontend principal, substituindo apenas o cliente/configuração do banco.
+
+### Melhorado
+
+- Games agrupa identidade/previsão, To-do, stamina/Save e ações sem alterar os contratos das linhas. Tasks conserva filtros, favoritos, conclusão, prazos e ações, com rolagem contida na tabela no celular.
+- Formulários destacam prazo e recorrência personalizada; seleção de jogos e diálogos seguem a mesma paleta. O lote mantém ações acessíveis durante a rolagem e preserva a confirmação aninhada/cancelamento/foco.
+- Removida a solicitação de fontes Google não utilizadas; títulos e controles usam fontes locais.
+
+**Validação:** 127 testes focados aprovados durante a implementação e revisão independente por dois agents. Fluxos de Games, Tasks, formulários, perfis, eventos e lote conferidos no navegador com dados descartáveis; desktop 1440 × 1000 e celular 390 × 844, sem overflow horizontal da página e sem erros de console observados. No fechamento MINOR, `npm test` passou 582 testes (69 Jest + 513 Node), sem falhas. Sem alterações no banco live; testes locais não validam permissões reais do Supabase ou todos os navegadores.
+
 ## [1.12.1] - 2026-10-10
 
 ### Melhorado
