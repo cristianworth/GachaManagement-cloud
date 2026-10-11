@@ -57,17 +57,17 @@ h3 { font-size: 18px; }
     background: #eff3fbdc; border: 1px solid #e2eaf2; border-radius:16px 0 0 16px;
     min-height:0; backdrop-filter:blur(10px);
 }
-.app-brand { display:flex; gap: 9px; align-items: center; text-decoration: none; color: var(--lagoon-deep); }
-.app-brand-mark { font-family: Georgia, serif; font-size: 38px; color: #ad6d94; }
-.app-brand-name { font-family: Georgia, serif; font-size: 22px; line-height: 1.1; }
-.app-brand-name small { display: block; font: 12px 'Trebuchet MS', sans-serif; color: var(--muted-ink); margin-top: 7px; }
-.app-brand-name .version-badge { padding:0; border:0; background:none; color:var(--muted-ink); }
+.app-brand { display:grid; grid-template-columns:28px minmax(0,1fr); gap:7px 8px; align-items:center; text-decoration:none; color:var(--lagoon-deep); }
+.app-brand-mark { display:block; width:28px; height:28px; object-fit:contain; }
+.app-brand-name { min-width:0; font-family:Georgia,serif; font-size:17px; line-height:1.2; }
+.app-brand-version { grid-column:2; font:12px 'Trebuchet MS',sans-serif; color:var(--muted-ink); }
+.app-brand-version .version-badge { padding:0; border:0; background:none; color:var(--muted-ink); }
 .app-project-link { display:inline-block; margin-top:8px; font-size:12px; }
 .app-nav { display: grid; gap: 7px; }
 .app-nav a { display:flex; gap:10px; align-items:center; padding: 11px 13px; border-radius: 9px; color:var(--muted-ink); text-decoration:none; }
 .app-nav a[aria-current='page'] { background: #dce9f2; color: var(--lagoon-deep); font-weight: 700; }
 .app-nav a:hover { background: #e5edf6; color: var(--lagoon-deep); }
-.app-nav-symbol { width: 22px; text-align:center; font-size: 19px; }
+.app-nav-symbol { width:22px; height:22px; flex-shrink:0; fill:none; stroke:currentColor; stroke-width:1.7; stroke-linecap:round; stroke-linejoin:round; }
 .app-sidebar-note { margin-top:auto; font-size:12px; color:var(--muted-ink); padding:0 12px; }
 .app-main { min-width:0; display:flex; flex-direction:column; }
 .app-content { display:grid; flex:1; }
@@ -221,12 +221,11 @@ td { text-align:left; }
 @media(max-width:720px) {
     .app-layout { display:block; width:100%; margin:0; }
     .app-sidebar { flex-direction:row; align-items:center; gap:14px; padding:12px; border:0; border-bottom:1px solid var(--line); border-radius:0; min-height:0; flex-wrap:wrap; }
-    .app-brand-name { font-size:18px; }
-    .app-brand-mark { font-size:30px; }
-    .app-brand-name small, .app-sidebar-note { display:none; }
+    .app-brand-name { font-size:17px; }
+    .app-brand-version, .app-sidebar-note { display:none; }
     .app-nav { display:flex; flex-wrap:wrap; gap:4px; }
     .app-nav a { padding:8px 10px; font-size:13px; }
-    .app-nav-symbol { display:none; }
+    .app-nav-symbol { width:18px; height:18px; }
     .app-main { padding:12px; }
     .app-topbar { margin-bottom:0; gap:8px; min-height:64px; border-radius:12px 12px 0 0; border-left:1px solid var(--line); }
     .profile-bar { margin-left:0; }

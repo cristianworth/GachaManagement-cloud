@@ -9,14 +9,15 @@ export function initializeAppShell() {
     layout.innerHTML = `
         <aside class="app-sidebar">
             <a class="app-brand" href="/" aria-label="Gacha Management, Games">
-                <span class="app-brand-mark" aria-hidden="true">❀</span>
-                <span class="app-brand-name">Gacha<br>Management<small></small></span>
+                <img class="app-brand-mark" src="${Router.BASE_PATH}/img/brand-lotus.svg" width="28" height="28" alt="" aria-hidden="true">
+                <span class="app-brand-name">Gacha<br>Management</span>
+                <small class="app-brand-version"></small>
             </a>
             <nav class="app-nav" aria-label="Navegação principal">
-                <a href="/" data-app-route="/"><span class="app-nav-symbol" aria-hidden="true">◇</span>Games</a>
-                <a href="/tasks" data-app-route="/tasks"><span class="app-nav-symbol" aria-hidden="true">☷</span>Tasks</a>
-                <a href="/events" data-app-route="/events"><span class="app-nav-symbol" aria-hidden="true">✧</span>Eventos</a>
-                <a href="/profile/games" data-app-route="/profile/games"><span class="app-nav-symbol" aria-hidden="true">⊞</span>Jogos do perfil</a>
+                <a href="/" data-app-route="/"><svg class="app-nav-symbol" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7h10c2 0 3 1.5 3.5 3.5l1 5c.5 2.5-1.5 4-3.5 2.5l-3-2H9l-3 2c-2 1.5-4 0-3.5-2.5l1-5C4 8.5 5 7 7 7Z"/><path d="M6 11h4m-2-2v4m8-2h.01m2 2h.01"/></svg>Games</a>
+                <a href="/tasks" data-app-route="/tasks"><svg class="app-nav-symbol" viewBox="0 0 24 24" aria-hidden="true"><path d="m3 6 2 2 3-4m-5 9 2 2 3-4M12 6h9m-9 7h9M3 20h18"/></svg>Tasks</a>
+                <a href="/events" data-app-route="/events"><svg class="app-nav-symbol" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M7 3v4m10-4v4M3 10h18m-14 5h3m4 0h3m-10 3h3"/></svg>Eventos</a>
+                <a href="/profile/games" data-app-route="/profile/games"><svg class="app-nav-symbol" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3H4a2 2 0 0 0-2 2v12m8-15H8a2 2 0 0 0-2 2v16"/><rect x="10" y="5" width="12" height="16" rx="2"/><path d="m13 13 2 2 4-4"/></svg>Jogos do perfil</a>
             </nav>
             <p class="app-sidebar-note">Seu progresso permanece separado por perfil.</p>
         </aside>
@@ -27,7 +28,7 @@ export function initializeAppShell() {
     const content = layout.querySelector('.app-content');
     const version = document.querySelector('.version-badge');
     const projectLink = version.closest('a');
-    layout.querySelector('.app-brand-name small').append(version);
+    layout.querySelector('.app-brand-version').append(version);
     projectLink.textContent = 'Código do projeto';
     projectLink.className = 'app-project-link';
     layout.querySelector('.app-sidebar-note').append(document.createElement('br'), projectLink);

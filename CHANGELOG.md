@@ -12,6 +12,19 @@ O projeto segue o versionamento semântico (SemVer), no formato `MAJOR.MINOR.PAT
 
 Nenhuma alteração pendente.
 
+## [1.13.2] - 2026-10-11
+
+### Melhorado
+
+- Ícones dos menus representam jogos, tarefas, eventos e jogos do perfil; título Gacha Management ajustado à largura da coluna lateral.
+- Marca vetorial de lótus inspirada em Nilou: Lotus Dance, com pétalas em azul, lavanda e rosa. Topo e favicon compartilham o mesmo SVG local.
+
+### Corrigido
+
+- Lótus centralizado verticalmente com as duas linhas Gacha Management; versão em uma linha separada, sem interferir no alinhamento.
+
+**Validação:** teste focado de build/shell/DOM aprovado após o ajuste final. Alinhamento conferido no navegador em desktop 1440 × 1000 e celular 390 × 844, com centros coincidentes e sem overflow horizontal no celular. Topo e favicon referenciam o mesmo asset. Suíte completa não repetida neste PATCH, conforme convenções. Sem alteração de banco.
+
 ## [1.13.1] - 2026-10-11
 
 ### Corrigido
