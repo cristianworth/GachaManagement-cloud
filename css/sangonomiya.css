@@ -51,11 +51,11 @@ h1, h2, h3 { color: var(--ink); }
 h1 { text-align: left; font-family: Georgia, 'Times New Roman', serif; font-weight: 400; font-size: 32px; line-height: 1.2; margin: 0 0 10px; }
 h2 { font-size: 21px; font-weight: 600; }
 h3 { font-size: 18px; }
-.app-layout { display: grid; grid-template-columns: 180px minmax(0, 1fr); min-height: calc(100vh - 64px); width:calc(100% - 96px); max-width:1240px; margin:32px auto; align-items:start; }
+.app-layout { display: grid; grid-template-columns: 180px minmax(0, 1fr); width:calc(100% - 96px); max-width:1240px; margin:32px auto; align-items:stretch; }
 .app-sidebar {
     display: flex; flex-direction: column; gap: 26px; padding: 30px 18px;
     background: #eff3fbdc; border: 1px solid #e2eaf2; border-radius:16px 0 0 16px;
-    min-height:calc(100vh - 64px); backdrop-filter:blur(10px);
+    min-height:0; backdrop-filter:blur(10px);
 }
 .app-brand { display:flex; gap: 9px; align-items: center; text-decoration: none; color: var(--lagoon-deep); }
 .app-brand-mark { font-family: Georgia, serif; font-size: 38px; color: #ad6d94; }
@@ -69,7 +69,8 @@ h3 { font-size: 18px; }
 .app-nav a:hover { background: #e5edf6; color: var(--lagoon-deep); }
 .app-nav-symbol { width: 22px; text-align:center; font-size: 19px; }
 .app-sidebar-note { margin-top:auto; font-size:12px; color:var(--muted-ink); padding:0 12px; }
-.app-main { min-width:0; padding: 0 0 36px; }
+.app-main { min-width:0; display:flex; flex-direction:column; }
+.app-content { display:grid; flex:1; }
 .app-topbar { display:flex; align-items:center; justify-content:space-between; gap:16px; flex-wrap:wrap; min-height:64px; padding:14px 24px; background:#eff5fbea; border:1px solid #e2eaf2; border-left:0; border-radius:0 16px 0 0; }
 .app-topbar:has(.profile-bar[hidden]) { display:none; }
 .profile-bar { padding:0; gap:10px; margin-left:auto; }
@@ -79,7 +80,7 @@ h3 { font-size: 18px; }
     background: var(--paper); border:1px solid var(--line); border-radius:16px;
     padding:26px; box-shadow: 0 8px 32px #243b5710;
 }
-.app-content > [data-page] > section { border-radius:0 0 16px 0; }
+.app-content > [data-page] > section { border-radius:0 0 16px 0; height:100%; box-sizing:border-box; }
 .app-content > [data-page] > section > p, #profileEntry > p { color:var(--muted-ink); max-width:78ch; }
 .main-title, .main-title a { color:var(--ink); }
 .version-badge { background:#e9e1f4; color:var(--lagoon-deep); border-color:var(--line); font:12px 'Trebuchet MS',sans-serif; vertical-align:middle; }
@@ -117,9 +118,10 @@ td { text-align:left; }
 #gameListBody td:nth-child(4)::before { content:'Stamina'; display:block; font-size:12px; color:var(--muted-ink); margin-bottom:5px; }
 .icon { border-radius:12px; width:48px; height:48px; object-fit:cover; }
 .pending-task-editor { width:100%; height:72px; min-height:72px; font-size:13px; line-height:1.5; padding:8px 10px; background:#f2f6fb; resize:vertical; }
-.game-stamina-controls { flex-direction:row; width:auto; gap:8px; }
-.game-stamina-controls > input { width:72px; min-height:38px; padding:7px; }
-.game-stamina-controls > button { width:auto; height:auto; min-height:38px; padding:7px 12px; }
+.game-stamina-controls { display:grid; grid-template-columns:72px minmax(0,1fr); width:100%; gap:8px; }
+.game-stamina-controls > input, .game-stamina-controls > button { width:100%; height:38px; min-height:38px; padding:7px; box-sizing:border-box; font-size:12px; }
+#gameListBody .list-actions { grid-template-columns:72px minmax(0,1fr); width:100%; gap:8px; }
+#gameListBody .list-actions > button { width:100%; height:38px; min-height:38px; padding:7px; box-sizing:border-box; white-space:nowrap; }
 .game-stamina-estimate { align-items:flex-start; margin:0; gap:3px; font-size:12px; }
 .game-stamina-estimate > output { font-weight:500; }
 .red-text { color:#95657b; }
@@ -164,7 +166,7 @@ td { text-align:left; }
 .app-batch-tools #loadTaskBatchBtn:hover { background:#d4e5f0; }
 .app-batch-tools #taskBatchHint { margin:0; flex:1 1 290px; max-width:72ch; font-size:11px; line-height:1.5; color:var(--muted-ink); }
 #game-form, #task-form { width:min(100%, 42rem); margin:24px 0 0; gap:10px; }
-[data-page='createGame'] > section, [data-page='createTask'] > section { max-width:850px; margin:0 auto; }
+[data-page='createGame'] > section, [data-page='createTask'] > section { max-width:none; margin:0; }
 #game-form label:not([hidden]), #task-form label:not([hidden]) { font-size:13px; color:var(--muted-ink); margin-top:8px; }
 #game-form small, #task-form small { color:var(--muted-ink); font-size:12px; }
 #game-form input:not([hidden]), #task-form input:not([type='checkbox']):not([hidden]), #task-form select { min-height:44px; padding:10px 12px; }
@@ -173,7 +175,7 @@ td { text-align:left; }
 #task-form #divExpirationDayAndHour label, #task-form #divExpirationDate label, #task-form #taskRepeatDaysFields label { margin-top:0; }
 #task-form .task-date-toggle { margin-top:18px; color:var(--ink); }
 #submitGameForm, #submitTaskForm { align-self:flex-start; margin-top:14px; min-width:160px; }
-#profileEntry { margin:50px auto; max-width:780px; }
+#profileEntry { margin:0; max-width:none; border-radius:0 16px 16px 0; }
 #profileEntry h1 { margin-bottom:18px; }
 #profileChoices { display:grid; grid-template-columns:repeat(3,1fr); gap:14px; margin-top:28px; }
 #profileChoices button { min-height:86px; font:22px Georgia,serif; background:var(--lagoon-wash); color:var(--lagoon-deep); border:1px solid var(--line); }
@@ -211,7 +213,6 @@ td { text-align:left; }
 @media(min-width:1500px) { .app-layout { margin-left:max(48px, calc((100vw - 1440px) / 2)); margin-right:0; } }
 @media(max-width:1150px) {
     .app-layout { grid-template-columns:160px minmax(0,1fr); width:calc(100% - 40px); margin:20px auto; }
-    .app-main { padding:0 0 20px; }
     .app-sidebar { padding:24px 12px; }
     .app-content > [data-page] > section { padding:20px; }
     #gameListBody tr { grid-template-columns:44px minmax(130px,1fr) 170px; grid-template-areas:'icon name actions' 'icon forecast stamina' 'notes notes notes'; }
@@ -227,17 +228,17 @@ td { text-align:left; }
     .app-nav a { padding:8px 10px; font-size:13px; }
     .app-nav-symbol { display:none; }
     .app-main { padding:12px; }
-    .app-topbar { margin-bottom:14px; gap:8px; min-height:64px; }
+    .app-topbar { margin-bottom:0; gap:8px; min-height:64px; border-radius:12px 12px 0 0; border-left:1px solid var(--line); }
     .profile-bar { margin-left:0; }
     .app-content > [data-page] > section, #profileEntry { padding:16px; border-radius:12px; }
+    .app-content > [data-page] > section { border-radius:0 0 12px 12px; }
     h1, .main-title { font-size:27px; }
     .app-actions > button, section > button { width:auto; }
     table { min-width:0; white-space:normal; }
     #gameListBody tr { padding:14px; grid-template-columns:44px minmax(0,1fr); grid-template-areas:'icon name' 'forecast forecast' 'notes notes' 'stamina stamina' 'actions actions'; gap:12px; }
     #gameListBody td:nth-child(2) { padding-top:6px; }
-    .game-stamina-controls { justify-content:space-between; }
-    .game-stamina-controls > input { width:110px; }
-    .game-stamina-controls > button { flex:1; }
+    .game-stamina-controls, #gameListBody .list-actions { grid-template-columns:repeat(2,minmax(0,1fr)); }
+    .game-stamina-controls > input, .game-stamina-controls > button, #gameListBody .list-actions > button { height:42px; min-height:42px; }
     .list-actions { width:100%; grid-template-columns:repeat(2,minmax(0,1fr)); }
     .list-actions > button { min-height:42px; }
     .task-filters { align-items:flex-start; }

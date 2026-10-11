@@ -12,6 +12,15 @@ O projeto segue o versionamento semântico (SemVer), no formato `MAJOR.MINOR.PAT
 
 Nenhuma alteração pendente.
 
+## [1.13.1] - 2026-10-11
+
+### Corrigido
+
+- Menu lateral acompanha a altura do painel em listas curtas e longas; removida a altura mínima baseada na janela. Cabeçalho, formulários, eventos e jogos do perfil compartilham as mesmas bordas.
+- Edit/Stamina e Ocultar jogo/Save usam colunas e alturas correspondentes em Games, inclusive no celular.
+
+**Validação:** teste focado de build/shell/DOM aprovado. Conferência visual com 1, 5 e 24 itens, formulários, eventos e perfis; desktop 1440 × 1000 e celular 390 × 844, sem overflow horizontal da página ou erros de console observados. Suíte completa não repetida neste fechamento PATCH, conforme convenções. Sem alteração de banco.
+
 ## [1.13.0] - 2026-10-10
 
 ### Adicionado
