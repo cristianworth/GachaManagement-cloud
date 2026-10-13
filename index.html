@@ -72,7 +72,7 @@
         <section>
             <h1 class="main-title">
                 <a href="https://github.com/cristianworth/GachaManagement-cloud/tree/main" target="_blank">
-                    Gacha Management <span class="version-badge">v1.13.2</span>
+                    Gacha Management <span class="version-badge">v1.14.0</span>
                 </a>
             </h1>
 
@@ -176,6 +176,16 @@
                 </tbody>
                 </table>
             </div>
+            <nav class="task-pagination" aria-label="Paginação de tarefas">
+                <label for="taskPageSize">Itens por página
+                    <select id="taskPageSize"><option value="20">20</option><option value="10">10</option></select>
+                </label>
+                <span id="taskPageStatus" role="status" aria-live="polite">0 atividades</span>
+                <div class="task-page-actions">
+                    <button id="taskPreviousPage" class="button-neutral" type="button" disabled aria-controls="gameScheduleBody">Anterior</button>
+                    <button id="taskNextPage" class="button-neutral" type="button" disabled aria-controls="gameScheduleBody">Próxima</button>
+                </div>
+            </nav>
         </section>
     </div>
 

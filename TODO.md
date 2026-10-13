@@ -22,10 +22,11 @@ Complexidade estimada para este projeto (HTML, CSS, JavaScript e Supabase): **ba
 
 ### 1.2. Atualizar automaticamente a estimativa de resina
 
-- [ ] Recalcular a estimativa a cada minuto enquanto Games estiver visível e ao retornar à tela, usando o horário atual, previsão salva e minutos por unidade do jogo.
-- [ ] Atualizar apenas o número estimado/tempo restante, sem consultar ou gravar no Supabase a cada tick e sem alterar resina/anotações em edição.
-- **Complexidade: baixa.** Reaproveitar o cálculo existente; manter valor indisponível quando faltar previsão válida. Tier S, depois da paginação visual.
+- [x] Recalcular a estimativa a cada minuto enquanto Games estiver visível e ao retornar à tela, usando o horário atual, previsão salva e minutos por unidade do jogo.
+- [x] Atualizar apenas o número estimado/tempo restante, sem consultar ou gravar no Supabase a cada tick e sem alterar resina/anotações em edição.
+- **Complexidade: baixa.** Reaproveitar o cálculo existente; manter valor indisponível quando faltar previsão válida. Recorte S entregue em 1.14.0 em 12/10/2026, junto da paginação visual.
 - **Concluído quando:** o tempo decorrido aparece sem clique manual, respeitando o limite, parâmetros próprios do jogo e retorno de uma aba inativa.
+- **Validação e Para testar:** [paginação/resina](docs/task-pagination-stamina.md). Entregue em 1.14.0.
 
 ### 1.3. Buscar dados salvos periodicamente
 
@@ -162,13 +163,14 @@ Planejamento pedido em 08/10/2026. Inventário completo, contadores fornecidos, 
 
 ## 12. Paginar a lista de atividades
 
-- [ ] Primeiro recorte: paginação visual no navegador, 20 itens por página e opção de 10, reaproveitando a consulta completa do perfil.
-- [ ] Filtrar por jogo/intervalo/conclusão e ordenar por favorita, prazo e ID antes de paginar. Mostrar intervalo/total e Anterior/Próxima.
-- [ ] Voltar à primeira página ao mudar filtros/tamanho; manter uma página válida após concluir, favoritar, ignorar ou excluir, recuando se ficar vazia.
-- **Complexidade inicial: baixa/média.** Prioridade S. Diminui a rolagem, sem reduzir a quantidade consultada no banco.
+- [x] Primeiro recorte: paginação visual no navegador, 20 itens por página e opção de 10, reaproveitando a consulta completa do perfil.
+- [x] Filtrar por jogo/intervalo/conclusão e ordenar por favorita, prazo e ID antes de paginar. Mostrar intervalo/total e Anterior/Próxima.
+- [x] Voltar à primeira página ao mudar filtros/tamanho; manter uma página válida após concluir, favoritar, ignorar ou excluir, recuando se ficar vazia.
+- **Complexidade inicial: baixa/média.** Recorte S entregue em 1.14.0 em 12/10/2026. Diminui a rolagem, sem reduzir a quantidade consultada no banco.
 - **Concluído quando:** a lista pode ser percorrida e filtrada sem perder ordenação, tarefas ou estado das ações.
 - [ ] Segundo recorte condicionado: paginar a consulta no Supabase somente se volume/lentidão reais justificarem, com filtros, ordenação e contagem na RPC pública antes do limite.
 - [ ] Busca por nome é complemento opcional, separado da primeira entrega.
+- **Validação e Para testar:** [paginação/resina](docs/task-pagination-stamina.md). Entregue em 1.14.0.
 
 ## 13. Favorite tasks — favoritas no topo
 

@@ -11,6 +11,44 @@ import { setFeedback } from './feedback.js';
 import { getProfileId, getSelectedProfileId } from '../services/profileSession.js';
 
 let refreshingGames = false;
+let renderedGames = [];
+let renderedGamesProfile = null;
+let staminaEstimateTimer = null;
+
+export function stopStaminaEstimateTimer() {
+    if (staminaEstimateTimer !== null) window.clearInterval(staminaEstimateTimer);
+    staminaEstimateTimer = null;
+    document.removeEventListener('visibilitychange', handleEstimateVisibility);
+}
+
+function canUpdateEstimates() {
+    return !document.hidden && document.querySelector('[data-page="games"]').style.display !== 'none'
+        && renderedGamesProfile === getSelectedProfileId();
+}
+
+function refreshStaminaEstimates() {
+    if (!canUpdateEstimates()) return;
+    const now = new Date();
+    for (const game of renderedGames) {
+        const row = document.getElementById(`estimatedStamina${game.id}`)?.closest('tr');
+        if (row) updateStaminaEstimate(row, game, now);
+    }
+}
+
+function handleEstimateVisibility() {
+    if (staminaEstimateTimer !== null) window.clearInterval(staminaEstimateTimer);
+    staminaEstimateTimer = null;
+    if (!renderedGames.length || !canUpdateEstimates()) return;
+    // Recompute from the saved forecast after background throttling, rather than counting ticks.
+    refreshStaminaEstimates();
+    staminaEstimateTimer = window.setInterval(refreshStaminaEstimates, 60_000);
+}
+
+function startStaminaEstimateTimer() {
+    stopStaminaEstimateTimer();
+    document.addEventListener('visibilitychange', handleEstimateVisibility);
+    handleEstimateVisibility();
+}
 
 async function handleRefreshGames() {
     if (refreshingGames) return;
@@ -68,6 +106,8 @@ function collectGameDrafts() {
 }
 
 function renderGameList(games, drafts = new Map()) {
+    renderedGames = games;
+    renderedGamesProfile = getSelectedProfileId();
     const gameListBody = document.getElementById("gameListBody");
     gameListBody.innerHTML = ''; // clear data
     const now = new Date();
@@ -78,6 +118,7 @@ function renderGameList(games, drafts = new Map()) {
         addGameEventListeners(game);
     });
     for (const [id, value] of drafts) document.getElementById(id).value = value;
+    startStaminaEstimateTimer();
 }
 
 function createGameRow(game, now) {

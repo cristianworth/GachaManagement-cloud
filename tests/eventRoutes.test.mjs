@@ -21,7 +21,7 @@ for (const game of EVENT_GAMES) for (const hosted of [false, true]) test(`${game
                 assert.equal(params.p_profile_id, 'cran');
                 return { data: [], error: null };
             } }) } };
-    globalThis.document = { getElementById: id => elements.get(id),
+    globalThis.document = { getElementById: id => elements.get(id), removeEventListener() {},
         querySelector: () => null, querySelectorAll: () => pages };
     globalThis.history = { replaceState: (_state, _title, path) => { location.pathname = path; } };
     const { default: Router } = await import(`../js/utils/router.js?event-route-${game.key}-${hosted}`);

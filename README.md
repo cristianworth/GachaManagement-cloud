@@ -4,7 +4,7 @@ As melhorias planejadas e suas estimativas de complexidade estão em [TODO.md](T
 
 O **Gacha Management** é uma aplicação projetada para ajudar jogadores de **gacha games** a gerenciar sua **resina/stamina** e acompanhar **tarefas recorrentes** nos jogos. Ele oferece ferramentas para rastrear a regeneração da stamina, organizar atividades programadas e facilitar o planejamento dentro dos jogos.
 
-Versão atual: **1.13.2**. Consulte o [CHANGELOG](CHANGELOG.md) para ver as alterações de cada versão e as regras de versionamento utilizadas.
+Versão atual: **1.14.0**. Consulte o [CHANGELOG](CHANGELOG.md) para ver as alterações de cada versão e as regras de versionamento utilizadas.
 
 ### Design Sangonomiya — 1.13.0
 
@@ -21,6 +21,8 @@ Para testar visualmente sem alterar o Supabase, execute `npm run preview:profile
 **Resina da versão 1.8.0:** Games mostra a resina estimada atual junto da previsão de lotar. **Save** registra o valor real e uma nova previsão. Sem previsão salva, a estimativa fica indisponível. Alertas continuam planejados em [docs/resin-alerts-plan.md](docs/resin-alerts-plan.md).
 
 **Atualizar dados da versão 1.9.1:** um botão no topo de Games substitui os botões de estimativa por jogo. Busca os dados salvos mais recentes do perfil e recalcula todas as estimativas, mantendo os campos que você estiver editando. Não salva rascunhos nem sincroniza eventos. Cenários de teste em [docs/refresh-games.md](docs/refresh-games.md).
+
+**Paginação e estimativa automática — 1.14.0:** Tasks mostra 20 itens por página, com opção de 10, após aplicar filtros e ordenar favoritas/prazos. Games recalcula a estimativa local a cada minuto enquanto visível e ao retornar de uma aba oculta, preservando rascunhos e sem consultar/gravar no banco. [Comportamento, limites e Para testar](docs/task-pagination-stamina.md).
 
 **Favorite tasks da versão 1.9.0:** estrela por perfil e favoritas no topo, mantendo filtros e ordenação por prazo. Para testar sem alterar o live, use `npm run preview:profiles`; para usar no Supabase, aplique antes a migração indicada em [docs/favorite-tasks.md](docs/favorite-tasks.md), ainda pendente no destino.
 

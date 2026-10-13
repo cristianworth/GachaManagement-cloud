@@ -38,6 +38,8 @@ class Router {
   }
 
   static async route(options = {}) {
+    const gameUI = await import('../ui/gameUI.js');
+    gameUI.stopStaminaEstimateTimer();
     const eventReview = await import('../ui/eventReviewUI.js');
     eventReview.stopEventReviewTimer();
     const path = this.getCurrentPath();
@@ -56,7 +58,7 @@ class Router {
         await import('../ui/dropdownHandler.js').then(module => module.populateGameDropDown());
         break;
       case 'games':
-        await import('../ui/gameUI.js').then(module => module.displayAllGames(options));
+        await gameUI.displayAllGames(options);
         break;
       case 'taskList':
         await import('../ui/taskUI.js').then(module => module.displayAllTasks(options));

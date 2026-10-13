@@ -12,6 +12,23 @@ O projeto segue o versionamento semântico (SemVer), no formato `MAJOR.MINOR.PAT
 
 Nenhuma alteração pendente.
 
+## [1.14.0] - 2026-10-12
+
+### Adicionado
+
+- Paginação visual em Tasks: 20 itens por padrão, opção de 10, intervalo/total e Anterior/Próxima. Filtros e ordenação consideram todas as tarefas antes do corte; ações conservam uma página válida e recuam quando a última fica vazia.
+- Estimativa local de resina e tempo restante atualizados a cada minuto em Games, pausando em aba oculta e recalculando ao voltar. Timer único encerrado ao sair da rota; previsão salva e parâmetros do jogo preservados, sem consultas/escritas ou alteração de rascunhos/foco.
+
+### Corrigido
+
+- Coluna central da grade não alarga a página móvel diante de nomes longos; a tabela conserva sua própria rolagem horizontal.
+
+### Documentado
+
+- Recortes S, limites e roteiro prático em [paginação/resina](docs/task-pagination-stamina.md); TODO e roadmap atualizados. Sem alteração SQL. Entrega fechada em 1.14.0 com commit e push autorizados por Cristian.
+
+**Validação local:** 56 testes focados iniciais e suíte completa com 593 testes aprovados (69 Jest + 524 Node). Ajustes finais de foco/fallback de filtro validados em 23 testes focados. Prévia isolada com 24 tarefas conferida em 20/4 e 10/10/4; celular 390 × 844 sem overflow horizontal da página. Clock fixo cobre avanço/pausa/teto da resina; rascunho/foco conferidos também no navegador.
+
 ## [1.13.2] - 2026-10-11
 
 ### Melhorado

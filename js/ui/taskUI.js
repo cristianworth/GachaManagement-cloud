@@ -20,6 +20,8 @@ let filterInitialized = false;
 let loadedGames = [];
 let loadingTaskBatch = false;
 let batchDataLoaded = false;
+let taskPage = 1;
+let loadedTaskProfile = null;
 const pendingFavoriteTasks = new Set();
 
 export async function displayAllTasks({ successMessage = '' } = {}) {
@@ -50,6 +52,9 @@ export async function displayAllTasks({ successMessage = '' } = {}) {
 }
 
 function updateTaskList(tasks, games) {
+    const profile = getSelectedProfileId();
+    if (profile !== loadedTaskProfile) taskPage = 1;
+    loadedTaskProfile = profile;
     loadedTasks = tasks;
     loadedGames = games;
     batchDataLoaded = true;
@@ -58,15 +63,24 @@ function updateTaskList(tasks, games) {
     filter.replaceChildren(new Option('All games', ''));
     for (const game of games) filter.add(new Option(game.description, String(game.id)));
     filter.value = [...filter.options].some(option => option.value === selectedGame) ? selectedGame : '';
+    if (filter.value !== selectedGame) taskPage = 1;
     const refreshFilter = document.getElementById('taskRefreshTypeFilter');
     if (!filterInitialized) {
         refreshFilter.replaceChildren(new Option('All intervals', ''));
         for (const refreshType of RefreshTypeEnum.presets) {
             refreshFilter.add(new Option(refreshType.value, String(refreshType.id)));
         }
-        filter.addEventListener('change', renderTaskList);
-        refreshFilter.addEventListener('change', renderTaskList);
-        document.getElementById('taskHideCompleted').addEventListener('change', renderTaskList);
+        const resetPage = () => { taskPage = 1; renderTaskList(); };
+        filter.addEventListener('change', resetPage);
+        refreshFilter.addEventListener('change', resetPage);
+        document.getElementById('taskHideCompleted').addEventListener('change', resetPage);
+        document.getElementById('taskPageSize').addEventListener('change', resetPage);
+        document.getElementById('taskPreviousPage').addEventListener('click', () => {
+            taskPage--; renderTaskList();
+        });
+        document.getElementById('taskNextPage').addEventListener('click', () => {
+            taskPage++; renderTaskList();
+        });
         document.getElementById('loadTaskBatchBtn').addEventListener('click', () => handleLoadTaskBatch());
         initializeTaskBatchPicker(handleLoadTaskBatch, updateBatchControls);
         filterInitialized = true;
@@ -79,17 +93,26 @@ function renderTaskList() {
     updateBatchControls();
     const refreshType = document.getElementById('taskRefreshTypeFilter').value;
     const hideCompleted = document.getElementById('taskHideCompleted').checked;
+    const taskPageSize = Number(document.getElementById('taskPageSize').value) === 10 ? 10 : 20;
     const tasks = sortTasks(filterTasks(loadedTasks, { gameId, interval: refreshType, hideCompleted }));
+    const pageCount = Math.max(1, Math.ceil(tasks.length / taskPageSize));
+    taskPage = Math.max(1, Math.min(taskPage, pageCount));
+    const offset = (taskPage - 1) * taskPageSize;
     const gameScheduleBody = document.getElementById("gameScheduleBody");
     gameScheduleBody.innerHTML = ''; // clear data
 
-    tasks.forEach(task => {
+    tasks.slice(offset, offset + taskPageSize).forEach(task => {
         const row = createTaskRow(task);
         gameScheduleBody.appendChild(row);
         addTaskEventListeners(task);
     });
     document.getElementById('taskListStatus').textContent = tasks.length
         ? `${tasks.length} activities` : 'No activities match the selected filters.';
+    document.getElementById('taskPageStatus').textContent = tasks.length
+        ? `${offset + 1}–${Math.min(offset + taskPageSize, tasks.length)} de ${tasks.length} atividades · Página ${taskPage} de ${pageCount}`
+        : '0 atividades';
+    document.getElementById('taskPreviousPage').disabled = taskPage === 1;
+    document.getElementById('taskNextPage').disabled = taskPage === pageCount;
 }
 
 function createTaskRow(task) {
@@ -198,7 +221,7 @@ async function handleTaskFavorite(task, button) {
         if (currentButton) {
             currentButton.disabled = false;
             if (hadFocus) currentButton.focus();
-        }
+        } else if (hadFocus) document.getElementById('taskPageSize').focus();
     }
 }
 
