@@ -30,11 +30,12 @@ Complexidade estimada para este projeto (HTML, CSS, JavaScript e Supabase): **ba
 
 ### 1.3. Buscar dados salvos periodicamente
 
-- [ ] Ler o Supabase a cada 6 minutos na tela visível e ao retornar quando os dados estiverem antigos; pausar consultas em segundo plano.
-- [ ] Atualizar silenciosamente o contexto atual, preservando rascunhos, filtros e paginação, sem overlay global nem requisições sobrepostas.
-- [ ] Adiar reconstrução durante edição/modal/gravação, conferir perfil/rota e manter os dados exibidos quando a leitura falhar.
+- [x] Ler o Supabase a cada 6 minutos na tela visível e ao retornar quando os dados estiverem antigos; pausar consultas em segundo plano.
+- [x] Atualizar silenciosamente o contexto atual, preservando rascunhos, filtros e paginação, sem overlay global nem requisições sobrepostas.
+- [x] Adiar reconstrução durante edição/modal/gravação, conferir perfil/rota e manter os dados exibidos quando a leitura falhar.
 - **Complexidade: média.** Evoluir a atualização manual existente. Isso lê o banco; não sincroniza APIs de eventos e não salva automaticamente resina.
 - **Concluído quando:** alterações de outra aba/celular aparecem sem perder trabalho local. Estimativa por minuto e leitura a cada 6 minutos têm responsabilidades distintas.
+- **Entregue em 1.15.0 em 18/10/2026:** [contrato, validação e Para testar](docs/silent-refresh.md).
 
 ## 2. Usar imagem por URL para jogos novos
 

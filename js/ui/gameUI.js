@@ -9,6 +9,7 @@ import { createGameIcon } from './eventCover.js';
 import { withLoading } from './loadingState.js';
 import { setFeedback } from './feedback.js';
 import { getProfileId, getSelectedProfileId } from '../services/profileSession.js';
+import { startSilentRefresh } from './silentRefresh.js';
 
 let refreshingGames = false;
 let renderedGames = [];
@@ -63,33 +64,38 @@ async function handleRefreshGames() {
     }
 }
 
-export async function displayAllGames({ successMessage = '', preserveDrafts = false } = {}) {
+export async function displayAllGames({ successMessage = '', preserveDrafts = false, silent = false, canApply = () => true } = {}) {
     const refresh = document.getElementById('refreshGamesBtn');
     if (refresh) refresh.onclick = handleRefreshGames;
-    return withLoading(preserveDrafts ? 'Atualizando dados...' : 'Carregando jogos...', async () => {
+    const load = async () => {
         const retry = document.getElementById('gameListRetry');
-        if (retry) {
+        if (retry && !silent) {
             retry.hidden = true;
             retry.onclick = preserveDrafts ? handleRefreshGames : () => displayAllGames();
         }
-        setFeedback('gameListMessage');
+        if (!silent) setFeedback('gameListMessage');
         try {
             const profileId = getProfileId();
             const games = await fetchAllGames();
             if (profileId !== getSelectedProfileId()) return false;
+            if (!canApply()) return null;
             // Read drafts after the request so edits made while it was pending also survive.
             const drafts = preserveDrafts ? collectGameDrafts() : new Map();
             const availableFields = new Set(games.flatMap(game => [`currentStamina${game.id}`, `pendingTask${game.id}`]));
             if ([...drafts.keys()].some(id => !availableFields.has(id))) {
-                setFeedback('gameListMessage', 'Um jogo com alterações não salvas saiu da seleção. A lista foi mantida para preservar seus rascunhos. Copie o que precisar antes de recarregar a página.', 'error');
+                if (!silent) setFeedback('gameListMessage', 'Um jogo com alterações não salvas saiu da seleção. A lista foi mantida para preservar seus rascunhos. Copie o que precisar antes de recarregar a página.', 'error');
                 return false;
             }
+            const focused = silent ? document.activeElement : null;
             renderGameList(games, drafts);
+            if (focused?.id) (document.getElementById(focused.id) ?? refresh)?.focus();
+            startSilentRefresh('games', canApply => displayAllGames({ preserveDrafts: true, silent: true, canApply }), () => refreshingGames);
             const message = successMessage || (games.length ? '' : 'Nenhum jogo selecionado. Use Selecionar jogos para começar.');
-            setFeedback('gameListMessage', drafts.size ? `${message} Alterações não salvas foram mantidas. As estimativas usam os dados salvos.` : message);
+            if (!silent) setFeedback('gameListMessage', drafts.size ? `${message} Alterações não salvas foram mantidas. As estimativas usam os dados salvos.` : message);
             return true;
         } catch (error) {
             console.error('Failed to load game list:', error);
+            if (silent) return false;
             setFeedback('gameListMessage', preserveDrafts
                 ? 'Não foi possível atualizar os dados. A lista e seus rascunhos foram mantidos. Use Tentar novamente.' : successMessage
                 ? `${successMessage} Porém, não foi possível atualizar a lista. Use Tentar novamente para recarregar os dados.`
@@ -97,7 +103,8 @@ export async function displayAllGames({ successMessage = '', preserveDrafts = fa
             if (retry) retry.hidden = false;
             return false;
         }
-    });
+    };
+    return silent ? load() : withLoading(preserveDrafts ? 'Atualizando dados...' : 'Carregando jogos...', load);
 }
 
 function collectGameDrafts() {

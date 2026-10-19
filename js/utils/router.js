@@ -1,6 +1,7 @@
 // js/utils/router.js
 import NavigationService from '../services/navigation.service.js';
 import { EVENT_GAMES } from '../events/eventGames.js';
+import { stopSilentRefresh } from '../ui/silentRefresh.js';
 
 class Router {
   // Deriva o base path do repositório servido no GitHub Pages (primeiro
@@ -38,6 +39,7 @@ class Router {
   }
 
   static async route(options = {}) {
+    stopSilentRefresh();
     const gameUI = await import('../ui/gameUI.js');
     gameUI.stopStaminaEstimateTimer();
     const eventReview = await import('../ui/eventReviewUI.js');

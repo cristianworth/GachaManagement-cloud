@@ -7,6 +7,9 @@ import { showDialog } from './dialogs.js';
 let offers = [];
 let actor = null;
 let busy = false;
+export function isTaskBatchPickerBusy() {
+    return busy;
+}
 let attempt = null;
 const isNew = item => ['never', 'deferred'].includes(item.state);
 const selectable = item => isNew(item) || item.can_replace === true;

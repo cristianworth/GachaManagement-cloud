@@ -1,5 +1,9 @@
 const pendingOperations = new Map();
 
+export function isLoading() {
+    return pendingOperations.size > 0;
+}
+
 function renderLoadingState() {
     const overlay = document.getElementById('loadingOverlay');
     if (!overlay) return;

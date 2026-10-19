@@ -1,5 +1,5 @@
 // js\ui\taskUI.js
-import { initializeTaskBatchPicker } from './taskBatchPicker.js';
+import { initializeTaskBatchPicker, isTaskBatchPickerBusy } from './taskBatchPicker.js';
 import { createEventCover } from './eventCover.js';
 import { cleanupExpiredImportedEvents, ignoreImportedTask, restoreEventApiDeadline } from '../database/eventCandidateDB.js';
 import { fetchAllGames } from '../database/gameDB.js';
@@ -14,6 +14,7 @@ import { getSelectedProfileId } from '../services/profileSession.js';
 import { filterTasks, sortTasks } from '../utils/taskFilters.js';
 import { withLoading } from './loadingState.js';
 import { setFeedback } from './feedback.js';
+import { startSilentRefresh } from './silentRefresh.js';
 
 let loadedTasks = [];
 let filterInitialized = false;
@@ -24,21 +25,29 @@ let taskPage = 1;
 let loadedTaskProfile = null;
 const pendingFavoriteTasks = new Set();
 
-export async function displayAllTasks({ successMessage = '' } = {}) {
-    return withLoading('Carregando tarefas...', async () => {
+export async function displayAllTasks({ successMessage = '', silent = false, canApply = () => true } = {}) {
+    const load = async () => {
         const retry = document.getElementById('taskListRetry');
-        if (retry) {
+        if (retry && !silent) {
             retry.hidden = true;
             retry.onclick = () => displayAllTasks();
         }
-        setFeedback('taskListMessage');
+        if (!silent) setFeedback('taskListMessage');
         try {
-            await cleanupExpiredImportedEvents();
+            const profile = getSelectedProfileId();
+            if (!silent) await cleanupExpiredImportedEvents();
             const [tasks, games] = await Promise.all([fetchAllTasks(), fetchAllGames()]);
+            if (profile !== getSelectedProfileId()) return false;
+            if (!canApply()) return null;
+            const focused = silent ? document.activeElement : null;
             updateTaskList(tasks, games);
-            setFeedback('taskListMessage', successMessage);
+            if (focused?.id) (document.getElementById(focused.id) ?? document.getElementById('taskPageSize')).focus();
+            startSilentRefresh('taskList', canApply => displayAllTasks({ silent: true, canApply }),
+                () => loadingTaskBatch || pendingFavoriteTasks.size > 0 || isTaskBatchPickerBusy());
+            if (!silent) setFeedback('taskListMessage', successMessage);
             return true;
         } catch (error) {
+            if (silent) { console.error('Failed to refresh task list:', error); return false; }
             batchDataLoaded = false;
             updateBatchControls();
             console.error('Failed to load task list:', error);
@@ -48,7 +57,8 @@ export async function displayAllTasks({ successMessage = '' } = {}) {
             if (retry) retry.hidden = false;
             return false;
         }
-    });
+    };
+    return silent ? load() : withLoading('Carregando tarefas...', load);
 }
 
 function updateTaskList(tasks, games) {

@@ -12,6 +12,16 @@ O projeto segue o versionamento semântico (SemVer), no formato `MAJOR.MINOR.PAT
 
 Nenhuma alteração pendente.
 
+## [1.15.0] - 2026-10-18
+
+### Adicionado
+
+- Leitura silenciosa dos dados salvos de Games/Tasks a cada seis minutos na lista visível, pausando em aba oculta e consultando ao voltar quando o período venceu. Sem overlay/avisos ou limpeza/escritas no caminho automático.
+- Agendamento único por tela/perfil, com adiamento durante edição/modal/lote/gravação e revalidação após a consulta. Rascunhos, filtros, paginação e foco de botões preservados; respostas atrasadas não substituem uma carga posterior nem cancelam o timer da tela atual. Falha mantém dados/controles e tenta novamente após seis minutos.
+- [Contrato, limites e Para testar](docs/silent-refresh.md). TODO e roadmap atualizados; sem mudança SQL ou dependência nova.
+
+**Validação local:** 89 testes focados e suíte completa com 606 testes aprovados (69 Jest + 537 Node). Ajuste final de carga manual atrasada validado nos 13 testes do agendador. Prévia isolada na porta 5506, com carga sem erros de console; ciclos de seis minutos verificados em DOM real com relógio fixo.
+
 ## [1.14.0] - 2026-10-12
 
 ### Adicionado

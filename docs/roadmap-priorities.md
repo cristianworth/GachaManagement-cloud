@@ -1,6 +1,6 @@
 # Roadmap — prioridades por tier
 
-Atualizado em 12/10/2026 conforme o pedido de Cristian. O objetivo é facilitar seu uso pessoal: um usuário frequente, poucos jogos e dados de baixa criticidade. Priorizar benefícios visíveis com ajustes pequenos na estrutura JavaScript/HTML/CSS. Esta lista registra trabalho futuro; sua ordem não autoriza implementar tudo.
+Atualizado em 18/10/2026 conforme o pedido de Cristian. O objetivo é facilitar seu uso pessoal: um usuário frequente, poucos jogos e dados de baixa criticidade. Priorizar benefícios visíveis com ajustes pequenos na estrutura JavaScript/HTML/CSS. Esta lista registra trabalho futuro; sua ordem não autoriza implementar tudo.
 
 Saíram da tierlist de implementação: perfis/seleção de jogos, sincronização diária, identidade por edição/limpeza de eventos, estimativa manual de resina, favoritas e lote de 16 definições/capas com recriação explícita. As migrações até 1.12.0 foram aplicadas por Cristian no Supabase em 09/10/2026; catálogos/leitura do lote responderam pela API. SweetAlert2 fechou em 1.12.1; menu lateral e tema Sangonomiya foram entregues até 1.13.2. Em 12/10/2026 os dois recortes S foram entregues em 1.14.0: paginação visual 20/10 e estimativa local por minuto. [Comportamento e validação](task-pagination-stamina.md); commit e push autorizados por Cristian. Histórico em [CHANGELOG.md](../CHANGELOG.md).
 
@@ -8,9 +8,8 @@ S = próximas melhorias de uso; A = alto retorno depois da base imediata; B = ne
 
 | Tier | Ordem | Melhoria | Por que esta posição | Complexidade / referência |
 | --- | --- | --- | --- | --- |
-| **A** | 1 | Atualização silenciosa do banco a cada 6 minutos enquanto visível | Recebe alterações de outra aba/celular. Complementa a estimativa local; preserva rascunhos, filtros e página atual. | Média. TODO 1.3. |
-| **A** | 2 | Ajustes pontuais no celular | Conferir tabelas, áreas de toque, filtros e formulários em cada recorte de uso. | Baixa/média por recorte. TODO 5. |
-| **A** | 3 | Alerta de resina alvo com contagem regressiva | Benefício pessoal claro, depois de deixar a estimativa acompanhando o tempo. Alerta dentro do site; notificações com site fechado ficam separadas. | Média. TODO 6; [levantamento](resin-alerts-plan.md). |
+| **A** | 1 | Ajustes pontuais no celular | Conferir tabelas, áreas de toque, filtros e formulários em cada recorte de uso. | Baixa/média por recorte. TODO 5. |
+| **A** | 2 | Alerta de resina alvo com contagem regressiva | Benefício pessoal claro, depois de deixar a estimativa acompanhando o tempo. Alerta dentro do site; notificações com site fechado ficam separadas. | Média. TODO 6; [levantamento](resin-alerts-plan.md). |
 | **B** | 1 | Calendário das próximas fases de Endstate Matrix | Necessário quando a próxima fase estiver disponível; requer fonte verificada e referência absoluta, sem inventar recorrência nem pedir datas na importação. | Média/alta. TODO 9.1; [limites](expanded-task-batch.md). |
 | **B** | 2 | Avisos de manutenção e próximos banners | Informação útil, mas exige manutenção de datas e anúncios; começar com cadastro manual. | Média. TODO 7 e 7.1. |
 | **B** | 3 | Ampliar catálogo da API/variantes regionais | Adicionar primeiro jogos que Cristian passar a acompanhar, com horários e metadados verificados; catálogo inteiro não é necessidade de escala. | Alta. TODO 10. |
@@ -27,13 +26,13 @@ S = próximas melhorias de uso; A = alto retorno depois da base imediata; B = ne
 
 **2. Estimativa local — entregue em 1.14.0.** Enquanto Games estiver visível, recalcular a cada minuto com o horário atual e os minutos por unidade de cada jogo. Reutilizar a previsão salva; não incrementar um contador por tick, salvar automaticamente ou sobrescrever o valor digitado. Recalcular ao retornar à página, pois timers podem atrasar em segundo plano. Sem parâmetros/previsão válidos, conservar a mensagem de estimativa indisponível.
 
-**3. Leitura periódica.** Intervalo inicial de 6 minutos para buscar dados do Supabase na tela visível; pausar em segundo plano e consultar ao retornar se a leitura estiver antiga. O intervalo é de sincronização da interface, não o tempo de regeneração de um jogo: não precisa de margem de 6,5/8,5 minutos para garantir a resina. Reaproveitar a atualização que preserva rascunhos. Evitar overlay global, consultas sobrepostas, troca de perfil e reconstrução durante edição/modal/gravação; manter linhas após falha. Atualizar somente o contexto exibido e conservar filtros/paginação. Esse fluxo não importa calendários das APIs dos jogos.
+**3. Leitura periódica — entregue em 1.15.0 em 18/10/2026.** [Contrato e validação](silent-refresh.md). Intervalo inicial de 6 minutos para buscar dados do Supabase na tela visível; pausar em segundo plano e consultar ao retornar se a leitura estiver antiga. O intervalo é de sincronização da interface, não o tempo de regeneração de um jogo: não precisa de margem de 6,5/8,5 minutos para garantir a resina. Reaproveitar a atualização que preserva rascunhos. Evitar overlay global, consultas sobrepostas, troca de perfil e reconstrução durante edição/modal/gravação; manter linhas após falha. Atualizar somente o contexto exibido e conservar filtros/paginação. Esse fluxo não importa calendários das APIs dos jogos.
 
 **4. Menu lateral — base entregue em 1.13.0.** Desktop com lateral estreita: nome do app, perfil ativo/Trocar perfil, Games, Tasks, Revisar eventos, Selecionar jogos e versão discreta. Usar ícones SVG simples com texto e destacar a rota atual. Celular com botão que abre/fecha o menu. Reaproveitar o seletor de perfil público e o Router; não implementar autenticação. Retirar View Tasks/Back to Games repetidos e manter criação, lote e filtros no conteúdo. Um contador de Tasks, se incluído, deve representar as pendências do perfil inteiro, não apenas a página exibida.
 
 ## Critérios e sequência
 
-Paginação visual e estimativa local foram entregues em 1.14.0, com testes e conferência visual concluídos. Menu lateral já possui sua base entregue; a leitura periódica silenciosa é a próxima proposta independente, ainda não implementada. Refinamentos mobile podem acompanhar cada recorte. Conferir a necessidade real antes de acrescentar busca, consultas paginadas ou automação de fontes. Não adicionar dependência para paginação, timers ou navegação simples.
+Paginação visual e estimativa local foram entregues em 1.14.0, com testes e conferência visual concluídos. Menu lateral já possui sua base entregue; a leitura periódica silenciosa foi entregue em 1.15.0 em 18/10/2026, com testes aprovados. Refinamentos mobile podem acompanhar cada recorte. Conferir a necessidade real antes de acrescentar busca, consultas paginadas ou automação de fontes. Não adicionar dependência para paginação, timers ou navegação simples.
 
 Paginação SQL, se necessária depois, deve usar contrato público por perfil, com todos os filtros antes do limite, ordenação estável e total correspondente. Não limitar uma página para só então filtrar suas tarefas no navegador.
 
