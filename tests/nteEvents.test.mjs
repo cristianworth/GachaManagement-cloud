@@ -71,8 +71,11 @@ test('Missing, invalid and inconsistent NTE periods stay in review', () => {
 });
 
 test('NTE real sync and PostgreSQL preserve completion, manual corrections, ignore and game isolation', async t => {
+    // Keep SQL expiration checks on the same frozen clock as the calendar normalization.
+    t.mock.timers.enable({ apis: ['Date'], now });
     const db = await createTestDatabase();
     t.after(() => db.close());
+    assert.equal((await db.query('select now() as instant')).rows[0].instant.toISOString(), '2026-10-04T12:00:00.000Z');
     t.mock.method(console, 'log', () => {});
     let data = structuredClone(calendar);
     mockDatabaseFetch(t, db, game, () => data);

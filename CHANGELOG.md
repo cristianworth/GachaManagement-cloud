@@ -10,7 +10,16 @@ O projeto segue o versionamento semântico (SemVer), no formato `MAJOR.MINOR.PAT
 
 ## [Não publicado]
 
-Nenhuma alteração pendente.
+### Corrigido
+
+- Teste de integração NTE usa o mesmo relógio fixo em JavaScript e PostgreSQL, incluindo uma verificação do instante SQL. A fixture continua importando os nove eventos esperados independentemente da data real da execução; a correção não altera os prazos ou a expiração em produção.
+
+### Documentado
+
+- Ajustes pontuais no celular removidos das prioridades do roadmap e registrados como concluídos em 1.15.1.
+- Proposta de estado diário em Games (Pendente / Voltar depois / Feito por hoje), com automação opcional pelo Save, persistência por perfil e decisões ainda abertas; sem implementação da funcionalidade.
+
+**Validação local:** 14 testes focados do NTE e suíte completa com 607 testes aprovados (69 Jest + 538 Node), sem falhas.
 
 ## [1.15.1] - 2026-10-19
 
