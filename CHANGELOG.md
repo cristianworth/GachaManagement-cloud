@@ -12,6 +12,15 @@ O projeto segue o versionamento semântico (SemVer), no formato `MAJOR.MINOR.PAT
 
 Nenhuma alteração pendente.
 
+## [1.15.1] - 2026-10-19
+
+### Melhorado
+
+- No celular (até 720 px), navegação, botões de perfil/lote, filtros e ações Edit/Delete de Tasks têm altura mínima de 42 px; a estrela de favoritas também ganha largura mínima de 42 px. Corrigida a prioridade do seletor que mantinha Edit/Delete em 30 px mesmo com a regra móvel ativa.
+- Filtros de Tasks e anotações de Games usam fonte de 16 px no celular. Tema Sangonomiya, estrutura, dimensões de desktop e rolagem interna da tabela preservados; sem alteração de JavaScript, banco ou dependências.
+
+**Validação local:** 47 testes focados aprovados (build/shell, paginação, apresentação de Games, seletor de lote e feedback). Prévia descartável conferida em 360 × 800, 390 × 844, no limite de 720/721 px e desktop 1440 × 1000; sem overflow horizontal da página nos cenários observados. Paginação, formulários, navegação e rodapé do lote conferidos; Escape fecha o seletor e devolve o foco ao botão. Conferência por emulação de dimensões, sem aparelho físico. Suíte completa não repetida nesta versão PATCH.
+
 ## [1.15.0] - 2026-10-18
 
 ### Adicionado

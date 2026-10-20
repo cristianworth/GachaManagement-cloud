@@ -228,11 +228,12 @@ td { text-align:left; }
     .app-brand-name { font-size:17px; }
     .app-brand-version, .app-sidebar-note { display:none; }
     .app-nav { display:flex; flex-wrap:wrap; gap:4px; }
-    .app-nav a { padding:8px 10px; font-size:13px; }
+    .app-nav a { padding:8px 10px; font-size:13px; min-height:42px; box-sizing:border-box; }
     .app-nav-symbol { width:18px; height:18px; }
     .app-main { padding:12px; }
     .app-topbar { margin-bottom:0; gap:8px; min-height:64px; border-radius:12px 12px 0 0; border-left:1px solid var(--line); }
     .profile-bar { margin-left:0; }
+    .profile-bar button, .app-batch-tools button { min-height:42px; }
     .app-content > [data-page] > section, #profileEntry { padding:16px; border-radius:12px; }
     .app-content > [data-page] > section { border-radius:0 0 12px 12px; }
     h1, .main-title { font-size:27px; }
@@ -244,12 +245,15 @@ td { text-align:left; }
     .game-stamina-controls > input, .game-stamina-controls > button, #gameListBody .list-actions > button { height:42px; min-height:42px; }
     .list-actions { width:100%; grid-template-columns:repeat(2,minmax(0,1fr)); }
     .list-actions > button { min-height:42px; }
+    #gameSchedule .list-actions > button { min-height:42px; }
+    .task-favorite-toggle { min-width:42px; min-height:42px; }
+    .pending-task-editor { font-size:16px; }
     .task-filters { align-items:flex-start; }
     .app-filter-field { max-width:none; flex-basis:100%; }
     .task-completed-filter, #taskListStatus { margin-top:0; }
     .app-daily-header { gap:12px; }
     .app-daily-header .app-actions { padding:0; }
-    .task-filters select { max-width:100%; }
+    .task-filters select { max-width:100%; min-height:42px; font-size:16px; }
     #taskListStatus { width:100%; margin-left:0; }
     #profileChoices { grid-template-columns:1fr; }
     #profileChoices button { min-height:60px; }
