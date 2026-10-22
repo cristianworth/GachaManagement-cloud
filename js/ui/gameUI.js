@@ -1,6 +1,6 @@
 // js\ui\gameUI.js
 import { Game, allGames } from '../data/Game.js';
-import { fetchGameById, fetchAllGames, updateGame, addGame, deleteGameById } from '../database/gameDB.js';
+import { fetchGameById, fetchAllGames, updateGame, addGame, deleteGameById, saveGameDailyState } from '../database/gameDB.js';
 import { calculateMaxStaminaDate, estimateCurrentStamina, formatDateToDayHour } from '../utils/dateUtils.js';
 import { resetGameForm, setGameFormMessage } from './formHandler.js';
 import { getRandomColor } from '../utils/colorUtils.js';
@@ -10,6 +10,7 @@ import { withLoading } from './loadingState.js';
 import { setFeedback } from './feedback.js';
 import { getProfileId, getSelectedProfileId } from '../services/profileSession.js';
 import { startSilentRefresh } from './silentRefresh.js';
+import { GAME_DAILY_STATES, getGameDailyState, sortGamesByDailyState } from '../utils/gameDailyState.js';
 
 let refreshingGames = false;
 let renderedGames = [];
@@ -32,7 +33,28 @@ function refreshStaminaEstimates() {
     const now = new Date();
     for (const game of renderedGames) {
         const row = document.getElementById(`estimatedStamina${game.id}`)?.closest('tr');
-        if (row) updateStaminaEstimate(row, game, now);
+        if (row) {
+            updateStaminaEstimate(row, game, now);
+            updateGameDailyControl(row, game, now);
+        }
+    }
+    reorderGameRows(now);
+}
+
+function reorderGameRows(now = new Date()) {
+    const sorted = sortGamesByDailyState(renderedGames, now);
+    if (sorted.every((game, index) => game === renderedGames[index])) return;
+    const focused = document.activeElement;
+    const selection = typeof focused?.selectionStart === 'number'
+        ? [focused.selectionStart, focused.selectionEnd, focused.selectionDirection] : null;
+    const rows = new Map([...document.querySelectorAll('#gameListBody tr')].map(row =>
+        [Number(row.dataset.gameId), row]));
+    const list = document.getElementById('gameListBody');
+    sorted.forEach(game => { const row = rows.get(game.id); if (row) list.appendChild(row); });
+    renderedGames = sorted;
+    if (focused?.isConnected && document.activeElement !== focused && document.activeElement === document.body) {
+        focused.focus({preventScroll:true});
+        if (selection) focused.setSelectionRange(...selection);
     }
 }
 
@@ -113,13 +135,12 @@ function collectGameDrafts() {
 }
 
 function renderGameList(games, drafts = new Map()) {
-    renderedGames = games;
+    const now = new Date();
+    renderedGames = sortGamesByDailyState(games, now);
     renderedGamesProfile = getSelectedProfileId();
     const gameListBody = document.getElementById("gameListBody");
     gameListBody.innerHTML = ''; // clear data
-    const now = new Date();
-
-    games.forEach(game => {
+    renderedGames.forEach(game => {
         const row = createGameRow(game, now);
         gameListBody.appendChild(row);
         addGameEventListeners(game);
@@ -130,10 +151,17 @@ function renderGameList(games, drafts = new Map()) {
 
 function createGameRow(game, now) {
     let row = document.createElement("tr");
+    row.dataset.gameId = String(game.id);
 
     row.innerHTML = `
         <td class="game-icon-cell"></td>
-        <td class="game-description"></td>
+        <td class="game-description">
+            <span class="game-name"></span>
+            <div class="game-daily-control">
+                <label for="daily-state-${game.id}">Hoje</label>
+                <select id="daily-state-${game.id}"></select>
+            </div>
+        </td>
         <td>
             <textarea
                 id="pendingTask${game.id}"
@@ -167,11 +195,20 @@ function createGameRow(game, now) {
     const iconUrl = game.abbreviation === 'NTE' && (!game.img || game.img === 'img/default-icon.png')
         ? allGames.find(preset => preset.abbreviation === 'NTE').img : game.img;
     row.querySelector('.game-icon-cell').appendChild(createGameIcon(iconUrl, game.description));
-    row.querySelector('.game-description').textContent = game.description;
+    row.querySelector('.game-name').textContent = game.description;
+    const dailyState = row.querySelector('.game-daily-control select');
+    dailyState.setAttribute('aria-label', `Estado diário de ${game.description}`);
+    for (const [value, label] of Object.entries(GAME_DAILY_STATES)) {
+        const option = document.createElement('option');
+        option.value = value;
+        option.textContent = label;
+        dailyState.append(option);
+    }
     row.querySelector('.pending-task-editor').setAttribute('aria-label', `Tarefas pendentes de ${game.description}`);
     row.querySelector('.pending-task-editor').defaultValue = game.pendingTasks || '';
     row.querySelector('.button-delete').textContent = 'Ocultar jogo';
     updateStaminaEstimate(row, game, now);
+    updateGameDailyControl(row, game, now);
     return row;
 }
 
@@ -184,11 +221,52 @@ function updateStaminaEstimate(row, game, now = new Date()) {
         ? 'Sem previsão válida.' : formatDateToDayHour(game.dateMaxStamina, now);
 }
 
+function updateGameDailyControl(row, game, now = new Date()) {
+    const select = row.querySelector('.game-daily-control select');
+    const state = getGameDailyState(game, now);
+    row.dataset.dailyState = state ?? 'unavailable';
+    if (row.dataset.dailySaving !== 'true') select.value = state ?? '';
+}
+
+async function handleGameDailyChange(game, select) {
+    const profileId = getProfileId();
+    if (renderedGamesProfile !== profileId || select.disabled) return;
+    const row = select.closest('tr');
+    const state = select.value;
+    const hadFocus = document.activeElement === select;
+    const controls = [...row.querySelectorAll('button, select')];
+    const disabled = controls.map(control => control.disabled);
+    const isCurrent = () => profileId === getSelectedProfileId() && renderedGames.includes(game)
+        && row.isConnected && document.querySelector('[data-page="games"]').style.display !== 'none';
+    row.dataset.dailySaving = 'true';
+    controls.forEach(control => { control.disabled = true; });
+    setFeedback('gameListMessage');
+    await withLoading('Salvando estado diário...', async () => {
+        try {
+            game.dailyState = await saveGameDailyState(game.id, game.abbreviation, state);
+            if (isCurrent()) setFeedback('gameListMessage', 'Estado diário salvo.');
+        } catch (error) {
+            console.error('Failed to save daily game state:', error);
+            if (isCurrent()) setFeedback('gameListMessage', 'Não foi possível salvar o estado diário. A marcação anterior foi mantida. Tente novamente.', 'error');
+        } finally {
+            delete row.dataset.dailySaving;
+            controls.forEach((control, index) => { control.disabled = disabled[index]; });
+            if (isCurrent()) {
+                updateGameDailyControl(row, game);
+                reorderGameRows();
+                if (hadFocus && document.activeElement === document.body) select.focus();
+            }
+        }
+    });
+}
+
 export function addGameEventListeners(game) {
     const saveGame = document.getElementById(`save-game-${game.id}`);
     const editGame = document.getElementById(`edit-game-${game.id}`);
     const deleteGame = document.getElementById(`delete-game-${game.id}`);
     const pendingTaskEditor = document.getElementById(`pendingTask${game.id}`);
+    const dailyState = document.getElementById(`daily-state-${game.id}`);
+    if (dailyState) dailyState.addEventListener('change', () => handleGameDailyChange(game, dailyState));
     if (saveGame)
         saveGame.addEventListener("click", () => handleGameSave(game.id));
     
@@ -249,31 +327,42 @@ function handleBulletPoint(event) {
 }
 
 async function handleGameSave(gameId) {
-    const currentStamina = parseInt(document.getElementById(`currentStamina${gameId}`).value, 10);
+    const field = document.getElementById(`currentStamina${gameId}`);
+    const notes = document.getElementById(`pendingTask${gameId}`);
+    const currentStamina = parseInt(field.value, 10);
     if (Number.isNaN(currentStamina)) {
         setFeedback('gameListMessage', 'Informe um número válido para a stamina antes de salvar.', 'error');
         return;
     }
+    const staminaChanged = currentStamina !== Number(field.defaultValue);
+    const pendingTask = notes.value;
+    const profileId = getProfileId();
+    const now = new Date();
     await runGameAction(gameId, {
         loadingMessage: 'Salvando jogo...', successMessage: 'Stamina e anotações salvas.',
         errorMessage: 'Não foi possível salvar o jogo. Sua stamina e suas anotações foram mantidas na tela. Tente novamente.',
         save: async () => {
             const game = await fetchGameById(gameId);
             if (!game) throw new Error('Game not found.');
-            const pendingTask = document.getElementById(`pendingTask${gameId}`).value;
+            if (profileId !== getSelectedProfileId()) throw new Error('The selected profile changed before saving.');
             game.currentStamina = currentStamina;
             game.pendingTasks = pendingTask;
-            game.dateMaxStamina = calculateMaxStaminaDate(game);
+            game.dateMaxStamina = calculateMaxStaminaDate(game, now);
             game.maxStaminaAt = formatDateToDayHour(game.dateMaxStamina);
             
-            await updateGame(game);
+            await updateGame(game, {completeDaily:staminaChanged, now});
+            field.defaultValue = String(currentStamina);
+            notes.defaultValue = pendingTask;
         },
     });
 }
 
 async function runGameAction(gameId, { loadingMessage, successMessage, errorMessage, save }) {
     const row = document.getElementById(`delete-game-${gameId}`).closest('tr');
-    const buttons = [...row.querySelectorAll('button')];
+    const profileId = getProfileId();
+    const isCurrent = () => profileId === getSelectedProfileId()
+        && document.querySelector('[data-page="games"]').style.display !== 'none';
+    const buttons = [...row.querySelectorAll('button, select')];
     const disabledStates = buttons.map(button => button.disabled);
     buttons.forEach(button => { button.disabled = true; });
     setFeedback('gameListMessage');
@@ -283,10 +372,10 @@ async function runGameAction(gameId, { loadingMessage, successMessage, errorMess
                 await save();
             } catch (error) {
                 console.error('Failed to change game:', error);
-                setFeedback('gameListMessage', errorMessage, 'error');
+                if (isCurrent()) setFeedback('gameListMessage', errorMessage, 'error');
                 return;
             }
-            await displayAllGames({ successMessage });
+            if (isCurrent()) await displayAllGames({ successMessage, preserveDrafts:true });
         });
     } finally {
         buttons.forEach((button, index) => { button.disabled = disabledStates[index]; });
@@ -316,12 +405,13 @@ async function handleGameEdit(gameId) {
 }
 
 async function handleDelete(gameId) {
+    const row = document.getElementById(`delete-game-${gameId}`).closest('tr');
     await runGameAction(gameId, {
         loadingMessage: 'Ocultando jogo...', successMessage: 'Jogo ocultado neste perfil. Você pode selecioná-lo novamente.',
         errorMessage: 'Não foi possível ocultar o jogo. Ele continua na lista. Tente novamente.',
         save: async () => {
             await deleteGameById(gameId);
-            document.getElementById(`delete-game-${gameId}`).closest('tr').remove();
+            row.remove();
         },
     });
 }

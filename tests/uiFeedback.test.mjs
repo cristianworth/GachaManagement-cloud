@@ -28,6 +28,7 @@ test('Lists report loading and failures without losing saved state or drafts', a
         return { promise, resolve };
     };
     const seed = async () => {
+        document.querySelector('[data-page="games"]').style.display = 'block';
         state.error = null; state.readError = null; state.queryError = null;
         state.beforeQuery = null; state.rpcErrors = {};
         state.games = [{ id: 4, description: 'Test game', abbreviation: 'ZZZ', current_stamina: 80,

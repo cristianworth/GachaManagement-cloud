@@ -10,16 +10,28 @@ O projeto segue o versionamento semântico (SemVer), no formato `MAJOR.MINOR.PAT
 
 ## [Não publicado]
 
+Nenhuma alteração pendente.
+
+## [1.16.0] - 2026-10-22
+
+### Adicionado
+
+- Estado diário de Games por jogo/perfil: Pendente (azul acinzentado), Voltar depois (âmbar) e Feito por hoje (verde), com controle manual e renovação no reset diário. Endfield e siglas personalizadas usam o padrão pessoal de 06:00 de Brasília; NTE conserva seu reset às 07:00.
+- Save de uma resina alterada marca Feito por hoje, inclusive se o jogo estava em Voltar depois, sem condição sobre o dia da próxima stamina cheia. Resina, anotações e conclusão são gravadas na mesma operação. Save apenas de anotações preserva o estado, e a escolha de Voltar depois é manual.
+- Games ordena por Pendente → Voltar depois → Feito por hoje e, dentro de cada grupo, pela previsão de stamina cheia. Mudanças de estado e viradas de ciclo reordenam os cards preservando os campos em edição e o foco.
+- [Contrato, horários e Para testar](docs/game-daily-state.md). Reutiliza `profile_games.overrides` e a RPC pública de Games, sem migração ou dependência nova; Tasks continua independente.
+
 ### Corrigido
 
 - Teste de integração NTE usa o mesmo relógio fixo em JavaScript e PostgreSQL, incluindo uma verificação do instante SQL. A fixture continua importando os nove eventos esperados independentemente da data real da execução; a correção não altera os prazos ou a expiração em produção.
+- Save de Games preserva rascunhos dos outros jogos e não grava em um perfil selecionado enquanto a leitura inicial estava em andamento; uma resposta atrasada não substitui a tela de outro perfil.
 
 ### Documentado
 
 - Ajustes pontuais no celular removidos das prioridades do roadmap e registrados como concluídos em 1.15.1.
-- Proposta de estado diário em Games (Pendente / Voltar depois / Feito por hoje), com automação opcional pelo Save, persistência por perfil e decisões ainda abertas; sem implementação da funcionalidade.
+- Estado diário retirado das prioridades após a conclusão da implementação; regras finais de Save e reset registradas conforme a orientação de Cristian em 22/10/2026.
 
-**Validação local:** 14 testes focados do NTE e suíte completa com 607 testes aprovados (69 Jest + 538 Node), sem falhas.
+**Validação:** testes focados e suíte completa com **634 testes aprovados** (69 Jest + 565 Node), sem falhas. SQL em instalação nova/upgrade, resets/padrão de Brasília, ordem por estado/previsão, Save atômico, falha/retry, troca de perfil e preservação de rascunhos/foco conferidos. Prévia descartável em desktop 1440 × 1000 e celular 390 × 844 / 360 × 800, sem overflow horizontal da página nos cenários observados. Sem teste em aparelho físico; sem migração ou operação no Supabase real.
 
 ## [1.15.1] - 2026-10-19
 

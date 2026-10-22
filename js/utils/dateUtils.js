@@ -10,11 +10,11 @@
     return `Day ${day} at ${hour}:${minutes < 10 ? '0' + minutes : minutes}  (${diffHours}h left)`;
 }
 
-export function calculateMaxStaminaDate(game) {
+export function calculateMaxStaminaDate(game, now = new Date()) {
     let totalStaminaLeft = game.capStamina - game.currentStamina;
     let howManyMinutesUntilCapped = totalStaminaLeft * game.staminaPerMinute;
 
-    let forecastDate = new Date();
+    let forecastDate = new Date(now);
     forecastDate.setMinutes(forecastDate.getMinutes() + howManyMinutesUntilCapped);
 
     return forecastDate;

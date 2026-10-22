@@ -8,6 +8,7 @@ import { getClient, Tables } from './supabaseClient.js';
 import { gameToRow, gameFromRow } from './mappers/gameMapper.js';
 import { allGames } from '../data/Game.js';
 import { profileRpc } from './profileDB.js';
+import { createGameDailyState } from '../utils/gameDailyState.js';
 
 function games() {
     return getClient().from(Tables.GAMES);
@@ -24,18 +25,30 @@ export async function addGame(game) {
     }
 }
 
-export async function updateGame(game) {
+export async function updateGame(game, { completeDaily = false, now = new Date() } = {}) {
     // Usado principalmente para atualizar a stamina na tela principal.
     if (!game.id) {
         return;
     }
 
     try {
-        await profileRpc('save_profile_game', { p_game_id: game.id, p_game: gameToRow(game) });
+        const payload = gameToRow(game);
+        if (completeDaily) payload.daily_state = createGameDailyState(game.abbreviation, 'done', now);
+        await profileRpc('save_profile_game', { p_game_id: game.id, p_game: payload });
     } catch (error) {
         console.error('Erro ao atualizar o jogo:', error);
         throw error;
     }
+}
+
+export async function saveGameDailyState(gameId, abbreviation, state, now = new Date()) {
+    const dailyState = createGameDailyState(abbreviation, state, now);
+    // A partial profile update preserves stamina, notes and changes saved by another device.
+    await profileRpc('save_profile_game', {
+        p_game_id: gameId,
+        p_game: { abbreviation, daily_state: dailyState },
+    });
+    return dailyState;
 }
 
 export async function deleteGameById(gameId) {

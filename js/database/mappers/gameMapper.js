@@ -49,6 +49,7 @@ export function gameFromRow(row) {
         maxStaminaAt: row.max_stamina_at ?? '',
         dateMaxStamina: row.date_max_stamina ? new Date(row.date_max_stamina) : null,
         pendingTasks: row.pending_tasks ?? '',
+        dailyState: row.daily_state ?? null,
         color: row.color,
     };
 }

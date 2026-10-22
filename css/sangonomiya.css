@@ -114,6 +114,14 @@ td { text-align:left; }
 #gameListBody td { border:0; padding:0; min-width:0; text-align:left; }
 #gameListBody td:nth-child(1) { grid-area:icon; align-self:start; padding-top:4px; }
 #gameListBody td:nth-child(2) { grid-area:name; align-self:start; font-weight:700; padding-top:7px; }
+.game-name { display:block; }
+.game-daily-control { display:grid; gap:3px; margin-top:9px; }
+.game-daily-control label { color:var(--muted-ink); font-size:12px; font-weight:400; }
+#gameListBody .game-daily-control select { box-sizing:border-box; width:100%; max-width:190px; min-height:36px; padding:6px 8px; font-size:13px; background:var(--daily-wash,var(--lagoon-wash)); border-color:var(--daily-accent,var(--line)); color:var(--daily-ink,var(--muted-ink)); }
+#gameListBody tr[data-daily-state='pending'] { --daily-accent:#a5b7c9; --daily-wash:#edf2f7; --daily-ink:#435b73; }
+#gameListBody tr[data-daily-state='return_later'] { --daily-accent:#bd9448; --daily-wash:#fbf2da; --daily-ink:#72551f; }
+#gameListBody tr[data-daily-state='done'] { --daily-accent:#82a892; --daily-wash:#eaf4ed; --daily-ink:#355e46; }
+#gameListBody tr[data-daily-state] { box-shadow:inset 3px 0 var(--daily-accent,var(--line)); }
 #gameListBody td:nth-child(3) { grid-area:notes; }
 #gameListBody td:nth-child(4) { grid-area:stamina; }
 #gameListBody td:nth-child(5) { grid-area:forecast; align-self:start; }
@@ -241,6 +249,7 @@ td { text-align:left; }
     table { min-width:0; white-space:normal; }
     #gameListBody tr { padding:14px; grid-template-columns:44px minmax(0,1fr); grid-template-areas:'icon name' 'forecast forecast' 'notes notes' 'stamina stamina' 'actions actions'; gap:12px; }
     #gameListBody td:nth-child(2) { padding-top:6px; }
+    #gameListBody .game-daily-control select { min-height:42px; font-size:16px; }
     .game-stamina-controls, #gameListBody .list-actions { grid-template-columns:repeat(2,minmax(0,1fr)); }
     .game-stamina-controls > input, .game-stamina-controls > button, #gameListBody .list-actions > button { height:42px; min-height:42px; }
     .list-actions { width:100%; grid-template-columns:repeat(2,minmax(0,1fr)); }
