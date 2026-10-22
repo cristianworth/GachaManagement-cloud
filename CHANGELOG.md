@@ -10,7 +10,9 @@ O projeto segue o versionamento semântico (SemVer), no formato `MAJOR.MINOR.PAT
 
 ## [Não publicado]
 
-Nenhuma alteração pendente.
+### Documentado
+
+- Skill local `commit` para fechar entregas com escolha de versão, changelog, atualização do roadmap, testes, commit e push. Invocação e autorização do fluxo registradas no `AGENTS.md`; criar ou editar a skill não executa o fechamento. Sem alteração da versão ou do comportamento da aplicação.
 
 ## [1.16.0] - 2026-10-22
 

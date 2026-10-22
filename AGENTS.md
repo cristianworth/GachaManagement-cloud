@@ -24,3 +24,10 @@ Leia [docs/project-conventions.md](docs/project-conventions.md) antes de alterar
 - Antes do fechamento **Workflow**, incluir um parágrafo **Para testar** com passos práticos da interface e o resultado esperado. Cristian prefere instruções como recarregar a prévia, selecionar o jogo, executar a ação, salvar e conferir a persistência; adaptar ao ajuste entregue e não repetir testes que ele já validou como se estivessem pendentes.
 - Antes de sincronizar uma integração nova, valide horários/identidade, teste schema e migrações e aplique a migração no destino. WuWa/NTE estão ativos; novas edições sem base de horário conferida ficam em revisão.
 - Antes de commit/merge, leia o changelog e consulte Cristian sobre a versão, salvo autorização já dada para a mesma entrega. Mantenha manifests, README e versão exibida consistentes.
+
+## Fechamento com a skill commit
+
+- Quando Cristian invocar `$commit`, selecionar a skill `commit` no menu `/`, enviar `/commit` como pedido textual ou pedir o fechamento equivalente, leia [.agents/skills/commit/SKILL.md](.agents/skills/commit/SKILL.md) e aplique seu fluxo.
+- Essa invocação autoriza escolher a numeração conforme o impacto, atualizar changelog/versões, retirar tarefas concluídas do roadmap ativo, ajustar pendências, validar, commitar e fazer push da entrega atual, sem nova confirmação dessas ações. Respeite restrições específicas do pedido.
+- Perguntas sobre o comando e pedidos para criar/editar a skill não executam o fechamento. A descoberta automática da skill também não substitui o pedido humano de commit/push.
+- `/commit` também é uma convenção textual quando a mensagem chega ao agente. A disponibilidade da skill no menu depende do aplicativo; `$commit` é a menção direta à skill.
