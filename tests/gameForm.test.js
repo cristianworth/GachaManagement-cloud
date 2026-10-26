@@ -17,13 +17,17 @@ beforeEach(() => {
     jest.clearAllMocks();
     fetchGameById.mockResolvedValue(existingGame());
     fields = { gameId: { value: '' }, gameDescription: { value: 'ZZZ' }, abbreviation: { value: 'ZZZ' },
-        gameImageUrl: { value: '' }, capStamina: { value: '240' }, staminaPerMinute: { value: '6' }, gameListBody: {} };
+        gameImageUrl: { value: '' }, capStamina: { value: '240' }, staminaPerMinute: { value: '6' }, gameListBody: {},
+        'game-form': {dataset:{profileId:'cran',noticeSnapshot:JSON.stringify({maintenance:true,banner:true})}},
+        maintenanceNotify: {checked:true}, bannerNotify: {checked:true} };
+    global.window = {localStorage:{getItem:()=> 'cran'}};
     global.document = { getElementById: id => fields[id] };
 });
 
 afterEach(async () => {
     await new Promise(resolve => setImmediate(resolve));
     delete global.document;
+    delete global.window;
 });
 
 test('creating a game saves the supplied image URL', async () => {

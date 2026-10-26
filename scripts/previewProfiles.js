@@ -23,6 +23,7 @@ if (args.includes('--events')) {
     console.log('Synthetic events: CRAN expired, Demo with a future manual deadline, Convidado recurring; next editions open.');
 }
 const functions = new Set([
+    'list_game_agenda', 'game_agenda_catalogue', 'save_game_agenda', 'delete_game_agenda',
     'initialize_game_catalogue', 'profile_game_catalogue', 'list_profile_games', 'set_profile_games',
     'save_profile_game', 'remove_profile_game', 'list_profile_tasks', 'save_profile_task',
     'complete_profile_task', 'set_profile_task_favorite', 'remove_profile_task', 'list_profile_candidates', 'ignore_profile_candidate',

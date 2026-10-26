@@ -80,16 +80,18 @@ Complexidade estimada para este projeto (HTML, CSS, JavaScript e Supabase): **ba
 
 ## 7. Avisar sobre atualizações e manutenção dos jogos
 
-- [ ] Cadastrar por jogo a data e hora previstas para início e fim da atualização, incluindo o período em que o jogo ficará indisponível.
-- [ ] Mostrar quanto tempo falta para começar; durante a manutenção, indicar que o jogo está indisponível e a previsão de retorno.
+**Entregue em 1.17.0, em 25/10/2026.** Agenda manual compartilhada e central por perfil; integração automática de fontes permanece separada.
+
+- [x] Agenda dos jogos em tela separada e compartilhada entre perfis, com versão e início/retorno previstos em Brasília. Preferências pessoais somente no Edit do jogo. Migração e 16 registros dos cinco jogos aplicados em 25/10/2026. [Contrato e Para testar](docs/game-notices.md).
+- [x] Central no sino com leitura persistida: uma entrada atualizada nos marcos de 48h, 24h e início da manutenção. Janela encerrada sai dos avisos ativos, mantendo cadastro editável; retorno é previsto, sem consulta ao estado real do servidor.
 - **Complexidade: média.** Exige dados por jogo, exibição do tempo restante e tratamento de fuso horário e de datas alteradas pelo jogo.
 - **Concluído quando:** o aviso distingue atualização futura, manutenção em andamento e manutenção encerrada, com horários coerentes no navegador e no celular.
 - **Origem dos dados:** começar com cadastro manual. Buscar agendas automaticamente em fontes externas seria uma tarefa separada.
 
 ### 7.1. Avisar sobre o próximo banner
 
-- [ ] Cadastrar por jogo a data e hora do próximo banner e quem estará nele.
-- [ ] Mostrar o nome ou os nomes anunciados e quantos dias faltam para o banner entrar.
+- [x] Banners com personagens, versão/fase, início e término na agenda compartilhada; fonte, imagem e observação de horários opcionais. Os dez banners têm imagem; filtros combinados por jogo/tipo e encerrados. Silenciamento e leitura por perfil preservam datas/nomes. [Calendário e fontes](docs/game-agenda-calendar.md). Entregue em 1.17.0.
+- [x] Central mostra nomes e tempo restante mediante clique, com marcos de 48h e 24h. A partir do início, retirar o anúncio dos avisos ativos sem apagar o cadastro editável; Games mantém os cards limpos.
 - **Complexidade: média.** Pode aproveitar a apresentação de datas do item 7, mas precisa permitir editar o anúncio caso personagens ou horários mudem.
 - **Concluído quando:** cada jogo mostra seu próximo banner e a contagem de dias, sem exibir anúncios vencidos como futuros.
 - **Origem dos dados:** cadastro manual inicialmente; integração automática com fontes de banners fica fora deste item.
@@ -186,10 +188,21 @@ Planejamento pedido em 08/10/2026. Inventário completo, contadores fornecidos, 
 - **Complexidade: baixa a média.** Reaproveita os contratos pessoais, mas exige persistência no banco e mudança na ordenação e na ação da lista.
 - **Concluído quando:** a estrela persiste apenas no perfil escolhido, as favoritas visíveis ficam no topo e as demais regras da lista continuam funcionando.
 
-## 14. Menu lateral e controle de perfil
+### 13.1. Mostrar favoritas também em Games
 
-- [ ] Reunir Games, Tasks, Revisar eventos, perfil ativo/Trocar perfil e Selecionar jogos na lateral, com ícones SVG simples e texto.
-- [ ] Destacar a seção atual, mostrar versão discreta e recolher o menu no celular. Reaproveitar Router e perfis públicos; não acrescentar login real.
-- [ ] Remover navegação repetida entre Games/Tasks; manter ações de criação, lote e filtros na página correspondente.
-- **Complexidade: média.** Tier A. Sem framework ou biblioteca adicional de ícones.
+**Ideia registrada em 24/10/2026, sem implementação.** Reaproveitar as favoritas existentes de Tasks, sem criar outra preferência ou copiar atividades para as anotações.
+
+- [ ] Subir o To-do dentro da área de anotações de cada jogo e mostrar as favoritas desse jogo no perfil selecionado em uma lista compacta abaixo dele.
+- [ ] Alinhar o primeiro recorte: proposta de até três atividades favoritas pendentes, com título e prazo, ordenadas pelo vencimento, seguidas de acesso a Tasks quando houver mais itens. Não reservar um bloco vazio quando não houver favoritas.
+- [ ] Conferir o espaço no desktop e no celular antes de considerar To-do e favoritas lado a lado; manter a estrutura e o tema existentes, sem crescimento ilimitado dos cards.
+- [ ] Reutilizar a consulta pública das tarefas por perfil uma vez por carregamento, agrupar por jogo e preservar rascunhos durante a leitura silenciosa. Respeitar seleção de jogos e isolamento dos perfis.
+- **Complexidade: baixa a média.** A persistência de favoritas já existe. O primeiro recorte proposto é de consulta; ações de favoritar/concluir continuam em Tasks. Não relacionar conclusão de uma tarefa com Feito por hoje ou Save de resina.
+- **Concluído quando:** Games mostra as favoritas corretas de cada jogo/perfil, acompanha alterações feitas em Tasks e mantém To-do, edição e uso no celular confortáveis. Quantidade exibida, tratamento de títulos longos e acesso às demais atividades precisam de validação visual.
+
+## 14. Menu lateral e controle de perfil — entregue
+
+- [x] Base entregue em 1.13.0; polimento de 1.17.0 mantém Games e Tasks na navegação principal, Eventos/Agenda sob engrenagem e Selecionar jogos somente em Games. Perfil/Trocar perfil permanecem no cabeçalho.
+- [x] Destacar a seção atual, mostrar versão discreta e manter menu compacto no celular, com configurações sob demanda. Reaproveitar Router e perfis públicos; sem login real.
+- [x] Remover atalhos de navegação repetidos entre Games/Tasks e o Atualizar dados de Games; manter criação, seleção, lote e filtros no contexto da tela. Atualização automática e recuperação de falhas preservadas.
+- **Complexidade: média.** Concluído, fora das prioridades ativas. Sem framework ou biblioteca adicional de ícones.
 - **Concluído quando:** navegar/trocar perfil continua claro no desktop/celular, com espaço útil para o conteúdo e sem duplicar botões.

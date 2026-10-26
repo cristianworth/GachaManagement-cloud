@@ -50,6 +50,10 @@ export function gameFromRow(row) {
         dateMaxStamina: row.date_max_stamina ? new Date(row.date_max_stamina) : null,
         pendingTasks: row.pending_tasks ?? '',
         dailyState: row.daily_state ?? null,
+        notices: row.game_notices ?? null,
+        agenda: row.game_agenda ?? [],
+        noticePreferences: row.game_notice_preferences ?? null,
+        noticeReads: { maintenance: row.maintenance_notice_read ?? null, banner: row.banner_notice_read ?? null },
         color: row.color,
     };
 }

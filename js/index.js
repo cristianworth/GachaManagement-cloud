@@ -9,6 +9,7 @@ import { withLoading } from './ui/loadingState.js';
 import { initializeProfiles } from './ui/profileUI.js';
 import { populateInitialGames } from './database/gameDB.js';
 import { initializeAppShell } from './ui/appShell.js';
+import { initializeGameNotifications, refreshGameNotifications } from './ui/gameNotifications.js';
 
 document.addEventListener('DOMContentLoaded', async function () {
   initializeAppShell();
@@ -21,11 +22,13 @@ document.addEventListener('DOMContentLoaded', async function () {
     await withLoading('Carregando...', async () => {
         await withTimeout(populateInitialGames());
         if (!await withTimeout(initializeProfiles())) return;
+        initializeGameNotifications();
         // Garante que o banco esteja semeado/atualizado antes da primeira renderização.
         await withTimeout(initializeDatabase());
 
         // Aguarda a primeira rota e seus dados antes de liberar a tela.
         await withTimeout(Router.init());
+        await refreshGameNotifications();
 
         initializeGameForm();
         initializeTaskForm();

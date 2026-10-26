@@ -118,8 +118,7 @@ test('Games uses the NTE icon and starts every typed To-do item with a bullet', 
         const editor = await seed();
         input(editor, 'First\nSecond');
         const expected = '• First\n• Second';
-        el('refreshGamesBtn').click();
-        await waitFor(() => !el('refreshGamesBtn').disabled);
+        await games.displayAllGames({preserveDrafts:true,silent:true});
         assert.equal(el('pendingTask1').value, expected);
         assert.equal(state.games[0].pending_tasks, '');
         assert.equal(state.writes.length, 0);

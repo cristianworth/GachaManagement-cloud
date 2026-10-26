@@ -14,7 +14,7 @@ export function createDomHarness() {
     for (const key of Object.keys(originals)) globalThis[key] = dom.window[key];
     dom.window.localStorage.setItem('gacha-profile', 'cran');
     const state = { games: [], tasks: [], candidates: [], writes: [], error: null, readError: null,
-        beforeQuery: null, queryError: null, rpcErrors: {}, rpcCalls: [], rpcResults: {} };
+        beforeQuery: null, queryError: null, rpcErrors: {}, rpcCalls: [], rpcResults: {}, agenda: [] };
     const client = {
         from(table) {
             if (!['games', 'tasks', 'event_candidates', 'profiles'].includes(table)) throw new Error(`Unexpected table ${table}`);
@@ -68,6 +68,21 @@ export function createDomHarness() {
             return query;
         },
         async rpc(name, payload) {
+            if (['list_game_agenda','game_agenda_catalogue','save_game_agenda','delete_game_agenda'].includes(name)) {
+                state.rpcCalls.push({name,payload});
+                await state.beforeQuery?.({operation:'rpc', name, payload});
+                const error = state.rpcErrors[name] ?? (name.startsWith('save_') || name.startsWith('delete_') ? state.error : state.readError);
+                if (error) return {data:null,error:new Error(error)};
+                if (name === 'game_agenda_catalogue') return {data:structuredClone(state.games),error:null};
+                if (name === 'save_game_agenda') {
+                    const id = payload.p_id ?? Math.max(0,...state.agenda.map(item=>item.id))+1;
+                    const row = {id,...structuredClone(payload.p_entry)};
+                    state.agenda = state.agenda.filter(item=>item.id!==id); state.agenda.push(row);
+                    return {data:row,error:null};
+                }
+                if (name === 'delete_game_agenda') state.agenda = state.agenda.filter(item=>item.id!==payload.p_id);
+                return {data:structuredClone(state.agenda.map(item=>({...item,game_name:state.games.find(game=>game.id===item.game_id)?.description}))),error:null};
+            }
             const legacyName = { ignore_profile_task: 'ignore_imported_task',
                 restore_profile_api_deadline: 'sync_event_candidate' }[name];
             if (legacyName) {
@@ -83,6 +98,9 @@ export function createDomHarness() {
                     query = query.eq('status', 'pending').eq('is_active', true).or(`proposed_end_at.is.null,proposed_end_at.gt.${new Date().toISOString()}`);
                     if (payload.p_source) query = query.eq('source', payload.p_source);
                 }
+                if (name === 'list_profile_games') return Promise.resolve(query).then(result => ({...result,
+                    data:result.data?.map(row => ({...row,game_agenda:row.game_agenda?.map(entry=>({...entry,
+                        read:row[`agenda_notice_read_${entry.id}`] ?? entry.read ?? null}))}))}));
                 return query;
             }
             const writeTable = { save_profile_game: 'games', save_profile_task: 'tasks', complete_profile_task: 'tasks',

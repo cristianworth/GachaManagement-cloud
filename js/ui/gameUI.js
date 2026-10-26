@@ -11,6 +11,8 @@ import { setFeedback } from './feedback.js';
 import { getProfileId, getSelectedProfileId } from '../services/profileSession.js';
 import { startSilentRefresh } from './silentRefresh.js';
 import { GAME_DAILY_STATES, getGameDailyState, sortGamesByDailyState } from '../utils/gameDailyState.js';
+import { fillGameNoticeFields, readGameNoticeChanges } from './gameNotices.js';
+import { setNotificationGames } from './gameNotifications.js';
 
 let refreshingGames = false;
 let renderedGames = [];
@@ -73,13 +75,13 @@ function startStaminaEstimateTimer() {
     handleEstimateVisibility();
 }
 
-async function handleRefreshGames() {
+async function handleRetryGames() {
     if (refreshingGames) return;
     refreshingGames = true;
-    const button = document.getElementById('refreshGamesBtn');
+    const button = document.getElementById('gameListRetry');
     if (button) button.disabled = true;
     try {
-        return await displayAllGames({ successMessage: 'Dados atualizados.', preserveDrafts: true });
+        return await displayAllGames({ preserveDrafts: true });
     } finally {
         refreshingGames = false;
         if (button) button.disabled = false;
@@ -87,13 +89,11 @@ async function handleRefreshGames() {
 }
 
 export async function displayAllGames({ successMessage = '', preserveDrafts = false, silent = false, canApply = () => true } = {}) {
-    const refresh = document.getElementById('refreshGamesBtn');
-    if (refresh) refresh.onclick = handleRefreshGames;
     const load = async () => {
         const retry = document.getElementById('gameListRetry');
         if (retry && !silent) {
             retry.hidden = true;
-            retry.onclick = preserveDrafts ? handleRefreshGames : () => displayAllGames();
+            retry.onclick = handleRetryGames;
         }
         if (!silent) setFeedback('gameListMessage');
         try {
@@ -109,8 +109,9 @@ export async function displayAllGames({ successMessage = '', preserveDrafts = fa
                 return false;
             }
             const focused = silent ? document.activeElement : null;
+            setNotificationGames(games, profileId);
             renderGameList(games, drafts);
-            if (focused?.id) (document.getElementById(focused.id) ?? refresh)?.focus();
+            if (focused?.id) (document.getElementById(focused.id) ?? document.getElementById('selectGamesBtn'))?.focus();
             startSilentRefresh('games', canApply => displayAllGames({ preserveDrafts: true, silent: true, canApply }), () => refreshingGames);
             const message = successMessage || (games.length ? '' : 'Nenhum jogo selecionado. Use Selecionar jogos para começar.');
             if (!silent) setFeedback('gameListMessage', drafts.size ? `${message} Alterações não salvas foram mantidas. As estimativas usam os dados salvos.` : message);
@@ -383,10 +384,12 @@ async function runGameAction(gameId, { loadingMessage, successMessage, errorMess
 }
 
 async function handleGameEdit(gameId) {
+    const profileId = getProfileId();
     try {
         await withLoading('Carregando jogo...', async () => {
             const game = await fetchGameById(gameId);
             if (!game) throw new Error('Game not found.');
+            if (profileId !== getSelectedProfileId()) throw new Error('Profile changed before opening the game.');
             Router.navigateTo('/games/create');
             resetGameForm();
             document.getElementById("gameId").value = game.id;
@@ -397,6 +400,7 @@ async function handleGameEdit(gameId) {
             document.getElementById('gameImageUrl').value = game.img?.startsWith('https://') ? game.img : '';
             document.getElementById("capStamina").value = game.capStamina;
             document.getElementById("staminaPerMinute").value = game.staminaPerMinute;
+            fillGameNoticeFields(game);
         });
     } catch (error) {
         console.error('Failed to open game:', error);
@@ -417,6 +421,10 @@ async function handleDelete(gameId) {
 }
 
 export async function handleAddGame() {
+    const profileId = getProfileId();
+    const formActor = document.getElementById('game-form').dataset.profileId;
+    if (formActor && formActor !== profileId) throw new Error('Profile changed before saving the game.');
+    const noticeSettings = readGameNoticeChanges();
     const gameDescription = document.getElementById("gameDescription").value;
     const abbreviation = document.getElementById("abbreviation").value;
     const capStamina = document.getElementById("capStamina").value;
@@ -426,6 +434,7 @@ export async function handleAddGame() {
     const gameId = (document.getElementById("gameId").value) ? parseInt(document.getElementById("gameId").value) : undefined;
     
     const existingGame = gameId ? await fetchGameById(gameId) : null;
+    if (profileId !== getSelectedProfileId()) throw new Error('Profile changed while reading the game.');
     if (gameId && !existingGame) throw new Error('Game not found. Reload the list before saving.');
     const image = imageUrl || (existingGame?.img?.startsWith('img/') ? existingGame.img : 'img/default-icon.png');
     const game = existingGame ? Object.assign(existingGame, {
@@ -441,9 +450,9 @@ export async function handleAddGame() {
     );
 
     if (gameId) {
-        await updateGame(game);
+        await updateGame(game, { noticeSettings });
     } else {
-        await addGame(game);
+        await addGame(game, { noticeSettings });
     }
 
     resetGameForm();

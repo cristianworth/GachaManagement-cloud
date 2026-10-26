@@ -9,14 +9,19 @@ import { gameToRow, gameFromRow } from './mappers/gameMapper.js';
 import { allGames } from '../data/Game.js';
 import { profileRpc } from './profileDB.js';
 import { createGameDailyState } from '../utils/gameDailyState.js';
+import { validateNoticePreferences } from '../utils/gameNotices.js';
 
 function games() {
     return getClient().from(Tables.GAMES);
 }
 
-export async function addGame(game) {
+function noticeSettingsToRow(settings) {
+    return settings ? { game_notice_preferences: validateNoticePreferences(settings.preferences) } : {};
+}
+
+export async function addGame(game, { noticeSettings = null } = {}) {
     try {
-        const data = await profileRpc('save_profile_game', { p_game: gameToRow(game) });
+        const data = await profileRpc('save_profile_game', { p_game: { ...gameToRow(game), ...noticeSettingsToRow(noticeSettings) } });
         console.log('New Game added:', data);
         return gameFromRow(data);
     } catch (error) {
@@ -25,14 +30,14 @@ export async function addGame(game) {
     }
 }
 
-export async function updateGame(game, { completeDaily = false, now = new Date() } = {}) {
+export async function updateGame(game, { completeDaily = false, now = new Date(), noticeSettings = null } = {}) {
     // Usado principalmente para atualizar a stamina na tela principal.
     if (!game.id) {
         return;
     }
 
     try {
-        const payload = gameToRow(game);
+        const payload = { ...gameToRow(game), ...noticeSettingsToRow(noticeSettings) };
         if (completeDaily) payload.daily_state = createGameDailyState(game.abbreviation, 'done', now);
         await profileRpc('save_profile_game', { p_game_id: game.id, p_game: payload });
     } catch (error) {
@@ -49,6 +54,19 @@ export async function saveGameDailyState(gameId, abbreviation, state, now = new 
         p_game: { abbreviation, daily_state: dailyState },
     });
     return dailyState;
+}
+
+export async function markGameNotificationsRead(gameId, abbreviation, notifications) {
+    const patch = { abbreviation };
+    for (const notice of notifications) {
+        if ((notice.agendaId != null && (!Number.isSafeInteger(notice.agendaId) || notice.agendaId <= 0)) || !['maintenance','banner'].includes(notice.kind) || !['48h','24h','ongoing'].includes(notice.stage)
+            || typeof notice.signature !== 'string') throw new Error('Notificação inválida.');
+        const key = notice.agendaId != null ? `agenda_notice_read_${notice.agendaId}` : `${notice.kind}_notice_read`;
+        patch[key] = { signature: notice.signature, stage: notice.stage };
+    }
+    await profileRpc('save_profile_game', {
+        p_game_id: gameId, p_game: patch,
+    });
 }
 
 export async function deleteGameById(gameId) {

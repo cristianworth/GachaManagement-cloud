@@ -5,6 +5,8 @@ import Router from '../utils/router.js';
 import RefreshTypeEnum from '../enums/RefreshTypeEnum.js';
 import { withLoading } from './loadingState.js';
 import { setFeedback } from './feedback.js';
+import { fillGameNoticeFields } from './gameNotices.js';
+import { getSelectedProfileId } from '../services/profileSession.js';
 
 export function initializeGameForm() {
     const gameForm = document.getElementById("game-form");
@@ -25,6 +27,8 @@ function handleCallGameFormButton() {
 }
 
 export function resetGameForm() {
+    document.getElementById('game-form').dataset.profileId = getSelectedProfileId() ?? '';
+    fillGameNoticeFields();
     document.getElementById("gameId").value = '';
     document.getElementById("gameDescription").value = '';
     document.getElementById("abbreviation").value = '';
@@ -145,7 +149,7 @@ async function submitForm(statusId, save, route) {
         });
     } catch (error) {
         console.error('Failed to save form:', error);
-        setFeedback(statusId, `Não foi possível salvar ${task ? 'a tarefa' : 'o jogo'}. Seus dados foram mantidos no formulário. Tente novamente.`, 'error');
+        setFeedback(statusId, error.userMessage || `Não foi possível salvar ${task ? 'a tarefa' : 'o jogo'}. Seus dados foram mantidos no formulário. Tente novamente.`, 'error');
     } finally {
         submit.disabled = false;
     }

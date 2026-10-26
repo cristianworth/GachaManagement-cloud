@@ -17,6 +17,7 @@ export const migrations = [
     '2026-10-09-task-batch-covers.sql',
     '2026-10-09-task-batch-maintenance.sql',
     '2026-10-09-task-batch-completion.sql',
+    '20261025223206_shared_game_agenda.sql',
 ];
 export const readProjectFile = path => readFile(new URL(`../../${path}`, import.meta.url), 'utf8');
 

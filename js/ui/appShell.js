@@ -16,9 +16,14 @@ export function initializeAppShell() {
             <nav class="app-nav" aria-label="Navegação principal">
                 <a href="/" data-app-route="/"><svg class="app-nav-symbol" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7h10c2 0 3 1.5 3.5 3.5l1 5c.5 2.5-1.5 4-3.5 2.5l-3-2H9l-3 2c-2 1.5-4 0-3.5-2.5l1-5C4 8.5 5 7 7 7Z"/><path d="M6 11h4m-2-2v4m8-2h.01m2 2h.01"/></svg>Games</a>
                 <a href="/tasks" data-app-route="/tasks"><svg class="app-nav-symbol" viewBox="0 0 24 24" aria-hidden="true"><path d="m3 6 2 2 3-4m-5 9 2 2 3-4M12 6h9m-9 7h9M3 20h18"/></svg>Tasks</a>
-                <a href="/events" data-app-route="/events"><svg class="app-nav-symbol" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M7 3v4m10-4v4M3 10h18m-14 5h3m4 0h3m-10 3h3"/></svg>Eventos</a>
-                <a href="/profile/games" data-app-route="/profile/games"><svg class="app-nav-symbol" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3H4a2 2 0 0 0-2 2v12m8-15H8a2 2 0 0 0-2 2v16"/><rect x="10" y="5" width="12" height="16" rx="2"/><path d="m13 13 2 2 4-4"/></svg>Jogos do perfil</a>
             </nav>
+            <details class="app-settings">
+                <summary aria-label="Configurações"><svg class="app-nav-symbol" viewBox="0 0 24 24" aria-hidden="true"><path d="m10 3-.5 2-2 .9-1.8-.7-2 3.5 1.5 1.3v2L3.7 13.3l2 3.5 1.8-.7 2 .9.5 2h4l.5-2 2-.9 1.8.7 2-3.5-1.5-1.3v-2l1.5-1.3-2-3.5-1.8.7-2-.9L14 3Z"/><circle cx="12" cy="11" r="3"/></svg><span>Configurações</span></summary>
+                <nav class="app-settings-nav" aria-label="Configurações">
+                    <a href="/events" data-app-route="/events">Eventos</a>
+                    <a href="/agenda" data-app-route="/agenda">Agenda dos jogos</a>
+                </nav>
+            </details>
             <p class="app-sidebar-note">Seu progresso permanece separado por perfil.</p>
         </aside>
         <div class="app-main">
@@ -43,7 +48,8 @@ export function initializeAppShell() {
         createGame: 'Cadastre ou ajuste os dados do jogo no perfil selecionado.',
         createTask: 'Defina a atividade, o prazo e o intervalo de repetição.',
         eventGames: 'Escolha um jogo para conferir os eventos encontrados.',
-        eventReview: 'Confira o prazo e o vínculo antes de adicionar ao seu perfil.'
+        eventReview: 'Confira o prazo e o vínculo antes de adicionar ao seu perfil.',
+        gameAgenda: 'Versões, manutenções e banners do servidor América.'
     };
     for (const page of content.querySelectorAll('[data-page]')) {
         const section = page.querySelector('section');
@@ -97,26 +103,45 @@ export function initializeAppShell() {
         }
     }
     const nav = layout.querySelector('.app-nav');
+    const settings = layout.querySelector('.app-settings');
+    let previousPath;
     function updateNavigation() {
         const path = Router.getCurrentPath();
-        for (const link of nav.querySelectorAll('a')) {
+        for (const link of layout.querySelectorAll('[data-app-route]')) {
             const route = link.dataset.appRoute;
-            const active = route === '/' ? path === '/' || path.startsWith('/games/')
+            const active = route === '/' ? path === '/' || path.startsWith('/games/') || path === '/profile/games'
                 : route === '/tasks' ? path.startsWith('/tasks')
                 : route === '/events' ? path.startsWith('/events') : path === route;
             if (active) link.setAttribute('aria-current', 'page');
             else link.removeAttribute('aria-current');
         }
         nav.hidden = !getSelectedProfileId();
+        settings.hidden = !getSelectedProfileId();
+        settings.dataset.active = String(path === '/agenda' || path.startsWith('/events'));
+        if (path !== previousPath || settings.hidden) settings.open = false;
+        previousPath = path;
     }
-    layout.querySelectorAll('.app-nav a, .app-brand').forEach(link => {
+    layout.querySelectorAll('[data-app-route], .app-brand').forEach(link => {
         const route = link.dataset.appRoute ?? '/';
         link.href = `${Router.BASE_PATH}${route}`;
         link.addEventListener('click', event => {
             if (event.button !== 0 || event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return;
             event.preventDefault();
+            if (settings.open) {
+                settings.open = false;
+                if (settings.contains(link)) settings.querySelector('summary').focus();
+            }
             if (getSelectedProfileId()) Router.navigateTo(route);
         });
+    });
+    document.addEventListener('pointerdown', event => {
+        if (!settings.contains(event.target)) settings.open = false;
+    });
+    document.addEventListener('keydown', event => {
+        if (event.key === 'Escape' && settings.open) {
+            settings.open = false;
+            settings.querySelector('summary').focus();
+        }
     });
     // Observe page visibility rather than replacing or patching the existing router.
     const observer = new MutationObserver(updateNavigation);

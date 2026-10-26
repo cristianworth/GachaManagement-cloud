@@ -17,6 +17,7 @@ class Router {
     '/tasks': 'taskList',
     '/tasks/create': 'createTask',
     '/events': 'eventGames',
+    '/agenda': 'gameAgenda',
     '/profile/games': 'profileGames',
     ...Object.fromEntries(EVENT_GAMES.map(game => [`/events/${game.key}`, 'eventReview']))
   };
@@ -39,6 +40,8 @@ class Router {
   }
 
   static async route(options = {}) {
+    const notifications = document.getElementById('notificationsPanel');
+    if (notifications?.open) notifications.close();
     stopSilentRefresh();
     const gameUI = await import('../ui/gameUI.js');
     gameUI.stopStaminaEstimateTimer();
@@ -53,6 +56,9 @@ class Router {
 
     // Load data when navigating to specific views
     switch(view) {
+      case 'gameAgenda':
+        await import('../ui/gameAgenda.js').then(module => module.displayGameAgenda());
+        break;
       case 'profileGames':
         await import('../ui/profileUI.js').then(module => module.displayProfileGames());
         break;

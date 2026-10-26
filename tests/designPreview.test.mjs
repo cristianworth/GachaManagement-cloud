@@ -51,11 +51,26 @@ test('full design build retains every real page and DOM contract with an isolate
     assert.equal(ui.window.document.querySelector('.version-badge').textContent, before.querySelector('.version-badge').textContent);
     assert.equal(ui.window.document.querySelector('.app-project-link').href, before.querySelector('.main-title a').href);
     assert.equal(ui.window.document.querySelector('.app-preview-label'), null, 'The production shell must not show test-only labels');
-    for (const path of ['/tasks', '/events', '/profile/games']) {
+    assert.equal(ui.window.document.querySelectorAll('.app-nav a').length,2,'Frequent destinations stay in the primary navigation');
+    assert.equal(ui.window.document.getElementById('viewTasksBtn'),null,'Tasks already has a primary navigation link');
+    const settings=ui.window.document.querySelector('.app-settings');
+    const summary=settings.querySelector('summary');
+    assert.equal(settings.querySelectorAll('a').length,2);
+    assert.equal(settings.open,false);
+    summary.click();assert.equal(settings.open,true);
+    ui.window.document.dispatchEvent(new ui.window.KeyboardEvent('keydown',{key:'Escape',bubbles:true}));
+    assert.equal(settings.open,false);assert.equal(ui.window.document.activeElement,summary);
+    summary.click();
+    settings.querySelector('[data-app-route="/agenda"]').click();
+    assert.equal(settings.open,false);assert.equal(navigations.at(-1),'/agenda');
+    for (const path of ['/tasks', '/events', '/agenda']) {
         currentPath = path;
         ui.window.dispatchEvent(new ui.window.PopStateEvent('popstate'));
         assert.equal(ui.window.document.querySelector(`[data-app-route="${path}"]`).getAttribute('aria-current'), 'page');
         assert.equal(ui.window.document.querySelectorAll('[aria-current="page"]').length, 1);
     }
+    currentPath='/profile/games';ui.window.dispatchEvent(new ui.window.PopStateEvent('popstate'));
+    assert.equal(ui.window.document.querySelector('[data-app-route="/"]').getAttribute('aria-current'),'page');
+    assert.equal(ui.window.document.querySelector('[data-app-route="/profile/games"]'),null,'Game selection has one contextual entry');
     ui.window.close();
 });

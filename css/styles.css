@@ -388,7 +388,7 @@ th {
 
 #task-form input:not([type="checkbox"]):not([hidden]),
 #task-form select,
-#game-form input:not([hidden]) {
+#game-form input:not([type="checkbox"]):not([hidden]) {
     width: 100%;
     padding: 8px;
 }

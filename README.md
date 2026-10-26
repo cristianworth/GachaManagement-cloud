@@ -4,7 +4,9 @@ As melhorias planejadas e suas estimativas de complexidade estão em [TODO.md](T
 
 O **Gacha Management** é uma aplicação projetada para ajudar jogadores de **gacha games** a gerenciar sua **resina/stamina** e acompanhar **tarefas recorrentes** nos jogos. Ele oferece ferramentas para rastrear a regeneração da stamina, organizar atividades programadas e facilitar o planejamento dentro dos jogos.
 
-Versão atual: **1.16.0**. Consulte o [CHANGELOG](CHANGELOG.md) para ver as alterações de cada versão e as regras de versionamento utilizadas.
+Versão atual: **1.17.0**. Consulte o [CHANGELOG](CHANGELOG.md) para ver as alterações de cada versão e as regras de versionamento utilizadas.
+
+**Agenda e notificações — 1.17.0:** agenda compartilhada de manutenção e banners, com preferências/leitura por perfil, horários de Brasília e imagens dos personagens. Games e Tasks são a navegação principal; Eventos e Agenda ficam na engrenagem, e Selecionar jogos fica em Games. [Comportamento e Para testar](docs/game-notices.md).
 
 **Estado diário — 1.16.0:** Games acompanha Pendente, Voltar depois e Feito por hoje por jogo/perfil. Salvar uma resina alterada conclui a rotina; o estado amarelo é manual. A lista ordena por estado e depois pela previsão de lotar, e volta a Pendente no reset diário. [Comportamento, horários e Para testar](docs/game-daily-state.md).
 

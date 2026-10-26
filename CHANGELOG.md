@@ -10,9 +10,24 @@ O projeto segue o versionamento semântico (SemVer), no formato `MAJOR.MINOR.PAT
 
 ## [Não publicado]
 
+## [1.17.0] - 2026-10-25
+
+### Adicionado
+
+- Central de notificações com sino/contador, painel sob demanda e marcos de 48h/24h/início da manutenção; leitura individual ou em grupo por perfil. Agenda dos jogos em tela própria e compartilhada, com versão/fase, personagens, início/término em Brasília, fontes e imagens opcionais; preferências pessoais no Edit. Migração e carga inicial de 16 registros dos cinco jogos aplicadas em 25/10/2026, sem reset ou integração automática. [Contrato e validação](docs/game-notices.md); [calendário e fontes](docs/game-agenda-calendar.md).
+- Agenda com filtros combináveis por jogo, tipo (banner/manutenção) e períodos encerrados. Imagens conferidas nos dez banners dos cinco jogos; complemento preenche apenas imagens ausentes, preservando dados e imagens escolhidas manualmente. [Origens das artes](docs/game-agenda-images.md).
+
+### Melhorado
+
+- Edit do jogo contém somente dois controles de notificações do perfil; datas e personagens são editados na agenda compartilhada. Corrigida a regra geral que esticava checkboxes como campos de texto; campos e rótulos alinhados no desktop e celular.
+- Games e Tasks ficam na navegação principal. Eventos e Agenda ficam em Configurações, com engrenagem no rodapé da lateral e controle compacto no celular; menu fecha por Escape, clique fora ou navegação. Selecionar jogos aparece somente em Games; removidos os atalhos duplicados entre Games/Tasks e o botão Atualizar dados de Games. Estimativa local, leitura silenciosa e Tentar novamente em falhas continuam disponíveis.
+
 ### Documentado
 
 - Skill local `commit` para fechar entregas com escolha de versão, changelog, atualização do roadmap, testes, commit e push. Invocação e autorização do fluxo registradas no `AGENTS.md`; criar ou editar a skill não executa o fechamento. Sem alteração da versão ou do comportamento da aplicação.
+- Ideia de mostrar favoritas de Tasks junto ao To-do de Games mantida no roadmap e no TODO 13.1. Agenda/notificações retiradas das prioridades ativas após a entrega; integração automática de fontes segue como proposta separada. Texto para issue no paimon.moe preparado, sem publicar.
+
+**Validação:** testes focados e suíte completa com **657 testes aprovados** (69 Jest + 588 Node), sem falhas. Instalação nova/upgrade, carga idempotente, filtros combinados, agenda compartilhada, isolamento de preferências/leitura, rascunhos, falhas/retry e navegação conferidos. Teste antigo de imagens do formulário atualizado com perfil e controles atuais. Conferência visual em desktop 1280px e celular 360px, com imagens carregadas e sem overflow horizontal observado; sem aparelho físico. Migração/carga inicial e complemento de imagens aplicados ao destino; sem integração automática de fontes.
 
 ## [1.16.0] - 2026-10-22
 
