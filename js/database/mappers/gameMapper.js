@@ -53,6 +53,8 @@ export function gameFromRow(row) {
         notices: row.game_notices ?? null,
         agenda: row.game_agenda ?? [],
         noticePreferences: row.game_notice_preferences ?? null,
+        bannerReads: Object.fromEntries(Object.entries(row).filter(([key])=>key.startsWith('banner_phase_read_'))
+            .map(([key,value])=>[key.slice('banner_phase_read_'.length),value])),
         noticeReads: { maintenance: row.maintenance_notice_read ?? null, banner: row.banner_notice_read ?? null },
         color: row.color,
     };

@@ -17,6 +17,7 @@ export function initializeAppShell() {
                 <a href="/" data-app-route="/"><svg class="app-nav-symbol" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7h10c2 0 3 1.5 3.5 3.5l1 5c.5 2.5-1.5 4-3.5 2.5l-3-2H9l-3 2c-2 1.5-4 0-3.5-2.5l1-5C4 8.5 5 7 7 7Z"/><path d="M6 11h4m-2-2v4m8-2h.01m2 2h.01"/></svg>Games</a>
                 <a href="/tasks" data-app-route="/tasks"><svg class="app-nav-symbol" viewBox="0 0 24 24" aria-hidden="true"><path d="m3 6 2 2 3-4m-5 9 2 2 3-4M12 6h9m-9 7h9M3 20h18"/></svg>Tasks</a>
             </nav>
+            <p class="app-sidebar-note">Seu progresso permanece separado por perfil.</p>
             <details class="app-settings">
                 <summary aria-label="Configurações"><svg class="app-nav-symbol" viewBox="0 0 24 24" aria-hidden="true"><path d="m10 3-.5 2-2 .9-1.8-.7-2 3.5 1.5 1.3v2L3.7 13.3l2 3.5 1.8-.7 2 .9.5 2h4l.5-2 2-.9 1.8.7 2-3.5-1.5-1.3v-2l1.5-1.3-2-3.5-1.8.7-2-.9L14 3Z"/><circle cx="12" cy="11" r="3"/></svg><span>Configurações</span></summary>
                 <nav class="app-settings-nav" aria-label="Configurações">
@@ -24,7 +25,6 @@ export function initializeAppShell() {
                     <a href="/agenda" data-app-route="/agenda">Agenda dos jogos</a>
                 </nav>
             </details>
-            <p class="app-sidebar-note">Seu progresso permanece separado por perfil.</p>
         </aside>
         <div class="app-main">
             <header class="app-topbar"></header>
@@ -49,7 +49,7 @@ export function initializeAppShell() {
         createTask: 'Defina a atividade, o prazo e o intervalo de repetição.',
         eventGames: 'Escolha um jogo para conferir os eventos encontrados.',
         eventReview: 'Confira o prazo e o vínculo antes de adicionar ao seu perfil.',
-        gameAgenda: 'Versões, manutenções e banners do servidor América.'
+        gameAgenda: 'Primeira e segunda fase dos banners do servidor América.'
     };
     for (const page of content.querySelectorAll('[data-page]')) {
         const section = page.querySelector('section');

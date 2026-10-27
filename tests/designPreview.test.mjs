@@ -25,6 +25,9 @@ test('full design build retains every real page and DOM contract with an isolate
             `The preview must use the real ${file}`);
     }
     assert.ok((await readFile(resolve(buildRoot, 'img/sangonomiya.png'))).length > 0);
+    for (const file of ['gi.json','hsr.json','zzz.json','wuwa.json','nte.json']) {
+        assert.equal(await readFile(resolve(buildRoot,`js/data/banners/${file}`),'utf8'),await readFile(new URL(`../js/data/banners/${file}`,import.meta.url),'utf8'));
+    }
     assert.equal(after.querySelector('script[src="design-preview/shell.js"]'), null,
         'The test build must not inject a second shell beside the production shell');
 

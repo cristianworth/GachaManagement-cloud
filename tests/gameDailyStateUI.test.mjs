@@ -89,15 +89,32 @@ test('Games daily state follows explicit choices and successful resin saves with
         assert.deepEqual(state.writes.at(-1).payload.daily_state,{state:'done',cycle_start:'2026-10-23T09:00:00.000Z'});
         assert.equal(state.writes.at(-1).payload.current_stamina,20);
     });
-    await t.test('notes-only Save preserves state; a changed resin value completes it even when full today',async()=>{
+    await t.test('Save completes the daily state even with unchanged stamina or notes-only edits',async()=>{
         await seed();change(1,'return_later');await settled();
         el('pendingTask1').value='Notes only';el('save-game-1').click();await settled();
-        assert.equal(el('daily-state-1').value,'return_later');
-        assert.equal(Object.hasOwn(state.writes.at(-1).payload,'daily_state'),false);
+        assert.equal(el('daily-state-1').value,'done');
+        assert.deepEqual(state.writes.at(-1).payload.daily_state,{state:'done',cycle_start:'2026-10-22T09:00:00.000Z'});
         el('currentStamina1').value='199';el('save-game-1').click();await settled();
         assert.equal(el('daily-state-1').value,'done');
         assert.equal(state.games.find(game=>game.id===1).date_max_stamina,'2026-10-22T12:08:00.000Z');
         change(1,'return_later');await settled();assert.equal(el('daily-state-1').value,'return_later');
+    });
+    await t.test('saving zero again after the next daily reset completes the new cycle in the same write',async()=>{
+        await seed();
+        state.games[0].current_stamina=0;
+        state.games[0].daily_state={state:'done',cycle_start:'2026-10-22T09:00:00.000Z'};
+        t.mock.timers.setTime(Date.parse('2026-10-23T12:00:00Z'));
+        await games.displayAllGames();
+        assert.equal(el('daily-state-1').value,'pending');
+        assert.equal(el('currentStamina1').value,'0');
+        assert.equal(el('currentStamina1').defaultValue,'0');
+        el('save-game-1').click();await settled();
+        assert.equal(state.writes.length,1,'Stamina and daily completion share one save');
+        assert.equal(state.writes[0].payload.current_stamina,0);
+        assert.deepEqual(state.writes[0].payload.daily_state,{state:'done',cycle_start:'2026-10-23T09:00:00.000Z'});
+        assert.equal(el('daily-state-1').value,'done');
+        assert.equal(el('daily-state-2').value,'pending');
+        await games.displayAllGames();assert.equal(el('daily-state-1').value,'done','The new mark survives a fresh read');
     });
     await t.test('failed resin Save cannot change the previous mark or persist half the operation',async()=>{
         await seed();state.error='Write failed';el('currentStamina1').value='20';el('save-game-1').click();await settled();

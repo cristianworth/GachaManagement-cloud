@@ -2,15 +2,12 @@
 import NavigationService from '../services/navigation.service.js';
 import { EVENT_GAMES } from '../events/eventGames.js';
 import { stopSilentRefresh } from '../ui/silentRefresh.js';
+import { getAppBasePath } from './appPaths.js';
 
 class Router {
   // Deriva o base path do repositório servido no GitHub Pages (primeiro
   // segmento da URL). Fora do github.io (local/host próprio) usa raiz.
-  static BASE_PATH = (() => {
-    if (!window.location.hostname.includes('github.io')) return '';
-    const repo = window.location.pathname.split('/')[1];
-    return repo ? `/${repo}` : '';
-  })();
+  static BASE_PATH = getAppBasePath(window.location);
   static routes = {
     '/': 'games',
     '/games/create': 'createGame',

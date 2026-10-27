@@ -1,14 +1,14 @@
 # Estado diário de Games
 
-Versão **1.16.0**, em 22/10/2026, sobre a base 1.15.1 (`e0ffea2`). Cristian definiu o reset por jogo, o padrão de 06:00 de Brasília para Endfield/siglas personalizadas, a conclusão ao salvar uma resina alterada e a ordenação por estado. A regra final substitui a sugestão anterior de preservar âmbar após alterar a resina: um novo Save de resina alterada deixa o jogo verde, e Voltar depois é escolhido manualmente.
+Base **1.16.0**, de 22/10/2026, refinada em 26/10/2026. Cristian definiu o reset por jogo, o padrão de 06:00 de Brasília para Endfield/siglas personalizadas, a conclusão ao clicar Save em Games e a ordenação por estado. A confirmação independe de alterar o número da resina: salvar 0 novamente no dia seguinte também deixa o jogo verde. Voltar depois é escolhido manualmente após o Save.
 
 ## Uso e ciclo
 
 - O controle **Hoje**, abaixo do nome, salva imediatamente a escolha: **Pendente** (azul acinzentado), **Voltar depois** (âmbar) ou **Feito por hoje** (verde). Texto e cor aparecem juntos; o destaque fica no controle e na borda do card.
 - Voltar depois indica que a rotina foi feita, mas ainda há algo para fazer. A escolha é reversível; não exige preencher uma tarefa ou motivo.
 - Escolher um estado altera somente essa marcação. Resina e To-do em edição permanecem na tela e não são salvos por essa ação.
-- Alterar numericamente a resina em relação ao valor carregado no campo e clicar Save marca **Feito por hoje**, mesmo se o jogo estava em Voltar depois. Não é necessário que a previsão de lotar seja amanhã. A resina, as anotações e a marcação são gravadas na mesma RPC; falha não deixa uma conclusão sem a resina correspondente. Um único instante capturado ao clicar Save guia o ciclo e a previsão.
-- Save sem alteração numérica da resina, incluindo Save apenas de anotações, mantém o estado. Depois de salvar a resina, Cristian pode escolher Voltar depois manualmente. A automação não precisa de opção extra para habilitar.
+- Clicar Save em Games marca **Feito por hoje**, mesmo se a stamina for igual ao último valor salvo ou se o jogo estava em Voltar depois. Isso inclui salvar apenas anotações pelo mesmo botão. Não é necessário que a previsão de lotar seja amanhã. A resina, as anotações e a marcação são gravadas na mesma RPC; falha não deixa uma conclusão sem a resina correspondente. Um único instante capturado ao clicar Save guia o ciclo e a previsão.
+- Depois de salvar, Cristian pode escolher Voltar depois manualmente. A automação não precisa de opção extra para habilitar. O Save do cadastro em Edit permanece separado e não conclui a diária.
 - No reset, um estado de um ciclo anterior é apresentado como Pendente, sem apagar anotações ou gravar um reset no banco. A tela verifica isso no relógio existente de um minuto e ao retornar à aba; não é necessário manter o site aberto. Com a página visível, a mudança pode aparecer no próximo tick, em até um minuto.
 - Uma gravação que atravessa o horário do reset pertence ao ciclo capturado no começo da operação. Ao receber a resposta, a tela já apresenta o estado efetivo do novo ciclo.
 - Falha restaura a marcação anterior e permite tentar de novo. Durante a gravação, o controle e os botões da linha ficam desabilitados. Respostas de um perfil/tela anterior não alteram a tela atual.
@@ -33,9 +33,11 @@ Por escolha explícita de Cristian em 22/10/2026, **Endfield e qualquer sigla se
 
 `js/utils/gameDailyState.js` define os ciclos, o estado efetivo e a ordenação. `gameUI.js` adiciona o controle, mantém os cards/rascunhos e compartilha o relógio existente. `gameDB.js` expõe `saveGameDailyState`, usando a RPC pública `save_profile_game` com apenas `abbreviation` e `daily_state: { state, cycle_start }`. A sigla é exigida pelo contrato para jogos do catálogo. O Save de resina usa `updateGame` com `completeDaily` explícito para incluir a marcação no mesmo payload da resina/anotações.
 
-`profile_games.overrides` e `list_profile_games` já suportam esse dado pessoal. O mapper lê `daily_state`, mas não o inclui em edições gerais; somente uma ação explícita de estado ou o Save de resina alterada o grava. Isso evita sobrescrever uma marcação mais recente com um snapshot antigo ao editar anotações/cadastro. Não houve alteração de schema, nova RPC, migração, dependência ou acesso ao Supabase real. O campo JSON segue as permissões públicas de perfil já existentes.
+`profile_games.overrides` e `list_profile_games` já suportam esse dado pessoal. O mapper lê `daily_state`, mas não o inclui em edições gerais; somente uma ação explícita de estado ou o Save em Games o grava. Isso evita sobrescrever uma marcação mais recente com um snapshot antigo ao editar o cadastro. Não houve alteração de schema, nova RPC, migração, dependência ou acesso ao Supabase real. O campo JSON segue as permissões públicas de perfil já existentes.
 
 ## Validação e Para testar
+
+Correção de 26/10: o cenário de stamina 0 repetida após o reset e o Save com o mesmo valor foram reproduzidos em testes que falharam antes da correção. Após remover a comparação numérica como condição de conclusão, **59 testes focados passaram** (estado diário, tela, stamina e feedback), incluindo persistência, falha sem gravação parcial, ciclo capturado e isolamento de perfil. Conferência na prévia descartável: salvar 0, marcar Pendente e salvar novamente sem alterar 0 deixa o controle verde. Sem alteração no banco real ou nova execução da suíte completa.
 
 Os testes focados cobrem limites de reset, viradas de mês/ano e ano bissexto, padrão para siglas personalizadas, ordenação por estado/previsão, persistência SQL em instalação nova/upgrade, Save de resina com conclusão atômica, Save apenas de anotações, falha/retry, gravação atravessando reset, troca de perfil durante a leitura, rascunhos/foco, leitura silenciosa e ausência de escritas pelos timers. A suíte completa integra o fechamento MINOR; o resultado final consta do changelog.
 
@@ -43,6 +45,6 @@ Prévia descartável: `npm run preview:profiles -- --design --port=5508`, usando
 
 1. Abra Games na prévia, selecione CRAN e escolha Voltar depois em um jogo. Confira o controle âmbar e o aviso de gravação.
 2. Digite resina/anotações sem Save e escolha Feito por hoje. Os rascunhos permanecem; uma nova aba deve mostrar a marcação verde e somente os valores de resina/anotações que já estavam salvos.
-3. Escolha Voltar depois, altere a resina e salve: o estado deve ficar verde e o card ir para o grupo Feito por hoje. Escolha Voltar depois novamente: ele fica âmbar e vai para o grupo intermediário. Save apenas de anotações deve conservar essa escolha.
+3. Escolha Pendente ou Voltar depois e clique Save sem alterar o número: o estado deve ficar verde e o card ir para o grupo Feito por hoje. Repita com stamina 0 e confira a persistência ao recarregar. Escolha Voltar depois após salvar: ele fica âmbar e vai para o grupo intermediário.
 4. A virada diária foi verificada com relógio fixo nos testes. Em uso normal, reabra a página após o próximo reset: o jogo deve aparecer Pendente, mantendo suas anotações.
 5. Troque para Demo para conferir que a marcação de CRAN não aparece ali. Retorne a CRAN e abra uma nova aba para conferir a persistência. Em cada grupo de estado, confira a previsão mais próxima antes da mais distante.

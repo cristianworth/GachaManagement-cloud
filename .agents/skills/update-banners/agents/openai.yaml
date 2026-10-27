@@ -1,0 +1,4 @@
+interface:
+  display_name: "update-banners"
+  short_description: "Atualiza banners por jogo com fontes e horários América"
+  default_prompt: "Use $update-banners para atualizar os banners de Genshin Impact no servidor América, conferindo as fontes e preservando os IDs das fases existentes."

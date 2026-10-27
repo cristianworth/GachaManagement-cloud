@@ -10,6 +10,7 @@ import { allGames } from '../data/Game.js';
 import { profileRpc } from './profileDB.js';
 import { createGameDailyState } from '../utils/gameDailyState.js';
 import { validateNoticePreferences } from '../utils/gameNotices.js';
+import { isBannerPhaseId } from '../utils/bannerCatalogue.js';
 
 function games() {
     return getClient().from(Tables.GAMES);
@@ -59,10 +60,12 @@ export async function saveGameDailyState(gameId, abbreviation, state, now = new 
 export async function markGameNotificationsRead(gameId, abbreviation, notifications) {
     const patch = { abbreviation };
     for (const notice of notifications) {
-        if ((notice.agendaId != null && (!Number.isSafeInteger(notice.agendaId) || notice.agendaId <= 0)) || !['maintenance','banner'].includes(notice.kind) || !['48h','24h','ongoing'].includes(notice.stage)
+        if ((notice.agendaId != null && !isBannerPhaseId(notice.agendaId) && (!Number.isSafeInteger(notice.agendaId) || notice.agendaId <= 0)) || notice.kind !== 'banner' || !['48h','24h'].includes(notice.stage)
             || typeof notice.signature !== 'string') throw new Error('Notificação inválida.');
-        const key = notice.agendaId != null ? `agenda_notice_read_${notice.agendaId}` : `${notice.kind}_notice_read`;
-        patch[key] = { signature: notice.signature, stage: notice.stage };
+        const ids = notice.agendaIds ?? (notice.agendaId != null ? [notice.agendaId] : []);
+        if (ids.some(id=>!isBannerPhaseId(id)&&(!Number.isSafeInteger(id)||id<=0))) throw new Error('Notificação inválida.');
+        const keys = ids.length ? ids.map(id=>`${isBannerPhaseId(id) ? 'banner_phase_read_' : 'agenda_notice_read_'}${id}`) : [`${notice.kind}_notice_read`];
+        for (const key of keys) patch[key] = { signature: notice.signature, stage: notice.stage };
     }
     await profileRpc('save_profile_game', {
         p_game_id: gameId, p_game: patch,

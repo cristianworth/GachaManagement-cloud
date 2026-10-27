@@ -78,23 +78,22 @@ Complexidade estimada para este projeto (HTML, CSS, JavaScript e Supabase): **ba
 - **Concluído quando:** o horário e a contagem estão corretos para o jogo escolhido, o alerta persiste no Supabase e acompanha mudanças na resina registrada.
 - **Escopo inicial:** alerta e contagem dentro do site. Notificações do navegador com o site fechado podem ser avaliadas separadamente.
 
-## 7. Avisar sobre atualizações e manutenção dos jogos
+## 7. Agenda compartilhada de banners e notificações
 
-**Entregue em 1.17.0, em 25/10/2026.** Agenda manual compartilhada e central por perfil; integração automática de fontes permanece separada.
+**Base entregue em 1.17.0, em 25/10/2026; refinamento concluído em 1.18.0, em 27/10.** A primeira entrega usava cadastro compartilhado de manutenção/banners no banco. Por decisão de Cristian, a manutenção foi retirada e o calendário passou aos JSONs publicados com o GitHub Pages.
 
-- [x] Agenda dos jogos em tela separada e compartilhada entre perfis, com versão e início/retorno previstos em Brasília. Preferências pessoais somente no Edit do jogo. Migração e 16 registros dos cinco jogos aplicados em 25/10/2026. [Contrato e Para testar](docs/game-notices.md).
-- [x] Central no sino com leitura persistida: uma entrada atualizada nos marcos de 48h, 24h e início da manutenção. Janela encerrada sai dos avisos ativos, mantendo cadastro editável; retorno é previsto, sem consulta ao estado real do servidor.
-- **Complexidade: média.** Exige dados por jogo, exibição do tempo restante e tratamento de fuso horário e de datas alteradas pelo jogo.
-- **Concluído quando:** o aviso distingue atualização futura, manutenção em andamento e manutenção encerrada, com horários coerentes no navegador e no celular.
-- **Origem dos dados:** começar com cadastro manual. Buscar agendas automaticamente em fontes externas seria uma tarefa separada.
+- [x] Agenda somente consulta, com filtro por jogo e fases encerradas; horários de Brasília, personagens e imagens agrupados por versão/fase.
+- [x] Cinco arquivos JSON como fonte única do calendário; preferências e leitura continuam por perfil no banco.
+- [x] Skill local `update-banners` com parâmetro de jogo, referências específicas e validação de estrutura, IDs e períodos no CI.
+- **Origem dos dados:** atualização assistida pela skill e publicação dos arquivos. Coleta automática em fontes externas permanece fora desta entrega.
+- **Contrato e evidências:** [arquivos e publicação](docs/banner-catalogue.md), [notificações](docs/game-notices.md) e [calendário inicial e fontes](docs/game-agenda-calendar.md).
 
-### 7.1. Avisar sobre o próximo banner
+### 7.1. Avisar sobre o término das fases de banners
 
-- [x] Banners com personagens, versão/fase, início e término na agenda compartilhada; fonte, imagem e observação de horários opcionais. Os dez banners têm imagem; filtros combinados por jogo/tipo e encerrados. Silenciamento e leitura por perfil preservam datas/nomes. [Calendário e fontes](docs/game-agenda-calendar.md). Entregue em 1.17.0.
-- [x] Central mostra nomes e tempo restante mediante clique, com marcos de 48h e 24h. A partir do início, retirar o anúncio dos avisos ativos sem apagar o cadastro editável; Games mantém os cards limpos.
-- **Complexidade: média.** Pode aproveitar a apresentação de datas do item 7, mas precisa permitir editar o anúncio caso personagens ou horários mudem.
-- **Concluído quando:** cada jogo mostra seu próximo banner e a contagem de dias, sem exibir anúncios vencidos como futuros.
-- **Origem dos dados:** cadastro manual inicialmente; integração automática com fontes de banners fica fora deste item.
+- [x] Um aviso por fase já iniciada, atualizado nos marcos de 48h e 24h antes do término. Ao terminar, a fase sai dos avisos ativos e permanece consultável em Mostrar encerrados.
+- [x] Silenciamento e recibos pessoais; IDs estáveis de fase, leitura em grupo, falha/retry e troca de perfil protegidos.
+- [x] Personagens de versão inteira aparecem nas duas fases; várias artes permanecem separadas e sem montagem. Games mantém os cards limpos.
+- **Concluído em 1.18.0.** Pesquisa automática de todos os eventos e notificações com site fechado continuam separadas.
 
 ## 8. Importar eventos automaticamente pelo StarRailAssistant — MVP
 

@@ -10,6 +10,25 @@ O projeto segue o versionamento semântico (SemVer), no formato `MAJOR.MINOR.PAT
 
 ## [Não publicado]
 
+## [1.18.0] - 2026-10-27
+
+### Adicionado
+
+- Cinco JSONs de banners como fonte do calendário publicado, com um registro por versão/fase e personagens agrupados; IDs estáveis para recibos pessoais. Skill de projeto `update-banners` com parâmetro de jogo e referências específicas para GI, HSR, ZZZ, WuWa e NTE. Validador `npm run validate:banners`, também no CI. [Contrato e publicação](docs/banner-catalogue.md).
+
+### Corrigido
+
+- Save em Games marca Feito por hoje mesmo quando a stamina repete o último valor, incluindo 0 após o reset diário. Resina, anotações e conclusão continuam na mesma gravação; Voltar depois permanece uma escolha manual posterior. Edições pelo cadastro não concluem a diária.
+
+### Melhorado
+
+- Configurações passa a ser o último item da lateral, abaixo da mensagem sobre perfis e do link Código do projeto.
+- Banners da Agenda agrupados por jogo, versão e fase, com personagens e artes lado a lado, sem recorte. Banners de versão inteira aparecem nas duas fases quando o limite entre elas é conhecido. A central reúne o aviso e a leitura dos personagens da mesma fase.
+- Agenda e notificações passam a trabalhar somente com banners. Removidos cadastro, filtro, preferência e imagem de manutenção. Lembretes de 48h/24h acompanham o término da fase atual e saem ao encerrar; leitura pessoal e agrupamento dos personagens são preservados.
+- Agenda passa a ser somente consulta dos JSONs publicados, sem gravações de calendário no banco. Leitura compartilhada com cache breve, atualização forçada e preservação do catálogo anterior em falhas. Preferências e recibos seguem por perfil nos contratos existentes; sem migração ou escrita no banco real. Períodos e imagens reaproveitados da carga revisada, sem inventar fases futuras.
+
+**Validação:** etapa focada anterior com 116 testes aprovados (100 Node + 16 Jest). No fechamento MINOR, suíte completa executada novamente: **670 testes aprovados** (69 Jest + 601 Node), sem falhas. Cinco JSONs/seis fases aprovados pelo validador; IDs, fuso, leitura por perfil, cache/falhas, instalação nova/upgrade, Save com stamina repetida e navegação conferidos. Prévia em desktop e celular de 360px, sem overflow horizontal observado; sem aparelho físico. Metadados e referências da skill validados com o parser disponível no projeto. Não houve nova pesquisa de banners nem migração dos recibos numéricos antigos; novos recibos usam os IDs das fases. Sem alteração no schema ou banco real nesta versão.
+
 ## [1.17.0] - 2026-10-25
 
 ### Adicionado

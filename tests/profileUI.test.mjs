@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createDomHarness, waitFor } from './helpers/domHarness.mjs';
 import { createTestDatabase } from './helpers/testDatabase.mjs';
+import {mockBannerFiles} from './helpers/bannerFiles.mjs';
 
 test('real profile UI uses SQL contracts and only selected games', async t => {
     const harness = createDomHarness();
@@ -9,7 +10,7 @@ test('real profile UI uses SQL contracts and only selected games', async t => {
     t.after(async () => { harness.close(); await db.close(); });
     t.mock.method(console, 'error', () => {});
     t.mock.method(console, 'log', () => {});
-    t.mock.method(globalThis, 'fetch', () => { throw new Error('Profile tests stay offline'); });
+    mockBannerFiles(t);
     await db.exec('set role anon');
     const calls = [];
     const client = window.supabase.createClient();

@@ -1,0 +1,27 @@
+[
+  {
+    "id": "wuwa-3.7-phase-2",
+    "version": "3.7",
+    "phase": 2,
+    "starts_at": "2026-10-22T15:00:00.000Z",
+    "ends_at": "2026-11-11T16:59:00.000Z",
+    "sources": [
+      "https://wutheringwaves.kurogames.com/en/main/news/detail/5529"
+    ],
+    "timing_note": "Horário do servidor América: UTC−5. Conferido também no guia de lançamento de Suoming.",
+    "characters": [
+      {
+        "name": "Suoming",
+        "image_url": "https://wuwawiki.com/assets/characters/suoming/banner-1600.webp"
+      },
+      {
+        "name": "Lucilla",
+        "image_url": "https://wuwawiki.com/assets/characters/lucilla/banner-1600.webp"
+      },
+      {
+        "name": "Lynae",
+        "image_url": "https://wuwawiki.com/assets/characters/lynae/banner-1600.webp"
+      }
+    ]
+  }
+]

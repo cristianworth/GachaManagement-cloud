@@ -1,0 +1,23 @@
+[
+  {
+    "id": "gi-7.1-phase-2",
+    "version": "7.1",
+    "phase": 2,
+    "starts_at": "2026-10-13T23:00:00.000Z",
+    "ends_at": "2026-11-03T19:59:00.000Z",
+    "sources": [
+      "https://genshin.hoyoverse.com/pt/news/detail/166634"
+    ],
+    "timing_note": "Horário do servidor América: UTC−5.",
+    "characters": [
+      {
+        "name": "Skirk",
+        "image_url": "https://sdk.hoyoverse.com/upload/ann/2026/09/23/8668a2e84580c1426c290a447320bcd9_5708783295049261864_transformed.jpg"
+      },
+      {
+        "name": "Escoffier",
+        "image_url": "https://sdk.hoyoverse.com/upload/ann/2026/09/23/e77eb5aab52127e55989bb8162d671d8_5676769242945454268_transformed.jpg"
+      }
+    ]
+  }
+]

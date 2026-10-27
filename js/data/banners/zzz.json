@@ -1,0 +1,23 @@
+[
+  {
+    "id": "zzz-3.3-phase-1",
+    "version": "3.3",
+    "phase": 1,
+    "starts_at": "2026-10-21T03:00:00.000Z",
+    "ends_at": "2026-11-11T16:59:00.000Z",
+    "sources": [
+      "https://zenless.hoyoverse.com/en-us/news/166926"
+    ],
+    "timing_note": "Início após manutenção: horário calculado pelo retorno previsto no anúncio; pode variar com a liberação do servidor.",
+    "characters": [
+      {
+        "name": "Phoenix",
+        "image_url": "https://upload-os-bbs.hoyolab.com/upload/2026/10/18/0/53161fb7a065d0d77b7e2a0b5f4954ab_2137834943334231194.png"
+      },
+      {
+        "name": "Velina",
+        "image_url": "https://upload-os-bbs.hoyolab.com/upload/2026/10/18/0/ab52894afd4dadd30202f7732cdc6614_342236792291687595.png"
+      }
+    ]
+  }
+]

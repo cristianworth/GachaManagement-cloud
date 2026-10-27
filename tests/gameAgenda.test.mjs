@@ -9,7 +9,7 @@ const entry = {game_id:1,kind:'banner',title:'Featured characters',version:'7.1 
 
 test('agenda validates explicit timezone, interval, HTTPS links and title without changing the input',()=>{
     assert.deepEqual(validateAgendaEntry(entry),{...entry,timing_note:''});
-    for (const patch of [{game_id:0},{kind:'other'},{title:' '},{starts_at:'2026-10-26T17:00'},
+    for (const patch of [{game_id:0},{kind:'other'},{kind:'maintenance'},{title:' '},{starts_at:'2026-10-26T17:00'},
         {ends_at:entry.starts_at},{image_url:'javascript:alert(1)'},{source_url:'https://user:password@example.org'}]) {
         assert.throws(()=>validateAgendaEntry({...entry,...patch}));
     }
@@ -55,7 +55,7 @@ for (const migrated of [false,true]) test(`shared agenda CRUD and personal recei
     assert.deepEqual((await list('cran'))[0].game_agenda,(await list('demo'))[0].game_agenda);
     await db.query('select save_profile_game($1,$2::jsonb,$3)',['cran',JSON.stringify({abbreviation:'GI',current_stamina:87,pending_tasks:'Keep draft',game_notice_preferences:{maintenance:true,banner:false}}),gameId]);
     assert.equal((await list('demo'))[0].game_notice_preferences,undefined);
-    const getNotices=async(profile)=>{const row=(await list(profile))[0];return getGameNotifications([{id:gameId,agenda:row.game_agenda,noticePreferences:row.game_notice_preferences}],new Date('2026-10-25T17:00:00Z'));};
+    const getNotices=async(profile)=>{const row=(await list(profile))[0];return getGameNotifications([{id:gameId,agenda:row.game_agenda,noticePreferences:row.game_notice_preferences}],new Date('2026-11-09T17:00:00Z'));};
     assert.equal((await getNotices('cran')).length,0);
     const notice=(await getNotices('demo'))[0];assert.equal(notice.unread,true);
     await db.query('select save_profile_game($1,$2::jsonb,$3)',['demo',JSON.stringify({abbreviation:'GI',[`agenda_notice_read_${saved.id}`]:{signature:notice.signature,stage:notice.stage}}),gameId]);

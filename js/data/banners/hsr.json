@@ -1,0 +1,42 @@
+[
+  {
+    "id": "hsr-4.6-phase-1",
+    "version": "4.6",
+    "phase": 1,
+    "starts_at": "2026-09-28T03:00:00.000Z",
+    "ends_at": "2026-10-21T17:00:00.000Z",
+    "sources": [
+      "https://www.hoyolab.com/article/47142215"
+    ],
+    "timing_note": "Período da primeira fase apresentado até o início confirmado da segunda fase.",
+    "characters": [
+      {
+        "name": "Pearl",
+        "image_url": "https://upload-os-bbs.hoyolab.com/upload/community/2026/09/24/8dce87dcbdb877a404e9d1ac5a48f1ef_2326426280653150930.png",
+        "whole_version": true
+      }
+    ]
+  },
+  {
+    "id": "hsr-4.6-phase-2",
+    "version": "4.6",
+    "phase": 2,
+    "starts_at": "2026-10-21T17:00:00.000Z",
+    "ends_at": "2026-11-10T20:00:00.000Z",
+    "sources": [
+      "https://www.hoyolab.com/article/47142215"
+    ],
+    "timing_note": "Horário do servidor América: UTC−5. Término às 15:00 conforme o anúncio oficial.",
+    "characters": [
+      {
+        "name": "Pearl",
+        "image_url": "https://upload-os-bbs.hoyolab.com/upload/community/2026/09/24/8dce87dcbdb877a404e9d1ac5a48f1ef_2326426280653150930.png",
+        "whole_version": true
+      },
+      {
+        "name": "Mortenax Blade",
+        "image_url": "https://upload-os-bbs.hoyolab.com/upload/community/2026/10/16/c4ad4cf76730b8e15324610efd9c22c3_8253529473331117229.png"
+      }
+    ]
+  }
+]

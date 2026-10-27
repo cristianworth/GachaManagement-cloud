@@ -109,12 +109,12 @@ export async function displayAllGames({ successMessage = '', preserveDrafts = fa
                 return false;
             }
             const focused = silent ? document.activeElement : null;
-            setNotificationGames(games, profileId);
             renderGameList(games, drafts);
             if (focused?.id) (document.getElementById(focused.id) ?? document.getElementById('selectGamesBtn'))?.focus();
             startSilentRefresh('games', canApply => displayAllGames({ preserveDrafts: true, silent: true, canApply }), () => refreshingGames);
             const message = successMessage || (games.length ? '' : 'Nenhum jogo selecionado. Use Selecionar jogos para começar.');
             if (!silent) setFeedback('gameListMessage', drafts.size ? `${message} Alterações não salvas foram mantidas. As estimativas usam os dados salvos.` : message);
+            await setNotificationGames(games, profileId);
             return true;
         } catch (error) {
             console.error('Failed to load game list:', error);
@@ -335,7 +335,6 @@ async function handleGameSave(gameId) {
         setFeedback('gameListMessage', 'Informe um número válido para a stamina antes de salvar.', 'error');
         return;
     }
-    const staminaChanged = currentStamina !== Number(field.defaultValue);
     const pendingTask = notes.value;
     const profileId = getProfileId();
     const now = new Date();
@@ -351,7 +350,7 @@ async function handleGameSave(gameId) {
             game.dateMaxStamina = calculateMaxStaminaDate(game, now);
             game.maxStaminaAt = formatDateToDayHour(game.dateMaxStamina);
             
-            await updateGame(game, {completeDaily:staminaChanged, now});
+            await updateGame(game, {completeDaily:true, now});
             field.defaultValue = String(currentStamina);
             notes.defaultValue = pendingTask;
         },

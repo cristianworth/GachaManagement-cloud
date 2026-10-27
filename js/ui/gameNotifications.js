@@ -2,6 +2,8 @@ import { fetchAllGames, markGameNotificationsRead } from '../database/gameDB.js'
 import { getSelectedProfileId } from '../services/profileSession.js';
 import { getGameNotifications } from '../utils/gameNotices.js';
 import { setFeedback } from './feedback.js';
+import { fetchBannerAgenda } from '../services/bannerAgenda.js';
+import { attachBannerAgenda } from '../utils/bannerCatalogue.js';
 
 const contexts = new WeakMap();
 const READ_INTERVAL = 6 * 60_000;
@@ -63,14 +65,24 @@ export function stopGameNotifications() {
     contexts.delete(document);
 }
 
-export function setNotificationGames(games, actor) {
+export async function setNotificationGames(games, actor) {
     const context = contexts.get(document);
     if (!context || actor !== getSelectedProfileId()) return;
     syncActor(context);
     if (context.busy) return;
-    context.games = games;
-    context.lastRead = Date.now(); context.revision++;
-    render(context);
+    const revision = ++context.revision;
+    if (!games.length) { context.games = []; render(context); return; }
+    try {
+        const catalogue = await fetchBannerAgenda();
+        if (actor !== getSelectedProfileId() || revision !== context.revision || contexts.get(document) !== context) return;
+        context.games = attachBannerAgenda(games,catalogue);
+        context.lastRead = Date.now();
+        setFeedback('notificationStatus'); render(context);
+    } catch (error) {
+        if (actor !== getSelectedProfileId() || revision !== context.revision || contexts.get(document) !== context) return;
+        console.error('Failed to load banner files:',error);
+        setFeedback('notificationStatus','Não foi possível ler os banners publicados. Os avisos anteriores foram mantidos; reabra a central para tentar novamente.','error');
+    }
 }
 
 export async function refreshGameNotifications({ force = false } = {}) {
@@ -84,9 +96,9 @@ export async function refreshGameNotifications({ force = false } = {}) {
     context.reading = true;
     context.panel.dataset.reading = 'true';
     try {
-        const games = await fetchAllGames();
+        const [games,catalogue] = await Promise.all([fetchAllGames(),fetchBannerAgenda({force})]);
         if (actor === getSelectedProfileId() && revision === context.revision && contexts.get(document) === context) {
-            context.games = games; context.lastRead = Date.now();
+            context.games = attachBannerAgenda(games,catalogue); context.lastRead = Date.now();
             setFeedback('notificationStatus'); render(context);
         }
     } catch (error) {
@@ -123,9 +135,9 @@ function render(context) {
         button.id = `notification-${item.gameId}-${item.agendaId != null ? `agenda-${item.agendaId}` : item.kind}`;
         button.className = 'notification-open'; button.disabled = context.busy;
         const title = doc.createElement('strong');
-        title.textContent = `${item.gameName} — ${item.kind === 'maintenance' ? 'Manutenção' : 'Próximo banner'}`;
+        title.textContent = `${item.gameName} — ${item.displayLabel ?? 'Banner'} terminando`;
         const label = doc.createElement('span');
-        label.textContent = `${item.unread ? 'Não lida' : 'Lida'} · ${item.stage === 'ongoing' ? 'Em andamento' : `Aviso de ${item.stage}`}`;
+        label.textContent = `${item.unread ? 'Não lida' : 'Lida'} · Aviso de ${item.stage}`;
         const details = doc.createElement('p'); details.id = `${button.id}-details`;
         details.textContent = item.text; details.hidden = !context.expanded.has(item.key);
         button.setAttribute('aria-expanded', String(!details.hidden));
@@ -165,8 +177,10 @@ async function markRead(context, items) {
                 if (game) for (const item of group) {
                     const receipt = { signature:item.signature, stage:item.stage };
                     if (item.agendaId != null) {
-                        const entry = game.agenda?.find(entry => entry.id === item.agendaId);
-                        if (entry) entry.read = receipt;
+                        for (const id of item.agendaIds ?? [item.agendaId]) {
+                            const entry = game.agenda?.find(entry => entry.id === id);
+                            if (entry) entry.read = receipt;
+                        }
                     } else {
                         game.noticeReads ??= {};
                         game.noticeReads[item.kind] = receipt;

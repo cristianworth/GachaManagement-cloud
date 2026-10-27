@@ -1,0 +1,19 @@
+[
+  {
+    "id": "nte-1.4-phase-2",
+    "version": "1.4",
+    "phase": 2,
+    "starts_at": "2026-10-21T03:00:00.000Z",
+    "ends_at": "2026-11-10T21:59:00.000Z",
+    "sources": [
+      "https://nte.perfectworld.com/en/article/news/gamenews/20261019/264675.html"
+    ],
+    "timing_note": "Início após manutenção: horário calculado pelo retorno previsto no anúncio; pode variar com a liberação do servidor. Término global em UTC+8; no Brasil, 10/11 às 18:59.",
+    "characters": [
+      {
+        "name": "Akane Rin",
+        "image_url": "https://senseos.gg/art/games/neverness-to-everness/steam/e30c619b8080b5b3.webp"
+      }
+    ]
+  }
+]

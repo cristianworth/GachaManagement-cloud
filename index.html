@@ -75,7 +75,7 @@
         <section>
             <h1 class="main-title">
                 <a href="https://github.com/cristianworth/GachaManagement-cloud/tree/main" target="_blank">
-                    Gacha Management <span class="version-badge">v1.17.0</span>
+                    Gacha Management <span class="version-badge">v1.18.0</span>
                 </a>
             </h1>
 
@@ -107,34 +107,14 @@
     <div data-page="gameAgenda" style="display:none">
         <section>
             <h1>Agenda dos jogos</h1>
-            <p class="agenda-shared-hint">Esta agenda é compartilhada. Ao salvar ou excluir, você altera a informação para todos os perfis. Horários de Brasília (UTC−3), servidor América.</p>
+            <p class="agenda-shared-hint">Calendário compartilhado dos banners, atualizado junto da publicação do site. Horários de Brasília (UTC−3), servidor América.</p>
             <div class="agenda-toolbar">
                 <label for="agendaGameFilter">Jogo<select id="agendaGameFilter"><option value="">Todos os jogos</option></select></label>
-                <label for="agendaKindFilter">Tipo<select id="agendaKindFilter"><option value="">Todos os tipos</option><option value="banner">Banners</option><option value="maintenance">Manutenções</option></select></label>
                 <label class="notice-toggle"><input id="agendaShowEnded" type="checkbox"> Mostrar encerrados</label>
-                <button id="agendaAdd" class="button-add" type="button">Adicionar à agenda</button>
                 <button id="agendaRefresh" class="button-neutral" type="button">Atualizar agenda</button>
             </div>
             <p id="agendaStatus" class="operation-feedback" role="status" hidden></p>
-            <form id="agendaForm" class="agenda-form" hidden>
-                <h2 id="agendaFormTitle">Novo registro</h2>
-                <div class="agenda-fields">
-                    <label for="agendaGame">Jogo<select id="agendaGame" required></select></label>
-                    <label for="agendaKind">Tipo<select id="agendaKind"><option value="maintenance">Versão / manutenção</option><option value="banner">Banner de personagens</option></select></label>
-                    <label for="agendaTitle">Título / personagens<input id="agendaTitle" maxlength="200" required></label>
-                    <label for="agendaVersion">Versão (opcional)<input id="agendaVersion" maxlength="80" placeholder="Ex.: 7.1 — Fase 2"></label>
-                    <label for="agendaStart">Início (Brasília)<input id="agendaStart" type="datetime-local" step="60" required></label>
-                    <label for="agendaEnd">Término / retorno previsto (Brasília)<input id="agendaEnd" type="datetime-local" step="60" required></label>
-                    <label for="agendaSource">Fonte (opcional)<input id="agendaSource" type="url" pattern="https://.+" placeholder="https://..."></label>
-                    <label for="agendaImage">Imagem (opcional)<input id="agendaImage" type="url" pattern="https://.+" placeholder="https://..."></label>
-                    <label for="agendaTimingNote">Observação de horários (opcional)<input id="agendaTimingNote" maxlength="300" placeholder="Ex.: início após a manutenção, conforme retorno previsto"></label>
-                </div>
-                <div class="list-actions">
-                    <button id="agendaSave" class="button-save" type="submit">Salvar para todos os perfis</button>
-                    <button id="agendaCancel" class="button-neutral" type="button">Cancelar</button>
-                </div>
-            </form>
-            <p id="agendaEmpty" hidden>Nenhum registro neste filtro. Adicione uma manutenção ou um banner com datas confirmadas.</p>
+            <p id="agendaEmpty" hidden>Nenhuma fase de banner neste filtro.</p>
             <ul id="agendaList" class="agenda-list"></ul>
         </section>
     </div>
@@ -167,9 +147,8 @@
 
                 <details id="gameNoticeSettings" class="game-notice-settings">
                     <summary>Notificações deste perfil</summary>
-                    <p>Receber lembretes em 48h e 24h, e no início da manutenção.</p>
-                    <label class="notice-toggle"><input id="maintenanceNotify" type="checkbox" checked> Manutenções e atualizações</label>
-                    <label class="notice-toggle"><input id="bannerNotify" type="checkbox" checked> Próximos banners</label>
+                    <p>Receber lembretes 48h e 24h antes do término de cada fase.</p>
+                    <label class="notice-toggle"><input id="bannerNotify" type="checkbox" checked> Fases de banners terminando</label>
                     <small>Estas escolhas valem só para este perfil. Datas e personagens são compartilhados na Agenda dos jogos.</small>
                 </details>
                 
