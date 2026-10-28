@@ -68,6 +68,6 @@ async function load(context, force = false) {
         context.entries = entries; render(context); setFeedback('agendaStatus');
     } catch (error) {
         console.error('Failed to read published banners:',error);
-        if (revision === context.revision) setFeedback('agendaStatus','Não foi possível ler os banners publicados. Os dados anteriores foram mantidos. Use Atualizar agenda para tentar novamente.','error');
+        if (revision === context.revision) setFeedback('agendaStatus','Não foi possível ler os banners publicados. Os dados anteriores foram mantidos. Use Atualizar calendário para tentar novamente.','error');
     } finally { if (revision === context.revision) el('agendaRefresh').disabled = false; }
 }

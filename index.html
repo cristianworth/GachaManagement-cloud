@@ -75,7 +75,7 @@
         <section>
             <h1 class="main-title">
                 <a href="https://github.com/cristianworth/GachaManagement-cloud/tree/main" target="_blank">
-                    Gacha Management <span class="version-badge">v1.18.0</span>
+                    Gacha Management <span class="version-badge">v1.18.1</span>
                 </a>
             </h1>
 
@@ -106,12 +106,12 @@
 
     <div data-page="gameAgenda" style="display:none">
         <section>
-            <h1>Agenda dos jogos</h1>
+            <h1>Calendário de banners</h1>
             <p class="agenda-shared-hint">Calendário compartilhado dos banners, atualizado junto da publicação do site. Horários de Brasília (UTC−3), servidor América.</p>
             <div class="agenda-toolbar">
                 <label for="agendaGameFilter">Jogo<select id="agendaGameFilter"><option value="">Todos os jogos</option></select></label>
                 <label class="notice-toggle"><input id="agendaShowEnded" type="checkbox"> Mostrar encerrados</label>
-                <button id="agendaRefresh" class="button-neutral" type="button">Atualizar agenda</button>
+                <button id="agendaRefresh" class="button-neutral" type="button">Atualizar calendário</button>
             </div>
             <p id="agendaStatus" class="operation-feedback" role="status" hidden></p>
             <p id="agendaEmpty" hidden>Nenhuma fase de banner neste filtro.</p>
@@ -149,7 +149,7 @@
                     <summary>Notificações deste perfil</summary>
                     <p>Receber lembretes 48h e 24h antes do término de cada fase.</p>
                     <label class="notice-toggle"><input id="bannerNotify" type="checkbox" checked> Fases de banners terminando</label>
-                    <small>Estas escolhas valem só para este perfil. Datas e personagens são compartilhados na Agenda dos jogos.</small>
+                    <small>Estas escolhas valem só para este perfil. Datas e personagens são compartilhados no Calendário de banners.</small>
                 </details>
                 
                 <p id="gameFormStatus" class="operation-feedback" role="alert" hidden></p>
@@ -307,7 +307,7 @@
         <p>Manutenções e próximos banners dos jogos deste perfil.</p>
         <button id="notificationsReadAll" class="button-neutral" type="button">Marcar todas como lidas</button>
         <p id="notificationStatus" class="operation-feedback" role="status" hidden></p>
-        <p id="notificationsEmpty">Sem avisos ativos. Confira as próximas datas na Agenda dos jogos.</p>
+        <p id="notificationsEmpty">Sem avisos ativos. Confira as próximas datas no Calendário de banners.</p>
         <ul id="notificationList" class="notification-list"></ul>
     </dialog>
 </body>

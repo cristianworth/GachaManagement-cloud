@@ -201,6 +201,7 @@ Planejamento pedido em 08/10/2026. Inventário completo, contadores fornecidos, 
 ## 14. Menu lateral e controle de perfil — entregue
 
 - [x] Base entregue em 1.13.0; polimento de 1.17.0 mantém Games e Tasks na navegação principal, Eventos/Agenda sob engrenagem e Selecionar jogos somente em Games. Perfil/Trocar perfil permanecem no cabeçalho.
+- [x] Polimento de 1.18.1: nomes Revisar eventos e Calendário de banners na engrenagem; cards Feito por hoje com véu verde decorativo, mantendo edição e ações disponíveis.
 - [x] Destacar a seção atual, mostrar versão discreta e manter menu compacto no celular, com configurações sob demanda. Reaproveitar Router e perfis públicos; sem login real.
 - [x] Remover atalhos de navegação repetidos entre Games/Tasks e o Atualizar dados de Games; manter criação, seleção, lote e filtros no contexto da tela. Atualização automática e recuperação de falhas preservadas.
 - **Complexidade: média.** Concluído, fora das prioridades ativas. Sem framework ou biblioteca adicional de ícones.

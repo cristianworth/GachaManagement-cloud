@@ -153,7 +153,22 @@ td { text-align:left; }
 #gameListBody .game-daily-control select { box-sizing:border-box; width:100%; max-width:190px; min-height:36px; padding:6px 8px; font-size:13px; background:var(--daily-wash,var(--lagoon-wash)); border-color:var(--daily-accent,var(--line)); color:var(--daily-ink,var(--muted-ink)); }
 #gameListBody tr[data-daily-state='pending'] { --daily-accent:#a5b7c9; --daily-wash:#edf2f7; --daily-ink:#435b73; }
 #gameListBody tr[data-daily-state='return_later'] { --daily-accent:#bd9448; --daily-wash:#fbf2da; --daily-ink:#72551f; }
-#gameListBody tr[data-daily-state='done'] { --daily-accent:#82a892; --daily-wash:#eaf4ed; --daily-ink:#355e46; }
+#gameListBody tr[data-daily-state='done'] {
+    --daily-accent:#7f9f89; --daily-wash:#e3eee6; --daily-ink:#355e46;
+    position:relative; isolation:isolate; background:#e6f1e9; border-color:#b9d3c1;
+}
+/* The veil and check are decorative; controls remain fully interactive. */
+#gameListBody tr[data-daily-state='done']::before {
+    content:''; position:absolute; inset:0; border-radius:inherit; z-index:2;
+    background:linear-gradient(120deg, #f5faf42b, #c5ddcc24); pointer-events:none;
+}
+#gameListBody tr[data-daily-state='done']::after {
+    content:''; position:absolute; right:25%; top:50%; width:44px; height:86px;
+    border:solid #6293711a; border-width:0 12px 12px 0;
+    transform:translateY(-65%) rotate(45deg); z-index:0; pointer-events:none;
+}
+#gameListBody tr[data-daily-state='done'] > td { position:relative; z-index:1; }
+#gameListBody tr[data-daily-state='done'] .pending-task-editor { background:#eef5ef99; }
 #gameListBody tr[data-daily-state] { box-shadow:inset 3px 0 var(--daily-accent,var(--line)); }
 #gameListBody td:nth-child(3) { grid-area:notes; }
 #gameListBody td:nth-child(4) { grid-area:stamina; }

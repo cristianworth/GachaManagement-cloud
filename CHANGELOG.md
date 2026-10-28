@@ -10,6 +10,15 @@ O projeto segue o versionamento semântico (SemVer), no formato `MAJOR.MINOR.PAT
 
 ## [Não publicado]
 
+## [1.18.1] - 2026-10-28
+
+### Melhorado
+
+- Menus de configuração renomeados para Revisar eventos e Calendário de banners, com referências da interface alinhadas ao novo nome do calendário.
+- Cards em Feito por hoje recebem um véu verde suave e uma confirmação como marca-d’água, preservando a edição, os botões e a distinção textual do estado.
+
+**Validação:** 15 testes focados aprovados durante a implementação (prévia, estado diário na interface e calendário), sem repetição no fechamento apenas documental/de versão. Conferidos desktop e celular de 360 × 800 no navegador: Save aplica o véu, Voltar depois o remove, anotações permanecem editáveis e salvas, Edit abre o cadastro e os menus navegam para as telas corretas. Sem overflow horizontal observado, sem aparelho físico. Suíte completa local não repetida por ser PATCH. Sem alteração no banco.
+
 ## [1.18.0] - 2026-10-27
 
 ### Adicionado

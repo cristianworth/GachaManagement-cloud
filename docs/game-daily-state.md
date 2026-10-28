@@ -4,7 +4,7 @@ Base **1.16.0**, de 22/10/2026, refinada em 26/10/2026. Cristian definiu o reset
 
 ## Uso e ciclo
 
-- O controle **Hoje**, abaixo do nome, salva imediatamente a escolha: **Pendente** (azul acinzentado), **Voltar depois** (âmbar) ou **Feito por hoje** (verde). Texto e cor aparecem juntos; o destaque fica no controle e na borda do card.
+- O controle **Hoje**, abaixo do nome, salva imediatamente a escolha: **Pendente** (azul acinzentado), **Voltar depois** (âmbar) ou **Feito por hoje** (verde). Texto e cor aparecem juntos. Feito por hoje também recebe um véu verde suave sobre o card e uma confirmação discreta como marca-d’água; os campos e botões continuam acessíveis. Ao voltar para outro estado ou virar o ciclo, o destaque sai junto com o estado efetivo.
 - Voltar depois indica que a rotina foi feita, mas ainda há algo para fazer. A escolha é reversível; não exige preencher uma tarefa ou motivo.
 - Escolher um estado altera somente essa marcação. Resina e To-do em edição permanecem na tela e não são salvos por essa ação.
 - Clicar Save em Games marca **Feito por hoje**, mesmo se a stamina for igual ao último valor salvo ou se o jogo estava em Voltar depois. Isso inclui salvar apenas anotações pelo mesmo botão. Não é necessário que a previsão de lotar seja amanhã. A resina, as anotações e a marcação são gravadas na mesma RPC; falha não deixa uma conclusão sem a resina correspondente. Um único instante capturado ao clicar Save guia o ciclo e a previsão.
@@ -36,6 +36,8 @@ Por escolha explícita de Cristian em 22/10/2026, **Endfield e qualquer sigla se
 `profile_games.overrides` e `list_profile_games` já suportam esse dado pessoal. O mapper lê `daily_state`, mas não o inclui em edições gerais; somente uma ação explícita de estado ou o Save em Games o grava. Isso evita sobrescrever uma marcação mais recente com um snapshot antigo ao editar o cadastro. Não houve alteração de schema, nova RPC, migração, dependência ou acesso ao Supabase real. O campo JSON segue as permissões públicas de perfil já existentes.
 
 ## Validação e Para testar
+
+Polimento de 28/10: 15 testes focados aprovados (prévia, estado diário na interface e calendário). Conferido no navegador em desktop e 360 × 800: Save aplica o véu, Voltar depois o remove, anotações continuam editáveis e salvas e Edit abre o cadastro. Sem overflow horizontal observado na página móvel; sem teste em aparelho físico.
 
 Correção de 26/10: o cenário de stamina 0 repetida após o reset e o Save com o mesmo valor foram reproduzidos em testes que falharam antes da correção. Após remover a comparação numérica como condição de conclusão, **59 testes focados passaram** (estado diário, tela, stamina e feedback), incluindo persistência, falha sem gravação parcial, ciclo capturado e isolamento de perfil. Conferência na prévia descartável: salvar 0, marcar Pendente e salvar novamente sem alterar 0 deixa o controle verde. Sem alteração no banco real ou nova execução da suíte completa.
 

@@ -4,9 +4,9 @@ As melhorias planejadas e suas estimativas de complexidade estão em [TODO.md](T
 
 O **Gacha Management** é uma aplicação projetada para ajudar jogadores de **gacha games** a gerenciar sua **resina/stamina** e acompanhar **tarefas recorrentes** nos jogos. Ele oferece ferramentas para rastrear a regeneração da stamina, organizar atividades programadas e facilitar o planejamento dentro dos jogos.
 
-Versão atual: **1.18.0**. Consulte o [CHANGELOG](CHANGELOG.md) para ver as alterações de cada versão e as regras de versionamento utilizadas.
+Versão atual: **1.18.1**. Consulte o [CHANGELOG](CHANGELOG.md) para ver as alterações de cada versão e as regras de versionamento utilizadas.
 
-**Agenda e notificações — 1.18.0:** banners por versão/fase nos JSONs de cada jogo, publicados junto do site; Agenda somente consulta e avisos de 48h/24h antes do término. Preferências/leitura continuam por perfil. Games e Tasks são a navegação principal; Eventos e Agenda ficam na engrenagem, e Selecionar jogos fica em Games. [Comportamento e Para testar](docs/game-notices.md); [atualizar os arquivos com a skill](docs/banner-catalogue.md).
+**Calendário e notificações — base 1.18.0, polimento 1.18.1:** banners por versão/fase nos JSONs de cada jogo, publicados junto do site; calendário somente consulta e avisos de 48h/24h antes do término. Preferências/leitura continuam por perfil. Games e Tasks são a navegação principal; Revisar eventos e Calendário de banners ficam na engrenagem, e Selecionar jogos fica em Games. Cards em Feito por hoje recebem um véu verde, mantendo a edição disponível. [Comportamento e Para testar](docs/game-notices.md); [atualizar os arquivos com a skill](docs/banner-catalogue.md).
 
 **Estado diário — 1.16.0:** Games acompanha Pendente, Voltar depois e Feito por hoje por jogo/perfil. Save em Games conclui a rotina mesmo com o mesmo número de stamina; o estado amarelo é manual. A lista ordena por estado e depois pela previsão de lotar, e volta a Pendente no reset diário. [Comportamento, horários e Para testar](docs/game-daily-state.md).
 

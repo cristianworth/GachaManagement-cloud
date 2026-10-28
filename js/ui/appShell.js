@@ -21,8 +21,8 @@ export function initializeAppShell() {
             <details class="app-settings">
                 <summary aria-label="Configurações"><svg class="app-nav-symbol" viewBox="0 0 24 24" aria-hidden="true"><path d="m10 3-.5 2-2 .9-1.8-.7-2 3.5 1.5 1.3v2L3.7 13.3l2 3.5 1.8-.7 2 .9.5 2h4l.5-2 2-.9 1.8.7 2-3.5-1.5-1.3v-2l1.5-1.3-2-3.5-1.8.7-2-.9L14 3Z"/><circle cx="12" cy="11" r="3"/></svg><span>Configurações</span></summary>
                 <nav class="app-settings-nav" aria-label="Configurações">
-                    <a href="/events" data-app-route="/events">Eventos</a>
-                    <a href="/agenda" data-app-route="/agenda">Agenda dos jogos</a>
+                    <a href="/events" data-app-route="/events">Revisar eventos</a>
+                    <a href="/agenda" data-app-route="/agenda">Calendário de banners</a>
                 </nav>
             </details>
         </aside>

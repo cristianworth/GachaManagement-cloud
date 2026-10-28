@@ -43,6 +43,8 @@ A área de anotações no desktop tem largura mínima de 190 px, o que favorece 
 
 ## Critérios e sequência
 
+**Polimento visual concluído em 1.18.1, em 28/10/2026:** menus Revisar eventos e Calendário de banners; véu verde nos cards Feito por hoje, preservando a edição. Complementa os itens já entregues de navegação e estado diário, sem retirar prioridades ainda pendentes. [Entrega e validação](../CHANGELOG.md#1181---2026-10-28).
+
 **Agenda e notificações entregues em 1.17.0, em 25/10/2026**, retiradas das prioridades ativas. **Refinamento concluído em 1.18.0, em 27/10:** banners em JSONs por jogo, Agenda somente consulta, skill `update-banners` e avisos de término; preferências/leitura continuam por perfil. Games/Tasks concentram a navegação; Eventos/Agenda ficam na engrenagem e Selecionar jogos em Games. [Contrato e validação](game-notices.md); [atualização dos arquivos](banner-catalogue.md). [Coleta automática de fontes](notification-sources-review.md) permanece uma proposta futura.
 
 Paginação visual e estimativa local foram entregues em 1.14.0, com testes e conferência visual concluídos. Menu lateral já possui sua base entregue; a leitura periódica silenciosa foi entregue em 1.15.0 em 18/10/2026, com testes aprovados. **Ajustes pontuais no celular foram concluídos em 1.15.1 em 19/10/2026**: alvos de toque maiores, filtros/anotações mais legíveis e conferência de tabelas, formulários e lote, preservando o desktop. O item saiu das prioridades; novos refinamentos dependem de uma necessidade concreta observada no uso. Conferir a necessidade real antes de acrescentar busca, consultas paginadas ou automação de fontes. Não adicionar dependência para paginação, timers ou navegação simples.
