@@ -67,7 +67,7 @@ test('six-minute saved-data refresh is silent, read-only and bound to the visibl
             date_max_stamina: '2026-10-14T08:00:00Z' });
         await advance(359_999); assert.equal(calls.length, 0);
         await advance(1);
-        assert.equal(calls.length, 1); assert.equal(calls[0].name, 'list_profile_games');
+        assert.deepEqual(calls.map(call => call.name).sort(), ['list_profile_games', 'list_profile_tasks']);
         assert.equal(calls[0].payload.p_profile_id, 'cran');
         assert.equal(el('currentStamina1').value, '77'); assert.equal(el('pendingTask1').value, 'Unsaved notes');
         assert.equal(el('currentStamina2').value, '40'); assert.equal(el('pendingTask2').value, 'Remote notes');
@@ -83,7 +83,7 @@ test('six-minute saved-data refresh is silent, read-only and bound to the visibl
         await advance(360_000); assert.equal(calls.length, 0);
         assert.deepEqual([el('pendingTask1').selectionStart, el('pendingTask1').selectionEnd], [2, 5]);
         el('pendingTask1').blur(); await advance(15_000);
-        assert.equal(calls.length, 1); assert.equal(el('pendingTask1').value, 'Typed draft');
+        assert.equal(calls.length, 2); assert.equal(el('pendingTask1').value, 'Typed draft');
     });
 
     await t.test('Tasks keeps all filters, page, button focus and updated favorites without cleanup or writes', async () => {
@@ -112,10 +112,10 @@ test('six-minute saved-data refresh is silent, read-only and bound to the visibl
     await t.test('hidden tabs pause; a recent return waits and an old return reads immediately once', async () => {
         await seed(); await advance(300_000); visibility(true);
         assert.equal(timers.size, 0); visibility(false); await advance(0); assert.equal(calls.length, 0);
-        await advance(60_000); assert.equal(calls.length, 1);
-        visibility(true); await advance(420_000); assert.equal(calls.length, 1);
-        visibility(false); await advance(0); assert.equal(calls.length, 2);
-        visibility(false); await advance(0); assert.equal(calls.length, 2);
+        await advance(60_000); assert.equal(calls.length, 2);
+        visibility(true); await advance(420_000); assert.equal(calls.length, 2);
+        visibility(false); await advance(0); assert.equal(calls.length, 4);
+        visibility(false); await advance(0); assert.equal(calls.length, 4);
     });
 
     await t.test('an open modal or an active save defers querying until it is safe', async () => {
@@ -126,16 +126,16 @@ test('six-minute saved-data refresh is silent, read-only and bound to the visibl
         let release; const gate = new Promise(resolve => { release = resolve; });
         const save = withLoading('Pending save', () => gate);
         await advance(360_000); assert.equal(calls.length, 0);
-        release(); await save; await advance(15_000); assert.equal(calls.length, 1);
+        release(); await save; await advance(15_000); assert.equal(calls.length, 2);
     });
 
     await t.test('a pending silent read stays without overlay and repeated visibility events do not duplicate it', async () => {
         await seed(); let release; const gate = new Promise(resolve => { release = resolve; });
         state.beforeQuery = () => gate;
-        const pending = advance(360_000); await waitFor(() => calls.length === 1);
+        const pending = advance(360_000); await waitFor(() => calls.length === 2);
         assert.equal(el('loadingOverlay').hidden, true);
         visibility(false); await advance(0); visibility(false); await advance(0);
-        assert.equal(calls.length, 1);
+        assert.equal(calls.length, 2);
         release(); await pending; assert.equal(timers.size, 1);
     });
 
@@ -143,7 +143,7 @@ test('six-minute saved-data refresh is silent, read-only and bound to the visibl
         await seed(); let release; const gate = new Promise(resolve => { release = resolve; });
         state.beforeQuery = () => gate;
         const before = el('gameListBody').innerHTML;
-        const pending = advance(360_000); await waitFor(() => calls.length === 1);
+        const pending = advance(360_000); await waitFor(() => calls.length === 2);
         el('pendingTask1').value = 'Typed while reading'; el('pendingTask1').focus();
         state.games[0].description = 'Remote rename'; release(); await pending;
         assert.equal(el('gameListBody').innerHTML, before);
@@ -155,9 +155,9 @@ test('six-minute saved-data refresh is silent, read-only and bound to the visibl
 
     await t.test('route and profile changes cannot apply a late response or leave duplicate timers', async () => {
         await seed(); let release; const gate = new Promise(resolve => { release = resolve; });
-        state.beforeQuery = request => request.table === 'games' && calls.length === 1 ? gate : undefined;
+        state.beforeQuery = request => request.table === 'games' && calls.length === 2 ? gate : undefined;
         const before = el('gameListBody').innerHTML;
-        const pending = advance(360_000); await waitFor(() => calls.length === 1);
+        const pending = advance(360_000); await waitFor(() => calls.length === 2);
         await Router.navigateTo('/tasks'); state.games[0].description = 'Late rename';
         release(); await pending; assert.equal(el('gameListBody').innerHTML, before); assert.equal(timers.size, 1);
         await Router.navigateTo('/tasks/create'); assert.equal(timers.size, 0); calls.length = 0;
@@ -170,9 +170,9 @@ test('six-minute saved-data refresh is silent, read-only and bound to the visibl
 
     await t.test('a late manual Games read cannot cancel the refresh for the newly visible Tasks view', async () => {
         await seed(); let release; const gate = new Promise(resolve => { release = resolve; });
-        state.beforeQuery = request => request.table === 'games' && calls.length === 1 ? gate : undefined;
+        state.beforeQuery = request => request.table === 'games' && calls.length === 2 ? gate : undefined;
         const pending = games.displayAllGames({ preserveDrafts: true });
-        await waitFor(() => calls.length === 1);
+        await waitFor(() => calls.length === 2);
         await Router.navigateTo('/tasks'); assert.equal(timers.size, 1);
         release(); await pending; assert.equal(timers.size, 1);
         state.beforeQuery = null; calls.length = 0; await advance(360_000);
@@ -203,7 +203,7 @@ test('six-minute saved-data refresh is silent, read-only and bound to the visibl
             if (name === 'list_profile_games' && hold) { hold = false; calls.push({ name, payload }); await gate; return { data: stale, error: null }; }
             return trackedRpc(name, payload);
         };
-        const pending = advance(360_000); await waitFor(() => calls.length === 1);
+        const pending = advance(360_000); await waitFor(() => calls.length === 2);
         el('currentStamina1').value = '200'; el('save-game-1').click();
         await waitFor(() => el('loadingOverlay').hidden && state.writes.length === 1);
         release(); await pending; client.rpc = trackedRpc;

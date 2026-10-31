@@ -9,7 +9,7 @@ S = próximas melhorias de uso; A = alto retorno depois da base imediata; B = ne
 | Tier | Ordem | Melhoria | Por que esta posição | Complexidade / referência |
 | --- | --- | --- | --- | --- |
 | **A** | 1 | Alerta de resina alvo com contagem regressiva | Benefício pessoal claro, depois de deixar a estimativa acompanhando o tempo. Alerta dentro do site; notificações com site fechado ficam separadas. | Média. TODO 6; [levantamento](resin-alerts-plan.md). |
-| **A** | 2 | Favoritas de Tasks também em Games | Ver atividades escolhidas junto ao To-do de cada jogo, reutilizando as estrelas e os dados do perfil. Lista compacta abaixo das anotações; disposição lado a lado depende de conferência em telas largas. | Baixa/média. TODO 13.1; proposta, sem implementação. |
+| **A** | 2 | Favoritas de Tasks também em Games | Favoritas como primeira aba de cada jogo, aberta por padrão; Anotações como segunda aba. Reutiliza estrelas e dados do perfil, com altura compacta. | Baixa/média. TODO 13.1; recorte local em revisão do marco 2, sem publicação. |
 | **B** | 1 | Calendário das próximas fases de Endstate Matrix | Necessário quando a próxima fase estiver disponível; requer fonte verificada e referência absoluta, sem inventar recorrência nem pedir datas na importação. | Média/alta. TODO 9.1; [limites](expanded-task-batch.md). |
 | **B** | 2 | Ampliar catálogo da API/variantes regionais | Adicionar primeiro jogos que Cristian passar a acompanhar, com horários e metadados verificados; catálogo inteiro não é necessidade de escala. | Alta. TODO 10. |
 | **B** | 3 | Fallback inglês/chinês | Avaliar diante de lacunas reais; associação entre edições precisa ser confiável. | Alta. Parte restante do TODO 8. |
@@ -35,11 +35,11 @@ Concluído em 22/10/2026 e retirado das prioridades: Pendente / Voltar depois / 
 
 [Contrato final, persistência, horários, validação e Para testar](game-daily-state.md). Reutiliza os contratos públicos existentes, sem nova migração ou dependência. A proposta original de condicionar a conclusão ao dia da previsão e de preservar âmbar após uma resina alterada foi substituída pela orientação explícita de Cristian para esta entrega.
 
-### 6. Favoritas em Games — proposta
+### 6. Favoritas em Games — primeiro recorte em revisão
 
-Subir o To-do na área de anotações de cada jogo e mostrar abaixo uma lista compacta das atividades favoritas daquele jogo no perfil selecionado. As estrelas e a conclusão continuam pertencendo às Tasks; exibir favoritas em Games não altera o estado diário do jogo. A proposta inicial é mostrar somente pendentes, ordenadas por prazo, com até três itens e acesso a Tasks para consultar as demais; esse limite e a navegação ainda precisam de alinhamento e conferência visual.
+Recorte alinhado no marco 1 e implementado localmente em 31/10/2026. Após a avaliação visual, Cristian escolheu abas com prioridade invertida: Favoritas primeiro e aberta por padrão em todos os jogos, Anotações em segundo lugar. Até três favoritas pendentes, ordenadas por prazo e ID, incluindo futuras/vencidas retornadas; títulos em duas linhas, bullets, separadores e prazo ou “Sem prazo”. Ver em Tasks abre a lista geral e indica os excedentes. Estrelas e conclusão continuam em Tasks, independentes do estado diário de Games.
 
-A área de anotações no desktop tem largura mínima de 190 px, o que favorece empilhar os dois conteúdos. Avaliar lado a lado somente em telas largas; no celular, manter To-do e favoritas em sequência, sem rolagem horizontal ou expansão ilimitada do card. Reutilizar uma leitura pública das tarefas por perfil e agrupá-las por jogo, preservando rascunhos durante atualizações. Detalhamento no TODO 13.1. Nenhuma interface foi alterada neste levantamento.
+A área compartilhada pelas duas abas tem altura fixa, teclado acessível e preserva rascunhos; sem favoritas, a primeira aba mostra uma mensagem própria. Uma consulta pública de tarefas por carga, agrupamento local, preservação das favoritas anteriores durante a leitura e guardas de carga/perfil/rota. Prévia descartável conferida em desktop, 1151px e 360px; revisão do marco 2 ainda pendente, sem release/publicação. [Contrato e validação](favorite-tasks.md#favoritas-em-games--recorte-local-em-revisão); TODO 13.1 permanece ativo até a aceitação.
 
 ## Critérios e sequência
 

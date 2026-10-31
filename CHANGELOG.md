@@ -10,6 +10,13 @@ O projeto segue o versionamento semântico (SemVer), no formato `MAJOR.MINOR.PAT
 
 ## [Não publicado]
 
+### Adicionado
+
+- Games mostra até três tarefas favoritas pendentes por jogo/perfil, em linhas compactas com prazo e acesso a Tasks. A aba Favoritas abre primeiro, com Anotações na segunda aba e altura estável ao alternar. A preferência e a conclusão permanecem em Tasks, independentes do estado diário do jogo.
+- Leitura de favoritas uma vez por carga de Games, preservando os dados anteriores durante a consulta, rascunhos, foco e aba selecionada durante Save/refresh. Falhas parciais mantêm Games utilizável; respostas de outra carga, rota ou perfil são descartadas.
+
+**Validação do checkpoint local:** 81 testes focados aprovados durante o ajuste para abas, com os 15 de favoritas/build repetidos após o ajuste final. Prévia descartável conferida em 1440px, 1151px e 360px, sem overflow observado; Save, rascunhos e altura estável ao alternar conferidos. Sem suíte completa nesta etapa intermediária, aparelho físico, alteração no banco real ou publicação. A versão permanece 1.18.1 até o fechamento do update.
+
 ## [1.18.1] - 2026-10-28
 
 ### Melhorado

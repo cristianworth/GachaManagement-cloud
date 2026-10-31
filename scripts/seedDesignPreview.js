@@ -32,6 +32,23 @@ export async function seedDesignPreview(db) {
             const saved = (await db.query('select public.save_profile_task($1,$2::jsonb) as task', [profile, JSON.stringify(task)])).rows[0].task;
             if (index === 2) await db.query('select public.set_profile_task_favorite($1,$2,true)', [profile, saved.id]);
         }
+        if (profile === 'cran') {
+            const favorites = [
+                { description: 'Finalizar a atividade com prazo encerrado', gameIndex: 1, offset: -1 },
+                { description: 'Explorar todos os caminhos da nova região e concluir os desafios opcionais antes do próximo ciclo', gameIndex: 1, offset: 2, startsTomorrow: true },
+                { description: 'Conferir as recompensas da próxima fase', gameIndex: 1, offset: 5 },
+                { description: 'Organizar as equipes sem prazo definido', gameIndex: 1, offset: null },
+                { description: 'Explorar no meu ritmo', gameIndex: 0, offset: null },
+            ];
+            for (const favorite of favorites) {
+                const game = games[favorite.gameIndex];
+                const task = { description: favorite.description, game_id: game.id, refresh_type: 0,
+                    expiration_date: favorite.offset === null ? null : new Date(now + favorite.offset * 86400000).toISOString(),
+                    start_at: favorite.startsTomorrow ? new Date(now + 86400000).toISOString() : null };
+                const saved = (await db.query('select public.save_profile_task($1,$2::jsonb) as task', [profile, JSON.stringify(task)])).rows[0].task;
+                await db.query('select public.set_profile_task_favorite($1,$2,true)', [profile, saved.id]);
+            }
+        }
     }
     for (const source of EVENT_GAMES) {
         const game = games.find(game => game.abbreviation === source.abbreviation);

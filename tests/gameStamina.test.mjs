@@ -25,6 +25,7 @@ test('one Games refresh reads saved data and recalculates estimates without losi
     ];
     const seed = async () => {
         selectProfile('cran');
+        document.querySelector('[data-page="games"]').style.display = 'block';
         state.games = structuredClone(fixtures);
         state.writes = [];
         state.readError = null;
@@ -51,16 +52,15 @@ test('one Games refresh reads saved data and recalculates estimates without losi
 
     await t.test('one read advances every estimate using the same clock without writing', async () => {
         await seed();
-        let reads = 0;
+        const reads = [];
         state.beforeQuery = request => {
-            assert.equal(request.table, 'games');
             assert.equal(request.operation, 'select');
-            reads++;
+            reads.push(request.table);
         };
         const stored = structuredClone(state.games);
         t.mock.timers.setTime(new Date('2026-10-06T12:06:00Z').getTime());
         await refresh();
-        assert.equal(reads, 1);
+        assert.deepEqual(reads.sort(), ['games', 'tasks']);
         for (const id of [1, 2]) assert.equal(el(`estimatedStamina${id}`).textContent, 'Resina estimada: 181/240');
         assert.deepEqual(state.games, stored);
         assert.equal(state.writes.length, 0);
@@ -117,11 +117,11 @@ test('one Games refresh reads saved data and recalculates estimates without losi
         assert.equal(el('loadingOverlay').querySelector('.loading-message').textContent, 'Atualizando dados...');
         el('gameListRetry').click();
         await el('gameListRetry').onclick();
-        await waitFor(() => reads === 1);
+        await waitFor(() => reads === 2);
         el('pendingTask1').value = 'Typed while pending';
         release();
         await waitFor(() => !el('gameListRetry').disabled);
-        assert.equal(reads, 1);
+        assert.equal(reads, 2);
         assert.equal(el('pendingTask1').value, 'Typed while pending');
         assert.equal(state.writes.length, 0);
     });

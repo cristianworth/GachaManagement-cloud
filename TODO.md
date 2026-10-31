@@ -189,14 +189,14 @@ Planejamento pedido em 08/10/2026. Inventário completo, contadores fornecidos, 
 
 ### 13.1. Mostrar favoritas também em Games
 
-**Ideia registrada em 24/10/2026, sem implementação.** Reaproveitar as favoritas existentes de Tasks, sem criar outra preferência ou copiar atividades para as anotações.
+**Ideia registrada em 24/10/2026; primeiro recorte alinhado e implementado localmente em 31/10/2026, aguardando revisão do marco 2.** Reaproveita as favoritas existentes de Tasks, sem criar outra preferência ou copiar atividades para as anotações. Sem release/publicação; [contrato e validação](docs/favorite-tasks.md#favoritas-em-games--recorte-local-em-revisão).
 
-- [ ] Subir o To-do dentro da área de anotações de cada jogo e mostrar as favoritas desse jogo no perfil selecionado em uma lista compacta abaixo dele.
-- [ ] Alinhar o primeiro recorte: proposta de até três atividades favoritas pendentes, com título e prazo, ordenadas pelo vencimento, seguidas de acesso a Tasks quando houver mais itens. Não reservar um bloco vazio quando não houver favoritas.
-- [ ] Conferir o espaço no desktop e no celular antes de considerar To-do e favoritas lado a lado; manter a estrutura e o tema existentes, sem crescimento ilimitado dos cards.
+- [ ] Validar as abas implementadas em Games: Favoritas primeiro e aberta por padrão, Anotações em segundo lugar, compartilhando uma área de altura fixa. Essa escolha substitui a proposta inicial de empilhar os conteúdos.
+- [x] Alinhar o primeiro recorte: até três favoritas pendentes, título em duas linhas, prazo/“Sem prazo”, ordem por prazo e ID, incluindo futuras/vencidas retornadas. Acesso a Tasks sempre que houver favoritas, com indicação dos excedentes. Dados e ações aprovados no marco 1 em 31/10/2026; a apresentação em abas foi escolhida posteriormente por Cristian, incluindo Favoritas como padrão mesmo sem itens.
+- [ ] Aceitar o resultado visual das abas no desktop e no celular, preservando tema, rascunhos e altura ao alternar. Prévia conferida em 1440px, 1151px e 360px; validação de Cristian pendente.
 - [ ] Reutilizar a consulta pública das tarefas por perfil uma vez por carregamento, agrupar por jogo e preservar rascunhos durante a leitura silenciosa. Respeitar seleção de jogos e isolamento dos perfis.
 - **Complexidade: baixa a média.** A persistência de favoritas já existe. O primeiro recorte proposto é de consulta; ações de favoritar/concluir continuam em Tasks. Não relacionar conclusão de uma tarefa com Feito por hoje ou Save de resina.
-- **Concluído quando:** Games mostra as favoritas corretas de cada jogo/perfil, acompanha alterações feitas em Tasks e mantém To-do, edição e uso no celular confortáveis. Quantidade exibida, tratamento de títulos longos e acesso às demais atividades precisam de validação visual.
+- **Concluído quando:** Games mostra as favoritas corretas de cada jogo/perfil, acompanha alterações feitas em Tasks e mantém Anotações, edição e uso no celular confortáveis. O resultado visual das abas, títulos longos e acesso às demais atividades aguarda aceite.
 
 ## 14. Menu lateral e controle de perfil — entregue
 

@@ -41,7 +41,7 @@ class Router {
     if (notifications?.open) notifications.close();
     stopSilentRefresh();
     const gameUI = await import('../ui/gameUI.js');
-    gameUI.stopStaminaEstimateTimer();
+    gameUI.stopGameUpdates();
     const eventReview = await import('../ui/eventReviewUI.js');
     eventReview.stopEventReviewTimer();
     const path = this.getCurrentPath();

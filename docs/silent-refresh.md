@@ -16,7 +16,9 @@ Implementada em 13/10/2026 sobre a versão 1.14.0 e entregue em 1.15.0 em 18/10/
 
 `js/ui/silentRefresh.js` concentra o agendamento e o contexto da tela/perfil. Router encerra o timer ao navegar. As listas usam `displayAllGames`/`displayAllTasks` com `silent` e uma verificação `canApply` após a leitura: `true` significa aplicado, `false` falha e `null` adiamento. Estados ocupados usam as funções públicas `isLoading` e `isTaskBatchPickerBusy`.
 
-Games consulta `list_profile_games`; Tasks consulta `list_profile_tasks` e `list_profile_games`. O caminho silencioso de Tasks pula `cleanupExpiredImportedEvents`, pois essa operação escreve no banco. A carga manual/por navegação continua com o comportamento anterior. Não há migração, escrita automática, importação de calendário, dependência nova ou sincronização entre idiomas.
+Games e Tasks consultam `list_profile_tasks` e `list_profile_games`, uma vez cada por carga. No recorte de favoritas em Games de 31/10/2026, os jogos são apresentados após sua própria leitura; favoritas chegam em uma segunda etapa que altera somente sua região e conserva o snapshot anterior do mesmo perfil enquanto aguarda. Ambas as etapas respeitam `canApply`, a carga vigente e perfil/rota. Falha parcial silenciosa conserva as favoritas disponíveis sem novos avisos. O Router invalida leituras de Games ao navegar, inclusive ao sair e voltar para a mesma rota.
+
+O caminho silencioso de Tasks pula `cleanupExpiredImportedEvents`, pois essa operação escreve no banco. Sua carga manual/por navegação continua com o comportamento anterior; Games não executa essa limpeza. Não há migração, escrita automática, importação de calendário, dependência nova ou sincronização entre idiomas.
 
 A estimativa local de resina por minuto é independente dessas consultas. Este recorte não é uma assinatura realtime; mudanças de outra aba/dispositivo aparecem na próxima leitura elegível. Atualizar dados e Save continuam disponíveis.
 

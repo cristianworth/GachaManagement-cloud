@@ -12,6 +12,7 @@ test('Games uses the NTE icon and starts every typed To-do item with a bullet', 
     const games = await import('../js/ui/gameUI.js');
     const el = id => document.getElementById(id);
     const seed = async (overrides = {}) => {
+        document.querySelector('[data-page="games"]').style.display = 'block';
         state.games = [{ id: 1, description: 'Neverness to Everness', abbreviation: 'NTE',
             img: 'img/default-icon.png', current_stamina: 80, cap_stamina: 320, stamina_per_minute: 6,
             pending_tasks: '', ...overrides }];

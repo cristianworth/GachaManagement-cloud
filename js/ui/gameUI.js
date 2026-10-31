@@ -1,7 +1,9 @@
 // js\ui\gameUI.js
 import { Game, allGames } from '../data/Game.js';
 import { fetchGameById, fetchAllGames, updateGame, addGame, deleteGameById, saveGameDailyState } from '../database/gameDB.js';
-import { calculateMaxStaminaDate, estimateCurrentStamina, formatDateToDayHour } from '../utils/dateUtils.js';
+import { calculateMaxStaminaDate, estimateCurrentStamina, formatDateToDayHour, formatDateForDisplay } from '../utils/dateUtils.js';
+import { fetchAllTasks } from '../database/taskDB.js';
+import { filterTasks, sortTasks } from '../utils/taskFilters.js';
 import { resetGameForm, setGameFormMessage } from './formHandler.js';
 import { getRandomColor } from '../utils/colorUtils.js';
 import Router from '../utils/router.js';
@@ -18,6 +20,17 @@ let refreshingGames = false;
 let renderedGames = [];
 let renderedGamesProfile = null;
 let staminaEstimateTimer = null;
+let gameLoadVersion = 0;
+let manualGameLoad = null;
+let gameFavorites = new Map();
+let gameFavoritesContext = null;
+let gameFavoritesStatus = 'loading';
+
+export function stopGameUpdates() {
+    // A route change also invalidates reads that could finish after returning to Games.
+    gameLoadVersion++;
+    stopStaminaEstimateTimer();
+}
 
 export function stopStaminaEstimateTimer() {
     if (staminaEstimateTimer !== null) window.clearInterval(staminaEstimateTimer);
@@ -89,17 +102,35 @@ async function handleRetryGames() {
 }
 
 export async function displayAllGames({ successMessage = '', preserveDrafts = false, silent = false, canApply = () => true } = {}) {
+    const version = ++gameLoadVersion;
+    const pageDocument = document;
+    const profileId = getProfileId();
+    if (gameFavoritesContext?.profileId !== profileId || gameFavoritesContext.document !== document) {
+        gameFavorites = new Map();
+        gameFavoritesContext = { profileId, document };
+        gameFavoritesStatus = 'loading';
+        for (const row of document.querySelectorAll('#gameListBody tr')) renderGameFavorites(row);
+        setFeedback('gameFavoritesMessage');
+    }
+    if (!silent) manualGameLoad = version;
+    const isCurrent = () => version === gameLoadVersion && document === pageDocument
+        && profileId === getSelectedProfileId()
+        && document.querySelector('[data-page="games"]').style.display !== 'none';
+    // Handle rejection immediately, even if the games request fails or becomes obsolete first.
+    const favoritesRead = fetchAllTasks().then(tasks => ({ tasks }), error => ({ error }));
     const load = async () => {
         const retry = document.getElementById('gameListRetry');
         if (retry && !silent) {
             retry.hidden = true;
             retry.onclick = handleRetryGames;
         }
-        if (!silent) setFeedback('gameListMessage');
+        if (!silent) {
+            setFeedback('gameListMessage');
+            setFeedback('gameFavoritesMessage');
+        }
         try {
-            const profileId = getProfileId();
             const games = await fetchAllGames();
-            if (profileId !== getSelectedProfileId()) return false;
+            if (!isCurrent()) return false;
             if (!canApply()) return null;
             // Read drafts after the request so edits made while it was pending also survive.
             const drafts = preserveDrafts ? collectGameDrafts() : new Map();
@@ -108,17 +139,24 @@ export async function displayAllGames({ successMessage = '', preserveDrafts = fa
                 if (!silent) setFeedback('gameListMessage', 'Um jogo com alterações não salvas saiu da seleção. A lista foi mantida para preservar seus rascunhos. Copie o que precisar antes de recarregar a página.', 'error');
                 return false;
             }
-            const focused = silent ? document.activeElement : null;
-            renderGameList(games, drafts);
-            if (focused?.id) (document.getElementById(focused.id) ?? document.getElementById('selectGamesBtn'))?.focus();
-            startSilentRefresh('games', canApply => displayAllGames({ preserveDrafts: true, silent: true, canApply }), () => refreshingGames);
+            const focused = silent || preserveDrafts ? document.activeElement : null;
+            const selection = typeof focused?.selectionStart === 'number'
+                ? [focused.selectionStart, focused.selectionEnd, focused.selectionDirection] : null;
+            const tabs = preserveDrafts && renderedGamesProfile === profileId ? new Map([...document.querySelectorAll('#gameListBody tr')]
+                .map(row => [row.dataset.gameId, row.dataset.notesTab])) : new Map();
+            renderGameList(games, drafts, tabs);
+            if (focused?.id) {
+                const replacement = document.getElementById(focused.id) ?? document.getElementById('selectGamesBtn');
+                replacement?.focus({ preventScroll: true });
+                if (selection && replacement === document.getElementById(focused.id)) replacement.setSelectionRange(...selection);
+            }
             const message = successMessage || (games.length ? '' : 'Nenhum jogo selecionado. Use Selecionar jogos para começar.');
             if (!silent) setFeedback('gameListMessage', drafts.size ? `${message} Alterações não salvas foram mantidas. As estimativas usam os dados salvos.` : message);
             await setNotificationGames(games, profileId);
             return true;
         } catch (error) {
             console.error('Failed to load game list:', error);
-            if (silent) return false;
+            if (silent || !isCurrent()) return false;
             setFeedback('gameListMessage', preserveDrafts
                 ? 'Não foi possível atualizar os dados. A lista e seus rascunhos foram mantidos. Use Tentar novamente.' : successMessage
                 ? `${successMessage} Porém, não foi possível atualizar a lista. Use Tentar novamente para recarregar os dados.`
@@ -127,7 +165,42 @@ export async function displayAllGames({ successMessage = '', preserveDrafts = fa
             return false;
         }
     };
-    return silent ? load() : withLoading(preserveDrafts ? 'Atualizando dados...' : 'Carregando jogos...', load);
+    try {
+        const result = silent ? await load() : await withLoading(preserveDrafts ? 'Atualizando dados...' : 'Carregando jogos...', load);
+        if (result !== true) return result;
+        // Games is usable now. Only the favorites region changes when its read finishes.
+        const { tasks, error } = await favoritesRead;
+        if (!isCurrent()) return false;
+        if (!canApply()) return null;
+        if (!error) {
+            gameFavoritesStatus = 'ready';
+            const selectedGames = new Set(renderedGames.map(game => String(game.id)));
+            gameFavorites = new Map();
+            for (const task of sortTasks(filterTasks(tasks, { hideCompleted: true }))) {
+                const key = String(task.gameId);
+                if (!task.isFavorite || !selectedGames.has(key)) continue;
+                if (!gameFavorites.has(key)) gameFavorites.set(key, []);
+                gameFavorites.get(key).push(task);
+            }
+            for (const row of document.querySelectorAll('#gameListBody tr')) renderGameFavorites(row);
+        } else {
+            if (gameFavoritesStatus !== 'ready') {
+                gameFavoritesStatus = 'error';
+                for (const row of document.querySelectorAll('#gameListBody tr')) renderGameFavorites(row);
+            }
+            if (!silent) {
+                setFeedback('gameFavoritesMessage', gameFavorites.size
+                    ? 'Não foi possível atualizar as favoritas. As últimas disponíveis foram mantidas. Use Tentar novamente.'
+                    : 'As favoritas estão indisponíveis. Você pode continuar usando Games. Use Tentar novamente.', 'error');
+                document.getElementById('gameListRetry').hidden = false;
+            }
+        }
+        startSilentRefresh('games', canApply => displayAllGames({ preserveDrafts: true, silent: true, canApply }),
+            () => refreshingGames || manualGameLoad !== null);
+        return !error;
+    } finally {
+        if (manualGameLoad === version) manualGameLoad = null;
+    }
 }
 
 function collectGameDrafts() {
@@ -135,7 +208,7 @@ function collectGameDrafts() {
     return new Map([...fields].filter(field => field.value !== field.defaultValue).map(field => [field.id, field.value]));
 }
 
-function renderGameList(games, drafts = new Map()) {
+function renderGameList(games, drafts = new Map(), tabs = new Map()) {
     const now = new Date();
     renderedGames = sortGamesByDailyState(games, now);
     renderedGamesProfile = getSelectedProfileId();
@@ -143,6 +216,7 @@ function renderGameList(games, drafts = new Map()) {
     gameListBody.innerHTML = ''; // clear data
     renderedGames.forEach(game => {
         const row = createGameRow(game, now);
+        selectGameNotesTab(row, tabs.get(String(game.id)) ?? 'favorites');
         gameListBody.appendChild(row);
         addGameEventListeners(game);
     });
@@ -163,14 +237,28 @@ function createGameRow(game, now) {
                 <select id="daily-state-${game.id}"></select>
             </div>
         </td>
-        <td>
-            <textarea
+        <td class="game-notes-cell">
+            <div class="game-notes-header">
+                <div class="game-notes-tabs" role="tablist">
+                    <button type="button" role="tab" id="game-favorites-tab-${game.id}" aria-controls="game-favorites-panel-${game.id}" aria-selected="true">Favoritas</button>
+                    <button type="button" role="tab" id="game-notes-tab-${game.id}" aria-controls="game-notes-panel-${game.id}" aria-selected="false" tabindex="-1">Anotações</button>
+                </div>
+                <a id="game-favorites-tasks-${game.id}" class="game-favorites-link" hidden>Ver em Tasks</a>
+            </div>
+            <div class="game-notes-content">
+                <div id="game-favorites-panel-${game.id}" class="game-favorites-panel" role="tabpanel" aria-labelledby="game-favorites-tab-${game.id}" tabindex="0">
+                    <p class="game-favorites-empty"></p>
+                </div>
+                <div id="game-notes-panel-${game.id}" role="tabpanel" aria-labelledby="game-notes-tab-${game.id}" hidden>
+                    <textarea
                 id="pendingTask${game.id}"
                 class="pending-task-editor"
                 rows="4"
                 spellcheck="true"
                 placeholder="• Exemplo de tarefa&#10;• Outra tarefa"
-            ></textarea>
+                    ></textarea>
+                </div>
+            </div>
         </td>
         <td>
             <div class="game-stamina-controls">
@@ -205,12 +293,94 @@ function createGameRow(game, now) {
         option.textContent = label;
         dailyState.append(option);
     }
-    row.querySelector('.pending-task-editor').setAttribute('aria-label', `Tarefas pendentes de ${game.description}`);
+    row.querySelector('.pending-task-editor').setAttribute('aria-label', `Anotações de ${game.description}`);
     row.querySelector('.pending-task-editor').defaultValue = game.pendingTasks || '';
+    row.querySelector('[role="tablist"]').setAttribute('aria-label', `Atividades de ${game.description}`);
+    const tabs = [...row.querySelectorAll('[role="tab"]')];
+    tabs.forEach((tab, index) => {
+        tab.addEventListener('click', () => selectGameNotesTab(row, index === 0 ? 'favorites' : 'notes'));
+        tab.addEventListener('keydown', event => {
+            if (!['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key) || tab.disabled) return;
+            event.preventDefault();
+            const next = event.key === 'Home' ? 0 : event.key === 'End' ? 1 : 1 - index;
+            selectGameNotesTab(row, next === 0 ? 'favorites' : 'notes');
+            tabs[next].focus();
+        });
+    });
+    const link = row.querySelector('.game-favorites-link');
+    link.href = `${Router.BASE_PATH}/tasks`;
+    link.addEventListener('click', event => {
+        if (event.button !== 0 || event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return;
+        event.preventDefault();
+        Router.navigateTo('/tasks');
+    });
     row.querySelector('.button-delete').textContent = 'Ocultar jogo';
+    renderGameFavorites(row);
     updateStaminaEstimate(row, game, now);
     updateGameDailyControl(row, game, now);
     return row;
+}
+
+function selectGameNotesTab(row, name) {
+    row.dataset.notesTab = name;
+    const favorites = name === 'favorites';
+    row.querySelectorAll('[role="tab"]').forEach((tab, index) => {
+        const selected = index === (favorites ? 0 : 1);
+        tab.setAttribute('aria-selected', String(selected));
+        tab.tabIndex = selected ? 0 : -1;
+    });
+    row.querySelector('.game-favorites-panel').hidden = !favorites;
+    row.querySelector(`#game-notes-panel-${row.dataset.gameId}`).hidden = favorites;
+    row.querySelector('.game-favorites-link').hidden = !gameFavorites.get(row.dataset.gameId)?.length;
+}
+
+function renderGameFavorites(row) {
+    const tasks = gameFavorites.get(row.dataset.gameId) ?? [];
+    const panel = row.querySelector('.game-favorites-panel');
+    const empty = panel.querySelector('.game-favorites-empty');
+    empty.hidden = tasks.length > 0;
+    empty.textContent = gameFavoritesStatus === 'loading' ? 'Carregando favoritas…'
+        : gameFavoritesStatus === 'error' ? 'Favoritas indisponíveis.' : 'Nenhuma favorita pendente.';
+    row.querySelector('[role="tab"]').textContent = gameFavoritesStatus === 'ready' ? `Favoritas (${tasks.length})` : 'Favoritas';
+    const link = row.querySelector('.game-favorites-link');
+    link.hidden = !tasks.length;
+    link.textContent = tasks.length > 3 ? `Ver em Tasks (+${tasks.length - 3})` : 'Ver em Tasks';
+    let block = row.querySelector('.game-favorites');
+    if (!tasks.length) {
+        if (block?.contains(document.activeElement) || document.activeElement === link) row.querySelector('[role="tab"]').focus({ preventScroll: true });
+        block?.remove();
+        return;
+    }
+    if (!block) {
+        block = document.createElement('div');
+        block.className = 'game-favorites';
+        const list = document.createElement('ul');
+        list.className = 'game-favorites-list';
+        block.append(list);
+        panel.append(block);
+    }
+    const items = tasks.slice(0, 3).map(task => {
+        const item = document.createElement('li');
+        const title = document.createElement('span');
+        title.className = 'game-favorite-title';
+        title.textContent = task.description;
+        title.title = task.description;
+        const deadline = document.createElement('small');
+        deadline.className = 'game-favorite-deadline';
+        const date = task.expirationDate;
+        if (date && Number.isFinite(date.getTime())) {
+            deadline.title = formatDateForDisplay(date);
+            const day = document.createElement('span');
+            day.textContent = date.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' });
+            const time = document.createElement('span');
+            time.textContent = date.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+            deadline.append(day, time);
+            deadline.setAttribute('aria-label', deadline.title);
+        } else deadline.textContent = 'Sem prazo';
+        item.append(title, deadline);
+        return item;
+    });
+    block.querySelector('ul').replaceChildren(...items);
 }
 
 function updateStaminaEstimate(row, game, now = new Date()) {
@@ -367,6 +537,7 @@ async function runGameAction(gameId, { loadingMessage, successMessage, errorMess
     buttons.forEach(button => { button.disabled = true; });
     setFeedback('gameListMessage');
     try {
+        let saved = false;
         await withLoading(loadingMessage, async () => {
             try {
                 await save();
@@ -375,8 +546,9 @@ async function runGameAction(gameId, { loadingMessage, successMessage, errorMess
                 if (isCurrent()) setFeedback('gameListMessage', errorMessage, 'error');
                 return;
             }
-            if (isCurrent()) await displayAllGames({ successMessage, preserveDrafts:true });
+            saved = true;
         });
+        if (saved && isCurrent()) await displayAllGames({ successMessage, preserveDrafts:true });
     } finally {
         buttons.forEach((button, index) => { button.disabled = disabledStates[index]; });
     }

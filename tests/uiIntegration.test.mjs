@@ -111,6 +111,7 @@ test('Real forms and task lists preserve user data and integration controls', as
     });
 
     await t.test('Game editing saves image while preserving stamina, notes and color', async () => {
+        document.querySelector('[data-page="games"]').style.display = 'block';
         await games.displayAllGames();
         element('edit-game-4').click();
         await waitFor(() => element('gameDescription').value === 'Zenless Zone Zero');
