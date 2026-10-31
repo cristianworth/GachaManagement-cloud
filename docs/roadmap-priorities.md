@@ -1,6 +1,6 @@
 # Roadmap — prioridades por tier
 
-Atualizado em 25/10/2026 conforme o pedido de Cristian. O objetivo é facilitar seu uso pessoal: um usuário frequente, poucos jogos e dados de baixa criticidade. Priorizar benefícios visíveis com ajustes pequenos na estrutura JavaScript/HTML/CSS. Esta lista registra trabalho futuro; sua ordem não autoriza implementar tudo.
+Atualizado em 31/10/2026 no fechamento da versão 1.19.0. O objetivo é facilitar seu uso pessoal: um usuário frequente, poucos jogos e dados de baixa criticidade. Priorizar benefícios visíveis com ajustes pequenos na estrutura JavaScript/HTML/CSS. Esta lista registra trabalho futuro; sua ordem não autoriza implementar tudo.
 
 Saíram da tierlist de implementação: perfis/seleção de jogos, sincronização diária, identidade por edição/limpeza de eventos, estimativa manual de resina, favoritas e lote de 16 definições/capas com recriação explícita. As migrações até 1.12.0 foram aplicadas por Cristian no Supabase em 09/10/2026; catálogos/leitura do lote responderam pela API. SweetAlert2 fechou em 1.12.1; menu lateral e tema Sangonomiya foram entregues até 1.13.2. Em 12/10/2026 os dois recortes S foram entregues em 1.14.0: paginação visual 20/10 e estimativa local por minuto. [Comportamento e validação](task-pagination-stamina.md); commit e push autorizados por Cristian. Histórico em [CHANGELOG.md](../CHANGELOG.md).
 
@@ -9,7 +9,6 @@ S = próximas melhorias de uso; A = alto retorno depois da base imediata; B = ne
 | Tier | Ordem | Melhoria | Por que esta posição | Complexidade / referência |
 | --- | --- | --- | --- | --- |
 | **A** | 1 | Alerta de resina alvo com contagem regressiva | Benefício pessoal claro, depois de deixar a estimativa acompanhando o tempo. Alerta dentro do site; notificações com site fechado ficam separadas. | Média. TODO 6; [levantamento](resin-alerts-plan.md). |
-| **A** | 2 | Favoritas de Tasks também em Games | Favoritas como primeira aba de cada jogo, aberta por padrão; Anotações como segunda aba. Reutiliza estrelas e dados do perfil, com altura compacta. | Baixa/média. TODO 13.1; recorte local em revisão do marco 2, sem publicação. |
 | **B** | 1 | Calendário das próximas fases de Endstate Matrix | Necessário quando a próxima fase estiver disponível; requer fonte verificada e referência absoluta, sem inventar recorrência nem pedir datas na importação. | Média/alta. TODO 9.1; [limites](expanded-task-batch.md). |
 | **B** | 2 | Ampliar catálogo da API/variantes regionais | Adicionar primeiro jogos que Cristian passar a acompanhar, com horários e metadados verificados; catálogo inteiro não é necessidade de escala. | Alta. TODO 10. |
 | **B** | 3 | Fallback inglês/chinês | Avaliar diante de lacunas reais; associação entre edições precisa ser confiável. | Alta. Parte restante do TODO 8. |
@@ -35,11 +34,11 @@ Concluído em 22/10/2026 e retirado das prioridades: Pendente / Voltar depois / 
 
 [Contrato final, persistência, horários, validação e Para testar](game-daily-state.md). Reutiliza os contratos públicos existentes, sem nova migração ou dependência. A proposta original de condicionar a conclusão ao dia da previsão e de preservar âmbar após uma resina alterada foi substituída pela orientação explícita de Cristian para esta entrega.
 
-### 6. Favoritas em Games — primeiro recorte em revisão
+### 6. Favoritas em Games — entregue em 1.19.0
 
-Recorte alinhado no marco 1 e implementado localmente em 31/10/2026. Após a avaliação visual, Cristian escolheu abas com prioridade invertida: Favoritas primeiro e aberta por padrão em todos os jogos, Anotações em segundo lugar. Até três favoritas pendentes, ordenadas por prazo e ID, incluindo futuras/vencidas retornadas; títulos em duas linhas, bullets, separadores e prazo ou “Sem prazo”. Ver em Tasks abre a lista geral e indica os excedentes. Estrelas e conclusão continuam em Tasks, independentes do estado diário de Games.
+Concluído em 31/10/2026 e retirado das prioridades ativas. Favoritas na primeira aba e Anotações na segunda; Anotações abre por padrão com zero favoritas pendentes confirmado. Até três favoritas pendentes, ordenadas por prazo e ID, incluindo futuras/vencidas retornadas; títulos em duas linhas, bullets, separadores e prazo ou “Sem prazo”. Ver em Tasks indica excedentes e abre a lista filtrada pelo jogo, na primeira página. Estrelas e conclusão continuam em Tasks, independentes do estado diário de Games.
 
-A área compartilhada pelas duas abas tem altura fixa, teclado acessível e preserva rascunhos; sem favoritas, a primeira aba mostra uma mensagem própria. Uma consulta pública de tarefas por carga, agrupamento local, preservação das favoritas anteriores durante a leitura e guardas de carga/perfil/rota. Prévia descartável conferida em desktop, 1151px e 360px; revisão do marco 2 ainda pendente, sem release/publicação. [Contrato e validação](favorite-tasks.md#favoritas-em-games--recorte-local-em-revisão); TODO 13.1 permanece ativo até a aceitação.
+A área compartilhada pelas abas tem altura fixa, teclado acessível e preserva rascunhos. Uma consulta pública de tarefas por carga, agrupamento local, preservação das favoritas anteriores durante a leitura e guardas de carga/perfil/rota. Prévia descartável conferida em desktop, 1151px e 360px. Sem nova persistência, migração ou relação entre conclusão de Tasks e estado diário. [Contrato e validação](favorite-tasks.md#favoritas-em-games--1190); [changelog](../CHANGELOG.md#1190---2026-10-31).
 
 ## Critérios e sequência
 

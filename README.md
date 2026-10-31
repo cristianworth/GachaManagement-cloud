@@ -15,6 +15,7 @@ Captura da prévia descartável, com o tema Sangonomiya. Os dados dessa prévia 
 - Estimar a stamina atual e quando cada jogo atingirá o limite, com taxas próprias de regeneração.
 - Marcar a rotina como pendente, voltar depois ou feita por hoje, respeitando o reset diário.
 - Organizar tarefas, favoritas e recorrências; filtrar e paginar a lista sem perder o contexto.
+- Ver as favoritas de cada jogo em Games, alternar para Anotações e abrir Tasks já filtrado pelo jogo.
 - Acompanhar eventos importados, revisar prazos e preservar ajustes manuais durante sincronizações.
 - Consultar o calendário de banners e notificações por fase, com fontes e horários registrados.
 - Separar progresso e preferências por perfil e acessar os dados salvos em navegador ou celular.
@@ -47,7 +48,7 @@ Abra **http://127.0.0.1:5502**. A prévia reutiliza o frontend e SQL reais, com 
 
 ## Estado e limites
 
-Versão **1.18.1**. Aplicação pessoal em evolução, com perfis públicos e integração de eventos dos cinco jogos ativos. A demonstração isolada para visitantes ainda precisa ser preparada.
+Versão **1.19.0**. Aplicação pessoal em evolução, com perfis públicos e integração de eventos dos cinco jogos ativos. A demonstração isolada para visitantes ainda precisa ser preparada.
 
 O produto é guiado por Cristian, com desenvolvimento assistido por IA. As decisões de calendário, região e comportamento são registradas nos guias e no histórico de entregas. [Changelog](CHANGELOG.md) e [próximas prioridades](docs/roadmap-priorities.md).
 

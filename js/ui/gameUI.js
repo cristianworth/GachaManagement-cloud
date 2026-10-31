@@ -25,6 +25,7 @@ let manualGameLoad = null;
 let gameFavorites = new Map();
 let gameFavoritesContext = null;
 let gameFavoritesStatus = 'loading';
+const manualGameTabs = new WeakSet();
 
 export function stopGameUpdates() {
     // A route change also invalidates reads that could finish after returning to Games.
@@ -216,7 +217,8 @@ function renderGameList(games, drafts = new Map(), tabs = new Map()) {
     gameListBody.innerHTML = ''; // clear data
     renderedGames.forEach(game => {
         const row = createGameRow(game, now);
-        selectGameNotesTab(row, tabs.get(String(game.id)) ?? 'favorites');
+        const previousTab = tabs.get(String(game.id));
+        if (previousTab) selectGameNotesTab(row, previousTab, { manual: true });
         gameListBody.appendChild(row);
         addGameEventListeners(game);
     });
@@ -298,21 +300,22 @@ function createGameRow(game, now) {
     row.querySelector('[role="tablist"]').setAttribute('aria-label', `Atividades de ${game.description}`);
     const tabs = [...row.querySelectorAll('[role="tab"]')];
     tabs.forEach((tab, index) => {
-        tab.addEventListener('click', () => selectGameNotesTab(row, index === 0 ? 'favorites' : 'notes'));
+        tab.addEventListener('click', () => selectGameNotesTab(row, index === 0 ? 'favorites' : 'notes', { manual: true }));
         tab.addEventListener('keydown', event => {
             if (!['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key) || tab.disabled) return;
             event.preventDefault();
             const next = event.key === 'Home' ? 0 : event.key === 'End' ? 1 : 1 - index;
-            selectGameNotesTab(row, next === 0 ? 'favorites' : 'notes');
+            selectGameNotesTab(row, next === 0 ? 'favorites' : 'notes', { manual: true });
             tabs[next].focus();
         });
     });
     const link = row.querySelector('.game-favorites-link');
-    link.href = `${Router.BASE_PATH}/tasks`;
+    const tasksPath = `/tasks?game=${encodeURIComponent(game.id)}`;
+    link.href = `${Router.BASE_PATH}${tasksPath}`;
     link.addEventListener('click', event => {
         if (event.button !== 0 || event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return;
         event.preventDefault();
-        Router.navigateTo('/tasks');
+        Router.navigateTo(tasksPath);
     });
     row.querySelector('.button-delete').textContent = 'Ocultar jogo';
     renderGameFavorites(row);
@@ -321,7 +324,8 @@ function createGameRow(game, now) {
     return row;
 }
 
-function selectGameNotesTab(row, name) {
+function selectGameNotesTab(row, name, { manual = false } = {}) {
+    if (manual) manualGameTabs.add(row);
     row.dataset.notesTab = name;
     const favorites = name === 'favorites';
     row.querySelectorAll('[role="tab"]').forEach((tab, index) => {
@@ -345,6 +349,9 @@ function renderGameFavorites(row) {
     const link = row.querySelector('.game-favorites-link');
     link.hidden = !tasks.length;
     link.textContent = tasks.length > 3 ? `Ver em Tasks (+${tasks.length - 3})` : 'Ver em Tasks';
+    if (!manualGameTabs.has(row)) {
+        selectGameNotesTab(row, gameFavoritesStatus === 'ready' && !tasks.length ? 'notes' : 'favorites');
+    }
     let block = row.querySelector('.game-favorites');
     if (!tasks.length) {
         if (block?.contains(document.activeElement) || document.activeElement === link) row.querySelector('[role="tab"]').focus({ preventScroll: true });
@@ -448,6 +455,11 @@ export function addGameEventListeners(game) {
         deleteGame.addEventListener("click", () => handleDelete(game.id))
 
     if (pendingTaskEditor) {
+        pendingTaskEditor.addEventListener('focus', () => {
+            if (pendingTaskEditor.closest('tr').dataset.notesTab === 'notes') {
+                manualGameTabs.add(pendingTaskEditor.closest('tr'));
+            }
+        });
         pendingTaskEditor.addEventListener('keydown', handleBulletPoint);
         pendingTaskEditor.addEventListener('input', handleTodoInput);
         pendingTaskEditor.addEventListener('compositionend', handleTodoInput);

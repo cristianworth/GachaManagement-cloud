@@ -187,16 +187,16 @@ Planejamento pedido em 08/10/2026. Inventário completo, contadores fornecidos, 
 - **Complexidade: baixa a média.** Reaproveita os contratos pessoais, mas exige persistência no banco e mudança na ordenação e na ação da lista.
 - **Concluído quando:** a estrela persiste apenas no perfil escolhido, as favoritas visíveis ficam no topo e as demais regras da lista continuam funcionando.
 
-### 13.1. Mostrar favoritas também em Games
+### 13.1. Mostrar favoritas também em Games — entregue em 1.19.0
 
-**Ideia registrada em 24/10/2026; primeiro recorte alinhado e implementado localmente em 31/10/2026, aguardando revisão do marco 2.** Reaproveita as favoritas existentes de Tasks, sem criar outra preferência ou copiar atividades para as anotações. Sem release/publicação; [contrato e validação](docs/favorite-tasks.md#favoritas-em-games--recorte-local-em-revisão).
+**Concluído em 31/10/2026 na versão 1.19.0.** Reaproveita as favoritas existentes de Tasks, sem criar outra preferência ou copiar atividades para as anotações. [Contrato e validação](docs/favorite-tasks.md#favoritas-em-games--1190); [changelog](CHANGELOG.md#1190---2026-10-31).
 
-- [ ] Validar as abas implementadas em Games: Favoritas primeiro e aberta por padrão, Anotações em segundo lugar, compartilhando uma área de altura fixa. Essa escolha substitui a proposta inicial de empilhar os conteúdos.
-- [x] Alinhar o primeiro recorte: até três favoritas pendentes, título em duas linhas, prazo/“Sem prazo”, ordem por prazo e ID, incluindo futuras/vencidas retornadas. Acesso a Tasks sempre que houver favoritas, com indicação dos excedentes. Dados e ações aprovados no marco 1 em 31/10/2026; a apresentação em abas foi escolhida posteriormente por Cristian, incluindo Favoritas como padrão mesmo sem itens.
-- [ ] Aceitar o resultado visual das abas no desktop e no celular, preservando tema, rascunhos e altura ao alternar. Prévia conferida em 1440px, 1151px e 360px; validação de Cristian pendente.
-- [ ] Reutilizar a consulta pública das tarefas por perfil uma vez por carregamento, agrupar por jogo e preservar rascunhos durante a leitura silenciosa. Respeitar seleção de jogos e isolamento dos perfis.
-- **Complexidade: baixa a média.** A persistência de favoritas já existe. O primeiro recorte proposto é de consulta; ações de favoritar/concluir continuam em Tasks. Não relacionar conclusão de uma tarefa com Feito por hoje ou Save de resina.
-- **Concluído quando:** Games mostra as favoritas corretas de cada jogo/perfil, acompanha alterações feitas em Tasks e mantém Anotações, edição e uso no celular confortáveis. O resultado visual das abas, títulos longos e acesso às demais atividades aguarda aceite.
+- [x] Abas em Games: Favoritas primeiro, Anotações em segundo lugar e selecionada por padrão quando há zero favoritas pendentes confirmado; área de altura fixa. Ver em Tasks abre o filtro do jogo clicado. Essa escolha substitui a proposta inicial de empilhar os conteúdos.
+- [x] Alinhar o primeiro recorte: até três favoritas pendentes, título em duas linhas, prazo/“Sem prazo”, ordem por prazo e ID, incluindo futuras/vencidas retornadas. Dados e ações aprovados no marco 1 em 31/10/2026; a apresentação em abas foi escolhida posteriormente por Cristian. Os ajustes mais recentes incluem Anotações como padrão sem favoritas e acesso a Tasks já filtrado pelo jogo.
+- [x] Ajustar o visual conforme a alternativa C escolhida por Cristian, preservando tema, rascunhos e altura ao alternar. Prévia conferida em 1440px, 1151px e 360px.
+- [x] Reutilizar a consulta pública das tarefas por perfil uma vez por carregamento, agrupar por jogo e preservar rascunhos durante a leitura silenciosa. Respeitar seleção de jogos e isolamento dos perfis.
+- **Complexidade: baixa a média.** A persistência de favoritas já existe. A listagem é de consulta; ações de favoritar/concluir continuam em Tasks, sem relação com Feito por hoje ou Save de resina.
+- **Resultado:** favoritas por jogo/perfil em abas compactas, acompanhando alterações de Tasks e preservando Anotações. Concluído e retirado das prioridades ativas.
 
 ## 14. Menu lateral e controle de perfil — entregue
 

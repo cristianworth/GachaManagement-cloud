@@ -23,7 +23,7 @@ class Router {
     // Restore a route redirected by static hosting when a page is opened directly.
     const redirectedPath = window.location.hash.slice(1);
     if (this.routes[redirectedPath]) {
-      history.replaceState({}, '', `${this.BASE_PATH}${redirectedPath}`);
+      history.replaceState({}, '', `${this.BASE_PATH}${redirectedPath}${window.location.search || ''}`);
     }
     NavigationService.init();
     window.addEventListener('popstate', () => this.route());
@@ -66,7 +66,8 @@ class Router {
         await gameUI.displayAllGames(options);
         break;
       case 'taskList':
-        await import('../ui/taskUI.js').then(module => module.displayAllTasks(options));
+        await import('../ui/taskUI.js').then(module => module.displayAllTasks({ ...options,
+          gameId: new URLSearchParams(window.location.search).get('game') ?? undefined }));
         await eventReview.displayEventReviewCount();
         break;
       case 'eventGames':

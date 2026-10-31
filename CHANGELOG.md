@@ -10,12 +10,19 @@ O projeto segue o versionamento semântico (SemVer), no formato `MAJOR.MINOR.PAT
 
 ## [Não publicado]
 
+## [1.19.0] - 2026-10-31
+
 ### Adicionado
 
-- Games mostra até três tarefas favoritas pendentes por jogo/perfil, em linhas compactas com prazo e acesso a Tasks. A aba Favoritas abre primeiro, com Anotações na segunda aba e altura estável ao alternar. A preferência e a conclusão permanecem em Tasks, independentes do estado diário do jogo.
+- Games mostra até três tarefas favoritas pendentes por jogo/perfil, em linhas compactas com prazo e acesso a Tasks. Favoritas fica na primeira aba, com Anotações na segunda e altura estável ao alternar. A preferência e a conclusão permanecem em Tasks, independentes do estado diário do jogo.
 - Leitura de favoritas uma vez por carga de Games, preservando os dados anteriores durante a consulta, rascunhos, foco e aba selecionada durante Save/refresh. Falhas parciais mantêm Games utilizável; respostas de outra carga, rota ou perfil são descartadas.
 
-**Validação do checkpoint local:** 81 testes focados aprovados durante o ajuste para abas, com os 15 de favoritas/build repetidos após o ajuste final. Prévia descartável conferida em 1440px, 1151px e 360px, sem overflow observado; Save, rascunhos e altura estável ao alternar conferidos. Sem suíte completa nesta etapa intermediária, aparelho físico, alteração no banco real ou publicação. A versão permanece 1.18.1 até o fechamento do update.
+### Melhorado
+
+- Jogos sem favoritas pendentes abrem Anotações por padrão após uma leitura confirmada. Carga pendente/falha não é interpretada como zero, e escolhas manuais ou rascunhos em edição são preservados.
+- Ver em Tasks abre a lista já filtrada pelo jogo clicado, na primeira página. O parâmetro de jogo permanece ao recarregar ou abrir o link em outra aba, incluindo o redirecionamento do GitHub Pages; filtros adicionais continuam disponíveis.
+
+**Validação:** 81 testes focados aprovados durante o ajuste para abas e 63 focados nos ajustes finais. No fechamento MINOR, `npm test` passou **689 testes** (69 Jest + 620 Node), sem falhas; o validador aprovou cinco jogos/seis fases de banners. Cobertos consulta única, falha parcial, respostas atrasadas, perfil/rota, teclado, rascunhos, padrão com zero favoritas, filtro por jogo e redirecionamento do Pages. Prévia descartável conferida em 1440px, 1151px e 360px: altura estável, Save/persistência, card verde, aba automática por jogo e recarga do filtro; sem erros de console ou overflow horizontal observado. Sem aparelho físico, nova migração ou alteração no banco real.
 
 ## [1.18.1] - 2026-10-28
 

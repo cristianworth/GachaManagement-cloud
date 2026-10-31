@@ -1,5 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import { readFile } from 'node:fs/promises';
 import { createDomHarness, waitFor } from './helpers/domHarness.mjs';
 
 test('Games reads profile favorites without changing notes or the daily workflow', async t => {
@@ -39,6 +40,7 @@ test('Games reads profile favorites without changing notes or the daily workflow
         history.replaceState({}, '', '/');
         for (const page of document.querySelectorAll('[data-page]')) page.style.display = page.dataset.page === 'games' ? 'block' : 'none';
         state.games = structuredClone(fixtures); state.tasks = initialTasks;
+        el('taskGameFilter').value = '';
         state.writes = []; state.rpcCalls = []; state.readError = null;
         assert.equal(await games.displayAllGames(), true);
         calls.length = 0;
@@ -75,12 +77,12 @@ test('Games reads profile favorites without changing notes or the daily workflow
         const navigations = [];
         const navigationMock = t.mock.method(Router, 'navigateTo', path => navigations.push(path));
         el('game-favorites-tasks-1').click();
-        assert.deepEqual(navigations, ['/tasks']);
-        assert.equal(el('game-favorites-tasks-1').getAttribute('href'), `${Router.BASE_PATH}/tasks`);
+        assert.deepEqual(navigations, ['/tasks?game=1']);
+        assert.equal(el('game-favorites-tasks-1').getAttribute('href'), `${Router.BASE_PATH}/tasks?game=1`);
         navigationMock.mock.restore();
     });
 
-    await t.test('favorites is always the first default tab, including games with no pending favorites', async () => {
+    await t.test('favorites stays first, but games with zero pending favorites open notes by default', async () => {
         await seed();
         const tabs = [...el('pendingTask1').closest('tr').querySelectorAll('[role="tab"]')];
         assert.deepEqual(tabs.map(tab => tab.textContent), ['Favoritas (1)', 'Anotações']);
@@ -88,11 +90,97 @@ test('Games reads profile favorites without changing notes or the daily workflow
         assert.equal(el('game-favorites-panel-1').hidden, false);
         assert.equal(el('game-notes-panel-1').hidden, true);
         assert.equal(el('game-favorites-tab-2').textContent, 'Favoritas (0)');
-        assert.equal(el('game-favorites-tab-2').getAttribute('aria-selected'), 'true');
-        assert.equal(el('game-favorites-panel-2').hidden, false);
-        assert.equal(el('game-notes-panel-2').hidden, true);
+        assert.equal(el('game-favorites-tab-2').getAttribute('aria-selected'), 'false');
+        assert.equal(el('game-favorites-panel-2').hidden, true);
+        assert.equal(el('game-notes-panel-2').hidden, false);
         assert.match(el('game-favorites-panel-2').textContent, /Nenhuma favorita pendente/);
         assert.equal(el('game-favorites-tasks-2').hidden, true);
+    });
+
+    await t.test('only a confirmed empty read opens notes; pending or failed reads do not count as zero', async () => {
+        await seed(); selectProfile('demo'); const gate = deferred();
+        respond = name => name === 'list_profile_tasks' ? gate.promise : undefined;
+        const load = games.displayAllGames();
+        await waitFor(() => el('loadingOverlay').hidden);
+        assert.equal(el('game-favorites-tab-1').getAttribute('aria-selected'), 'true');
+        gate.resolve({ data: [], error: null }); await load;
+        assert.equal(el('game-notes-tab-1').getAttribute('aria-selected'), 'true');
+        selectProfile('guest');
+        respond = name => name === 'list_profile_tasks' ? Promise.resolve({ data: null, error: new Error('Offline') }) : undefined;
+        await games.displayAllGames();
+        assert.equal(el('game-favorites-tab-1').getAttribute('aria-selected'), 'true');
+        assert.match(el('game-favorites-panel-1').textContent, /indisponíveis/);
+    });
+
+    await t.test('an explicit tab choice during the read and notes already being edited are never overridden', async () => {
+        await seed(); const gate = deferred();
+        respond = name => name === 'list_profile_tasks' ? gate.promise : undefined;
+        const load = games.displayAllGames();
+        await waitFor(() => el('loadingOverlay').hidden);
+        el('game-favorites-tab-1').click();
+        gate.resolve({ data: [], error: null }); await load;
+        assert.equal(el('game-favorites-tab-1').getAttribute('aria-selected'), 'true');
+        respond = null; state.tasks = []; await games.displayAllGames();
+        assert.equal(el('game-notes-tab-1').getAttribute('aria-selected'), 'true');
+        const nextGate = deferred();
+        respond = name => name === 'list_profile_tasks' ? nextGate.promise : undefined;
+        const nextLoad = games.displayAllGames();
+        await waitFor(() => el('loadingOverlay').hidden);
+        const notes = el('pendingTask1'); notes.focus(); notes.value = 'Keep this editor visible';
+        nextGate.resolve({ data: [favorite(3, 'New favorite')], error: null }); await nextLoad;
+        assert.equal(el('game-notes-panel-1').hidden, false); assert.equal(document.activeElement, notes);
+        assert.equal(notes.value, 'Keep this editor visible');
+    });
+
+    await t.test('the Games link opens Tasks filtered by that game and a direct URL restores the same filter', async () => {
+        await seed([favorite(1, 'First game'), favorite(2, 'Second game', { game_id: 2 })]);
+        state.tasks.push(...Array.from({length:24}, (_, index) => favorite(index + 3, `Extra ${index}`, {is_favorite:false})));
+        await Router.navigateTo('/tasks');
+        el('taskGameFilter').value = '1'; el('taskGameFilter').dispatchEvent(new dom.window.Event('change'));
+        el('taskPageSize').value = '10'; el('taskPageSize').dispatchEvent(new dom.window.Event('change'));
+        el('taskNextPage').click(); assert.match(el('taskPageStatus').textContent, /Página 2/);
+        await Router.navigateTo('/'); el('game-favorites-tasks-2').click();
+        await waitFor(() => el('loadingOverlay').hidden && el('taskGameFilter').value === '2');
+        assert.equal(window.location.pathname, '/tasks'); assert.equal(window.location.search, '?game=2');
+        assert.match(el('gameScheduleBody').textContent, /Second game/);
+        assert.doesNotMatch(el('gameScheduleBody').textContent, /First game|Extra/);
+        assert.match(el('taskPageStatus').textContent, /Página 1 de 1/);
+        el('taskGameFilter').value = '1'; el('taskGameFilter').dispatchEvent(new dom.window.Event('change'));
+        await Router.route();
+        assert.equal(el('taskGameFilter').value, '2', 'Reloading the URL reapplies its explicit game filter');
+        await Router.navigateTo('/tasks?game=999'); assert.equal(el('taskGameFilter').value, '');
+        assert.equal(state.writes.length, 0);
+    });
+
+    await t.test('failed filtered navigation retains its requested game for retry', async () => {
+        await seed([favorite(1, 'First game'), favorite(2, 'Second game', { game_id: 2 })]);
+        state.readError = 'Offline'; await Router.navigateTo('/tasks?game=2');
+        assert.equal(el('taskListRetry').hidden, false);
+        state.readError = null; el('taskListRetry').click();
+        await waitFor(() => el('loadingOverlay').hidden && el('taskGameFilter').value === '2');
+        assert.match(el('gameScheduleBody').textContent, /Second game/);
+        assert.doesNotMatch(el('gameScheduleBody').textContent, /First game/);
+        assert.equal(state.writes.length, 0);
+    });
+
+    await t.test('the GitHub Pages redirect preserves the game query through Router initialization', async () => {
+        await seed([favorite(1, 'First game'), favorite(2, 'Second game', { game_id: 2 })]);
+        const html = await readFile(new URL('../404.html', import.meta.url), 'utf8');
+        let redirected;
+        new Function('window', html.match(/<script>([\s\S]*?)<\/script>/)[1])({ location: {
+            pathname: '/GachaManagement-cloud/tasks', hostname: 'cristianworth.github.io', search: '?game=2',
+            replace: url => { redirected = url; },
+        } });
+        assert.equal(redirected, '/GachaManagement-cloud/?game=2#/tasks');
+        const originalBase = Router.BASE_PATH;
+        try {
+            Router.BASE_PATH = '/GachaManagement-cloud';
+            history.replaceState({}, '', redirected);
+            await Router.init();
+            assert.equal(window.location.pathname, '/GachaManagement-cloud/tasks');
+            assert.equal(window.location.search, '?game=2'); assert.equal(el('taskGameFilter').value, '2');
+            assert.match(el('gameScheduleBody').textContent, /Second game/);
+        } finally { Router.BASE_PATH = originalBase; }
     });
 
     await t.test('tabs support keyboard navigation and keep the same unsaved notes and cursor when switching', async () => {
@@ -125,7 +213,7 @@ test('Games reads profile favorites without changing notes or the daily workflow
         const load = games.displayAllGames({ preserveDrafts: true });
         await waitFor(() => el('loadingOverlay').hidden);
         assert.equal(el('game-notes-panel-1').hidden, false);
-        assert.equal(el('game-favorites-panel-2').hidden, false);
+        assert.equal(el('game-notes-panel-2').hidden, false);
         const notes = el('pendingTask1'); notes.focus(); notes.setSelectionRange(1, 4);
         gate.resolve({ data: [favorite(2, 'Arrived while editing')], error: null });
         await load;

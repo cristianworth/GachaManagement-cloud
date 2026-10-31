@@ -9,7 +9,7 @@
     const repo = window.location.hostname.includes('github.io') ? pathname.split('/')[1] : '';
     const base = repo ? `/${repo}` : '';
     const path = pathname.slice(base.length) || '/';
-    window.location.replace(`${base}/#${path}`);
+    window.location.replace(`${base}/${window.location.search}#${path}`);
   </script>
 </head>
 <body>

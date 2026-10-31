@@ -25,12 +25,12 @@ let taskPage = 1;
 let loadedTaskProfile = null;
 const pendingFavoriteTasks = new Set();
 
-export async function displayAllTasks({ successMessage = '', silent = false, canApply = () => true } = {}) {
+export async function displayAllTasks({ successMessage = '', silent = false, canApply = () => true, gameId } = {}) {
     const load = async () => {
         const retry = document.getElementById('taskListRetry');
         if (retry && !silent) {
             retry.hidden = true;
-            retry.onclick = () => displayAllTasks();
+            retry.onclick = () => displayAllTasks({ gameId });
         }
         if (!silent) setFeedback('taskListMessage');
         try {
@@ -40,7 +40,7 @@ export async function displayAllTasks({ successMessage = '', silent = false, can
             if (profile !== getSelectedProfileId()) return false;
             if (!canApply()) return null;
             const focused = silent ? document.activeElement : null;
-            updateTaskList(tasks, games);
+            updateTaskList(tasks, games, gameId);
             if (focused?.id) (document.getElementById(focused.id) ?? document.getElementById('taskPageSize')).focus();
             startSilentRefresh('taskList', canApply => displayAllTasks({ silent: true, canApply }),
                 () => loadingTaskBatch || pendingFavoriteTasks.size > 0 || isTaskBatchPickerBusy());
@@ -61,7 +61,7 @@ export async function displayAllTasks({ successMessage = '', silent = false, can
     return silent ? load() : withLoading('Carregando tarefas...', load);
 }
 
-function updateTaskList(tasks, games) {
+function updateTaskList(tasks, games, gameId) {
     const profile = getSelectedProfileId();
     if (profile !== loadedTaskProfile) taskPage = 1;
     loadedTaskProfile = profile;
@@ -69,11 +69,11 @@ function updateTaskList(tasks, games) {
     loadedGames = games;
     batchDataLoaded = true;
     const filter = document.getElementById('taskGameFilter');
-    const selectedGame = filter.value;
+    const selectedGame = gameId === undefined ? filter.value : String(gameId);
     filter.replaceChildren(new Option('All games', ''));
     for (const game of games) filter.add(new Option(game.description, String(game.id)));
     filter.value = [...filter.options].some(option => option.value === selectedGame) ? selectedGame : '';
-    if (filter.value !== selectedGame) taskPage = 1;
+    if (gameId !== undefined || filter.value !== selectedGame) taskPage = 1;
     const refreshFilter = document.getElementById('taskRefreshTypeFilter');
     if (!filterInitialized) {
         refreshFilter.replaceChildren(new Option('All intervals', ''));
