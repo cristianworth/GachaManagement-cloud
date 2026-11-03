@@ -1,6 +1,6 @@
 # Roadmap — prioridades por tier
 
-Atualizado em 31/10/2026 no fechamento da versão 1.19.0. O objetivo é facilitar seu uso pessoal: um usuário frequente, poucos jogos e dados de baixa criticidade. Priorizar benefícios visíveis com ajustes pequenos na estrutura JavaScript/HTML/CSS. Esta lista registra trabalho futuro; sua ordem não autoriza implementar tudo.
+Atualizado em 03/11/2026: versão publicada 1.19.0 e demo isolada com API/capas em prévia local, aguardando revisão/publicação. O objetivo é facilitar seu uso pessoal: um usuário frequente, poucos jogos e dados de baixa criticidade. Priorizar benefícios visíveis com ajustes pequenos na estrutura JavaScript/HTML/CSS. Esta lista registra trabalho futuro; sua ordem não autoriza implementar tudo.
 
 Saíram da tierlist de implementação: perfis/seleção de jogos, sincronização diária, identidade por edição/limpeza de eventos, estimativa manual de resina, favoritas e lote de 16 definições/capas com recriação explícita. As migrações até 1.12.0 foram aplicadas por Cristian no Supabase em 09/10/2026; catálogos/leitura do lote responderam pela API. SweetAlert2 fechou em 1.12.1; menu lateral e tema Sangonomiya foram entregues até 1.13.2. Em 12/10/2026 os dois recortes S foram entregues em 1.14.0: paginação visual 20/10 e estimativa local por minuto. [Comportamento e validação](task-pagination-stamina.md); commit e push autorizados por Cristian. Histórico em [CHANGELOG.md](../CHANGELOG.md).
 
@@ -19,6 +19,22 @@ S = próximas melhorias de uso; A = alto retorno depois da base imediata; B = ne
 | **C** | 4 | Paginação real da consulta no Supabase | Só promover com lentidão/crescimento medido. Exige filtros, ordenação e contagem na RPC, além da navegação. | Média. Segunda etapa do TODO 12. |
 
 ## Recortes e continuidade
+
+### Demo pública isolada para o portfólio — implementada em 1.20.0, publicação pendente
+
+Prioridade explicitamente solicitada por Cristian em 02/11/2026. Reutilizar a interface e SQL reais com PGlite no navegador, estado local por visitante, exemplos fictícios, persistência e restauração. [Decisão, prévia e limites](public-demo.md).
+
+- [x] Implementar e conferir localmente desktop/celular/teclado, persistência, restauração e recarga direta; evidências em [demo pública](public-demo.md#validação-local-em-02112026).
+- [x] Integrar catálogo da API e capas locais em Tasks, com atualização por edição, preservação do progresso, descarte de respostas antigas e tratamento dos encerrados. Implementação local em 03/11/2026; [contrato](public-demo.md#eventos-e-capas-da-api).
+- [x] Priorizar consistência sobre quantidade na demo: ocultar tarefas vencidas ou sem capa própria carregada em Tasks/favoritas/revisão, sem substituir imagens por ícones nem apagar o estado pessoal ocultado.
+- [x] Preparar captura diária/build/Pages com cache e ativação explícita; automação ainda não habilitada nem publicada.
+- [x] Obter revisão de Cristian na prévia local e fechar versão 1.20.0 com 702 testes completos aprovados.
+- [ ] Ativar e publicar o workflow do Pages após autorização específica da configuração.
+- [ ] Verificar a URL final e seu isolamento antes de marcar a demo como publicada.
+- [x] Preparar o [prompt para transporte manual ao chat do portfólio](portfolio-demo-prompt.md).
+- [ ] Após publicação verificada, usar o prompt para adicionar “Experimentar demo”. Não alterar `D:/Repo/portfolio` nesta entrega.
+
+O perfil público chamado Demo pertence ao banco compartilhado e não substitui esta demonstração. O botão público permanece pendente até a verificação da hospedagem.
 
 **1. Paginação visual — entregue em 1.14.0.** Aplicar filtros por jogo/intervalo/conclusão e ordenar favoritas → prazo → ID antes de separar as páginas. Padrão de 20 com opção de 10; rodapé com intervalo/total e Anterior/Próxima. Mudança de filtro volta à primeira página. Concluir, favoritar ou excluir conserva a página válida; recuar quando a página ficar vazia. Contagens e ordenação consideram a lista filtrada inteira. Continuar carregando todas as tarefas deve ficar explícito: isso melhora a leitura, não reduz os registros consultados. Busca por nome é opcional e separada.
 

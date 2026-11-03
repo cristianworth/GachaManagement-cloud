@@ -2,13 +2,22 @@
 
 Organize a rotina dos seus jogos: acompanhe stamina, tarefas recorrentes, eventos e banners em um só lugar. A aplicação calcula quando os recursos estarão cheios e ajuda a decidir o que ainda falta fazer em cada jogo.
 
-## Experimente com dados fictícios
+## Experimente a demonstração
 
-**Ainda não há uma demo pública isolada.** A aplicação online usa perfis públicos e um banco compartilhado; ela não é uma área descartável para visitantes. [Execute a prévia local](#executar-a-prévia-local) para conhecer a interface sem acessar esse banco.
+**Demo isolada em preparação; publicação pendente.** A aplicação online e seu perfil chamado Demo usam um banco compartilhado e não são uma área descartável para visitantes. A nova [demo estática](docs/public-demo.md) combina eventos e capas da API com progresso demonstrativo, SQL real no navegador e armazenamento local de cada visitante. A URL pública só será anunciada após revisão, publicação e verificação.
+
+```sh
+npm ci
+npm run demo:preview
+```
+
+Abra **http://127.0.0.1:5503/GachaManagement-cloud/demo/**. Na primeira execução, o comando prepara os eventos e baixa as capas da API pública. O servidor e o navegador usam somente os arquivos estáticos gerados; não acessam seu Supabase. Alterações persistem neste navegador e “Sobre a demo” permite restaurar os exemplos. A lista informa a data da coleta; banners e seus avisos continuam fictícios. `npm run demo:capture` renova o catálogo, `npm run demo:build` gera só a demo e `npm run pages:build` prepara o site completo com a demo isolada em `/demo/`. A automação diária está preparada e aguarda a autorização de publicação.
 
 ![Prévia atual do Gacha Management Cloud com jogos e dados fictícios](docs/images/overview.png)
 
-Captura da prévia descartável, com o tema Sangonomiya. Os dados dessa prévia somem ao encerrar o servidor.
+Captura com dados fictícios e tema Sangonomiya. Na demo estática, suas alterações ficam no navegador até restaurar os exemplos ou limpar o armazenamento.
+
+A demo prioriza a apresentação: Tasks e favoritas mostram somente tarefas com capa própria carregada e prazo futuro, quando houver prazo. Eventos sem imagem, com imagem indisponível ou vencidos ficam fora da exibição; ícones dos jogos não substituem capas. Essa seleção não apaga tarefas pessoais já salvas e não muda a aplicação normal.
 
 ## O que você pode fazer
 
@@ -48,7 +57,7 @@ Abra **http://127.0.0.1:5502**. A prévia reutiliza o frontend e SQL reais, com 
 
 ## Estado e limites
 
-Versão **1.19.0**. Aplicação pessoal em evolução, com perfis públicos e integração de eventos dos cinco jogos ativos. A demonstração isolada para visitantes ainda precisa ser preparada.
+Versão **1.20.0**. Aplicação pessoal em evolução, com perfis públicos e integração de eventos dos cinco jogos ativos. A demonstração isolada está implementada e validada; ativação da hospedagem e verificação da URL pública permanecem pendentes.
 
 O produto é guiado por Cristian, com desenvolvimento assistido por IA. As decisões de calendário, região e comportamento são registradas nos guias e no histórico de entregas. [Changelog](CHANGELOG.md) e [próximas prioridades](docs/roadmap-priorities.md).
 

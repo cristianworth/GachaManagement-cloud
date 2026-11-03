@@ -7,6 +7,7 @@ O [README principal](../README.md) apresenta o produto e a prévia local. Este m
 | Instalação, banco e migrações        | [Instalação e integrações](setup-and-integrations.md)                                     |
 | Contratos e processo de trabalho     | [Convenções do projeto](project-conventions.md)                                           |
 | Perfis públicos e prévia descartável | [Perfis](profiles-phases.md)                                                              |
+| Demo estática isolada para visitantes | [Prévia, limites e publicação pendente](public-demo.md) e [prompt para o portfólio](portfolio-demo-prompt.md) |
 | Stamina e rotina diária              | [Estado diário](game-daily-state.md)                                                      |
 | Atualizações em segundo plano        | [Atualização silenciosa](silent-refresh.md)                                               |
 | Paginação e estimativa               | [Lista e timers](task-pagination-stamina.md)                                              |

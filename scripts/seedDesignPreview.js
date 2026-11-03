@@ -1,9 +1,8 @@
 import { EVENT_GAMES } from '../js/events/eventGames.js';
 
 // All writes target the disposable preview database provided by the caller.
-export async function seedDesignPreview(db) {
+export async function seedDesignPreview(db, { now = Date.now(), includeExpiredFavorite = true, includeSyntheticEvents = true } = {}) {
     const games = (await db.query('select * from public.games order by id')).rows;
-    const now = Date.now();
     for (const profile of ['cran', 'demo', 'guest']) {
         await db.query('select public.set_profile_games($1, $2::bigint[], false)', [profile, games.map(game => game.id)]);
         for (const [index, game] of games.entries()) {
@@ -41,6 +40,7 @@ export async function seedDesignPreview(db) {
                 { description: 'Explorar no meu ritmo', gameIndex: 0, offset: null },
             ];
             for (const favorite of favorites) {
+                if (favorite.offset < 0 && !includeExpiredFavorite) continue;
                 const game = games[favorite.gameIndex];
                 const task = { description: favorite.description, game_id: game.id, refresh_type: 0,
                     expiration_date: favorite.offset === null ? null : new Date(now + favorite.offset * 86400000).toISOString(),
@@ -50,7 +50,7 @@ export async function seedDesignPreview(db) {
             }
         }
     }
-    for (const source of EVENT_GAMES) {
+    for (const source of includeSyntheticEvents ? EVENT_GAMES : []) {
         const game = games.find(game => game.abbreviation === source.abbreviation);
         await db.query(`insert into public.event_candidates
             (source, external_id, name, game_id, source_start_at, source_end_at, proposed_start_at, proposed_end_at, review_reason)

@@ -11,7 +11,14 @@ import { populateInitialGames } from './database/gameDB.js';
 import { initializeAppShell } from './ui/appShell.js';
 import { initializeGameNotifications, refreshGameNotifications } from './ui/gameNotifications.js';
 
-document.addEventListener('DOMContentLoaded', async function () {
+let initializationPromise;
+export function initializeApplication() {
+  // A delayed entry point can start after DOM readiness; initialize the shared UI only once.
+  initializationPromise ??= bootApplication();
+  return initializationPromise;
+}
+
+async function bootApplication() {
   initializeAppShell();
   if (!isSupabaseConfigured()) {
     showConfigWarning();
@@ -40,7 +47,9 @@ document.addEventListener('DOMContentLoaded', async function () {
     console.error('Falha ao carregar a aplicação:', error);
     showLoadingError();
   }
-});
+}
+
+document.addEventListener('DOMContentLoaded', initializeApplication);
 
 function withTimeout(promise, timeout = 15000) {
   return Promise.race([

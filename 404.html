@@ -8,8 +8,10 @@
     const pathname = window.location.pathname;
     const repo = window.location.hostname.includes('github.io') ? pathname.split('/')[1] : '';
     const base = repo ? `/${repo}` : '';
-    const path = pathname.slice(base.length) || '/';
-    window.location.replace(`${base}/${window.location.search}#${path}`);
+    const demoBase = `${base}/demo`;
+    const routeBase = pathname.startsWith(`${demoBase}/`) ? demoBase : base;
+    const path = pathname.slice(routeBase.length) || '/';
+    window.location.replace(`${routeBase}/${window.location.search}#${path}`);
   </script>
 </head>
 <body>

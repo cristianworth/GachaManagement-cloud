@@ -8,7 +8,15 @@ O projeto segue o versionamento semântico (SemVer), no formato `MAJOR.MINOR.PAT
 - `MINOR`: nova funcionalidade compatível com a versão anterior.
 - `PATCH`: correção de bug ou melhoria pequena, sem nova funcionalidade relevante.
 
-## [Não publicado]
+## [1.20.0] - 2026-11-03
+
+### Adicionado
+
+- Demo estática isolada para o portfólio, com PGlite/IndexedDB no navegador, interface e SQL reais, exemplos fictícios, persistência e restauração. Implementação revisada e validada; ativação da hospedagem e verificação da URL final pendentes. A aplicação normal mantém o banco compartilhado; seu perfil Demo não é a demonstração descartável.
+- Tasks da demo recebe eventos reais e capas empacotadas da API, reutilizando descoberta/identidade e funções SQL de produção. Atualização local preserva conclusão, favoritas, exclusões, notas e prazo manual; edições novas não herdam estado e eventos automáticos encerrados são removidos. Metadados mostram a data real de coleta e falhas conservam o último catálogo válido. Banners permanecem demonstrativos.
+- Captura pública independente do Supabase e workflow diário de build/Pages preparado com cache e ativação explícita. A demo exibe somente tarefas com capa própria carregada e prazo ainda válido (ou sem prazo), incluindo favoritas e revisão; não substitui fotos por ícones nem apaga tarefas pessoais ocultadas. Nenhuma automação ou publicação foi ativada nesta etapa.
+
+**Validação:** `npm test` aprovou **702 testes** (69 Jest + 633 Node), sem falhas, no fechamento MINOR. Testes focados anteriores cobrem captura pública, falha parcial/cache, identidade/expiração, preservação do progresso, restauração/rollback, rotas e isolamento do artefato. Prévia conferida em desktop e 360px: 20 tarefas ilustradas com prazo futuro, um candidato em revisão e favoritas correspondentes; recarga com filtro por jogo e teclado conferidos. Sem alteração no schema ou banco real. Detalhes e limites em [demo pública](docs/public-demo.md).
 
 ## [1.19.0] - 2026-10-31
 

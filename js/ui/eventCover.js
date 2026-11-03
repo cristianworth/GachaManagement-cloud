@@ -2,7 +2,9 @@ const PLACEHOLDER = new URL('../../img/event-placeholder.svg', import.meta.url).
 const GAME_PLACEHOLDER = new URL('../../img/default-icon.png', import.meta.url).href;
 
 export function createEventCover(url, className) {
-    return createImage(url?.startsWith('https://') ? url : null, className, PLACEHOLDER);
+    const source = url?.startsWith('https://') ? url
+        : /^img\/[a-zA-Z0-9/_-]+\.(?:png|jpe?g|webp|gif|svg)$/.test(url ?? '') ? new URL(`../../${url}`,import.meta.url).href : null;
+    return createImage(source, className, PLACEHOLDER);
 }
 
 export function createGameIcon(url, description) {

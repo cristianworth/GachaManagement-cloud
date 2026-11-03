@@ -1,0 +1,62 @@
+name: Public demo catalogue and Pages
+
+on:
+  push:
+    branches: [main]
+  schedule:
+    # 10:45 UTC = 07:45 Brasilia. Uses the public API directly, never the personal database.
+    - cron: '45 10 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: public-demo-pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    permissions:
+      contents: read
+      pages: read
+    # Enable only at the authorized publication milestone, together with Pages source = GitHub Actions.
+    if: vars.PUBLIC_DEMO_PAGES_ENABLED == 'true' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+      - run: npm ci
+      - name: Restore last usable public catalogue and covers
+        uses: actions/cache@v4
+        with:
+          path: .local-deliveries/public-demo/catalogue
+          key: public-demo-catalogue-v1-${{ github.run_id }}-${{ github.run_attempt }}
+          restore-keys: public-demo-catalogue-v1-
+      - run: npm run test:demo
+      - run: npm run validate:banners
+      - name: Capture public calendars and local covers
+        run: npm run demo:capture
+      - name: Build normal application and isolated demo
+        run: npm run pages:build
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v4
+        with:
+          path: .local-deliveries/public-demo/pages
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Publish Pages artifact
+        id: deployment
+        uses: actions/deploy-pages@v4

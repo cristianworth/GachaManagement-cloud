@@ -44,12 +44,14 @@ function makeCandidateCard(candidate, existingTasks, game) {
     appendText(card, 'p', `Prazo sugerido no seu horário: ${displayDate(candidate.proposed_end_at)}`);
     if (candidate.review_reason) appendText(card, 'p', candidate.review_reason, 'event-review-warning');
 
-    const source = document.createElement('a');
-    source.href = game.url;
-    source.target = '_blank';
-    source.rel = 'noopener noreferrer';
-    source.textContent = 'Ver resposta da fonte';
-    card.appendChild(source);
+    if (game.url) {
+        const source = document.createElement('a');
+        source.href = game.url;
+        source.target = '_blank';
+        source.rel = 'noopener noreferrer';
+        source.textContent = 'Ver resposta da fonte';
+        card.appendChild(source);
+    }
     if (game.referenceUrl) {
         const reference = appendText(card, 'a', 'Conferir datas no Game8');
         reference.href = game.referenceUrl;
