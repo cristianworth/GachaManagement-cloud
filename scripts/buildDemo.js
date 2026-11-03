@@ -1,6 +1,6 @@
 import { cp, mkdir, readFile, writeFile, readdir, rm, stat } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
-import { resolve, join, relative, sep } from 'node:path';
+import { resolve, join, relative, sep, toNamespacedPath } from 'node:path';
 import { DEMO_CATALOGUE_DIRECTORY } from './captureDemoCatalogue.js';
 import { validateDemoCatalogue } from '../demo/catalogue.js';
 
@@ -26,7 +26,8 @@ export async function buildDemo({ basePath = DEMO_BASE_PATH, name = 'build', cat
     for (const folder of ['js', 'css', 'img', 'demo']) {
         await cp(resolve(projectRoot, folder), resolve(destination, folder), { recursive: true,
             filter: source => !['js/config/supabase.config.js', 'js/database/supabaseClient.js', 'js/services/bannerAgenda.js', 'js/data/banners']
-                .includes(relative(projectRoot, source).split(sep).join('/')) });
+                // Node 20 on Windows passes namespaced paths to fs.cp filters.
+                .includes(relative(toNamespacedPath(projectRoot), toNamespacedPath(source)).split(sep).join('/')) });
     }
     await write('js/config/supabase.config.js', 'export const isSupabaseConfigured = () => true;\n');
     await write('js/database/supabaseClient.js', "export { getClient, Tables } from '../../demo/client.js';\n");

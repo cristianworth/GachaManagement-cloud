@@ -106,6 +106,8 @@ Na conferência do estado já salvo no Chromium, sem reset, a lista passou de 50
 
 No fechamento 1.20.0, `npm test` aprovou 702 testes (69 Jest + 633 Node), sem falhas. Log local ignorado: `.local-deliveries/public-demo/review/release-1.20.0-tests.log`. A revisão local foi aceita para fechamento; a publicação exige mudar o Pages de raiz/branch para GitHub Actions e habilitar a variável do workflow preparado.
 
+O primeiro CI Windows/Node 20 detectou uma diferença de caminhos no `fs.cp`: o prefixo de namespace impedia excluir os JSONs de banners reais. A falha foi reproduzida localmente com Node 20; o filtro normaliza os dois caminhos antes da comparação, e o teste também confere todo o manifesto da demo. As configurações/cliente continuavam sendo sobrescritos pelo adaptador local; a correção garante a ausência dos catálogos reais em todas as plataformas suportadas.
+
 1. Revisar a prévia local com Cristian: Games/Tasks, favoritas, anotações, CRUD, teclado, celular, calendário e avisos.
 2. Fechar versão conforme o fluxo do projeto, executar a validação exigida e autorizar commit/push/publicação separadamente.
 3. Autorizar e ativar o workflow preparado conforme a seção acima. O `404.html` da raiz despacha rotas `/demo/...` para a demo, conservando query e rota; rotas normais seguem para a aplicação normal. Nenhum artefato foi publicado nesta etapa.

@@ -52,6 +52,8 @@ test('static demo preserves real views and excludes production access and extern
     const realUrl = config.match(/SUPABASE_URL\s*=\s*['"]([^'"]+)/)?.[1];
     const realKey = config.match(/SUPABASE_ANON_KEY\s*=\s*['"]([^'"]+)/)?.[1];
     const manifest = JSON.parse(await read('build-manifest.json'));
+    assert.ok(!manifest.files.some(file=>file.path.startsWith('js/data/banners/')),
+        'No published banner catalogue may enter the demo on any supported runtime');
     for (const file of manifest.files.filter(file => /\.(js|html|sql|json|txt|css)$/.test(file.path))) {
         const source = await read(file.path);
         if (realUrl && realUrl !== 'YOUR_SUPABASE_URL') assert.ok(!source.includes(realUrl), `${file.path} contains production URL`);
