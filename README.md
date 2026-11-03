@@ -4,14 +4,14 @@ Organize a rotina dos seus jogos: acompanhe stamina, tarefas recorrentes, evento
 
 ## Experimente a demonstração
 
-**Demo isolada em preparação; publicação pendente.** A aplicação online e seu perfil chamado Demo usam um banco compartilhado e não são uma área descartável para visitantes. A nova [demo estática](docs/public-demo.md) combina eventos e capas da API com progresso demonstrativo, SQL real no navegador e armazenamento local de cada visitante. A URL pública só será anunciada após revisão, publicação e verificação.
+**[Experimentar demo](https://cristianworth.github.io/GachaManagement-cloud/demo/)** — sem conta ou instalação. A [demo estática isolada](docs/public-demo.md) combina eventos e capas da API com progresso demonstrativo, SQL real no navegador e armazenamento local de cada visitante. A aplicação normal e seu perfil chamado Demo continuam usando o banco compartilhado; o link acima abre a demonstração descartável.
 
 ```sh
 npm ci
 npm run demo:preview
 ```
 
-Abra **http://127.0.0.1:5503/GachaManagement-cloud/demo/**. Na primeira execução, o comando prepara os eventos e baixa as capas da API pública. O servidor e o navegador usam somente os arquivos estáticos gerados; não acessam seu Supabase. Alterações persistem neste navegador e “Sobre a demo” permite restaurar os exemplos. A lista informa a data da coleta; banners e seus avisos continuam fictícios. `npm run demo:capture` renova o catálogo, `npm run demo:build` gera só a demo e `npm run pages:build` prepara o site completo com a demo isolada em `/demo/`. A automação diária está preparada e aguarda a autorização de publicação.
+Abra **http://127.0.0.1:5503/GachaManagement-cloud/demo/**. Na primeira execução, o comando prepara os eventos e baixa as capas da API pública. O servidor e o navegador usam somente os arquivos estáticos gerados; não acessam seu Supabase. Alterações persistem neste navegador e “Sobre a demo” permite restaurar os exemplos. A lista informa a data da coleta; banners e seus avisos continuam fictícios. `npm run demo:capture` renova o catálogo, `npm run demo:build` gera só a demo e `npm run pages:build` prepara o site completo com a demo isolada em `/demo/`. A publicação usa GitHub Actions, com atualização diária do catálogo às 07:45 de Brasília.
 
 ![Prévia atual do Gacha Management Cloud com jogos e dados fictícios](docs/images/overview.png)
 
@@ -57,7 +57,7 @@ Abra **http://127.0.0.1:5502**. A prévia reutiliza o frontend e SQL reais, com 
 
 ## Estado e limites
 
-Versão **1.20.0**. Aplicação pessoal em evolução, com perfis públicos e integração de eventos dos cinco jogos ativos. A demonstração isolada está implementada e validada; ativação da hospedagem e verificação da URL pública permanecem pendentes.
+Versão **1.20.0**. Aplicação pessoal em evolução, com perfis públicos e integração de eventos dos cinco jogos ativos. A demonstração isolada está publicada e sua URL foi verificada em 03/11/2026.
 
 O produto é guiado por Cristian, com desenvolvimento assistido por IA. As decisões de calendário, região e comportamento são registradas nos guias e no histórico de entregas. [Changelog](CHANGELOG.md) e [próximas prioridades](docs/roadmap-priorities.md).
 

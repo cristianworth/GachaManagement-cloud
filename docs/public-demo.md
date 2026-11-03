@@ -1,6 +1,6 @@
 # Demo pública isolada
 
-**Estado em 03/11/2026: implementação revisada e validada para a versão 1.20.0; ativação da hospedagem e verificação da URL pública pendentes.** O perfil chamado Demo na aplicação normal continua usando o banco compartilhado e não deve ser oferecido como demonstração descartável.
+**Publicada e verificada em 03/11/2026 na versão 1.20.0:** https://cristianworth.github.io/GachaManagement-cloud/demo/. O perfil chamado Demo na aplicação normal continua usando o banco compartilhado e não deve ser oferecido como demonstração descartável.
 
 ## Executar e gerar
 
@@ -50,11 +50,11 @@ O navegador verifica o carregamento das imagens, compartilha a verificação ent
 
 “Sobre a demo” explica o armazenamento e oferece “Restaurar exemplos”, com confirmação. A restauração reconstrói somente o schema local em uma transação; uma falha SQL preserva o estado anterior. Se a confirmação for interrompida, a interface orienta recarregar para conferir. Após sucesso, outras abas da demo recarregam. Não há alteração em perfis ou preferências da aplicação normal.
 
-## Automação preparada, ainda não ativada
+## Atualização diária e publicação
 
-`.github/workflows/public-demo-pages.yml` prepara captura diária às 07:45 de Brasília, cache do último catálogo/capas, testes focados, build e deploy do site completo. O job fica condicionado a `PUBLIC_DEMO_PAGES_ENABLED=true` e à branch `main`. Nenhuma variável, configuração de Pages ou publicação foi alterada nesta entrega.
+`.github/workflows/public-demo-pages.yml` executa captura diária programada para 07:45 de Brasília, cache do último catálogo/capas, testes focados, build e deploy do site completo. Também roda em push para `main` e por acionamento manual. O job fica condicionado a `PUBLIC_DEMO_PAGES_ENABLED=true` e à branch `main`; a variável e o Pages por GitHub Actions foram ativados em 03/11/2026, após autorização específica de Cristian.
 
-Na etapa autorizada de publicação, configurar Pages para GitHub Actions e habilitar a variável. O build do site mantém a aplicação normal/configuração existente na raiz e adiciona somente a demo isolada em `/demo/`; o subartefato da demo não contém configuração/cliente reais. Falha de build/teste impede um novo deploy. [Fluxo oficial do Pages](https://docs.github.com/en/pages/getting-started-with-github-pages/using-custom-workflows-with-github-pages) e [comportamento do cache](https://docs.github.com/en/actions/reference/workflows-and-actions/dependency-caching).
+O build do site mantém a aplicação normal/configuração existente na raiz e adiciona somente a demo isolada em `/demo/`; o subartefato da demo não contém configuração/cliente reais. A rotina lê somente APIs públicas e atualiza os arquivos estáticos: não copia CRAN, não acessa o Supabase e não substitui o progresso dos visitantes. Banners e avisos continuam fictícios. Falha de build/teste impede um novo deploy. [Fluxo oficial do Pages](https://docs.github.com/en/pages/getting-started-with-github-pages/using-custom-workflows-with-github-pages) e [comportamento do cache](https://docs.github.com/en/actions/reference/workflows-and-actions/dependency-caching).
 
 O visitante precisa de navegador atual com WebAssembly, Worker, Web Locks, BroadcastChannel e IndexedDB disponíveis. A primeira visita baixa cerca de 17 MB de runtime sem compressão, além das imagens da interface e das capas. A preparação e a restauração podem levar dezenas de segundos: a prévia ainda executa diversas chamadas SQL pelo worker, com o andamento informado durante a espera. Não há garantia de funcionamento com armazenamento bloqueado, espaço insuficiente ou em todo modo privado. Falhas mostram uma opção de tentar novamente; não existe fallback para o banco real. Limpar o armazenamento do navegador apaga a demo. Não é uma aplicação offline completa: recargas precisam dos arquivos estáticos da hospedagem.
 
@@ -102,14 +102,14 @@ Nova coleta pública em 03/11/2026 às 14:47 de Brasília: 21 candidatos com cap
 
 Na conferência do estado já salvo no Chromium, sem reset, a lista passou de 50 para 20 tarefas visíveis e um candidato em revisão. As 20 capas carregaram; nenhuma linha usou ícone ou prazo passado. Games mostrou uma favorita elegível por jogo. O link de HSR abriu três tarefas com artes distintas e contagem correspondente. Desktop e viewport 360×800 conferidos, com teclado e sem transbordamento horizontal da página (a tabela mantém sua rolagem lateral interna). Capturas: `.local-deliveries/public-demo/review/demo-consistency-hsr-desktop.jpg` e `demo-consistency-hsr-360.jpg`.
 
-## Conferência e publicação pendentes
+## Fechamento e publicação em 03/11/2026
 
-No fechamento 1.20.0, `npm test` aprovou 702 testes (69 Jest + 633 Node), sem falhas. Log local ignorado: `.local-deliveries/public-demo/review/release-1.20.0-tests.log`. A revisão local foi aceita para fechamento; a publicação exige mudar o Pages de raiz/branch para GitHub Actions e habilitar a variável do workflow preparado.
+No fechamento 1.20.0, `npm test` aprovou 702 testes (69 Jest + 633 Node), sem falhas. Após a correção de caminhos, a suíte completa passou novamente usando Node 20/Windows, a mesma combinação do CI. Logs locais ignorados: `.local-deliveries/public-demo/review/release-1.20.0-tests.log` e `release-1.20.0-node20-tests.log`.
 
 O primeiro CI Windows/Node 20 detectou uma diferença de caminhos no `fs.cp`: o prefixo de namespace impedia excluir os JSONs de banners reais. A falha foi reproduzida localmente com Node 20; o filtro normaliza os dois caminhos antes da comparação, e o teste também confere todo o manifesto da demo. As configurações/cliente continuavam sendo sobrescritos pelo adaptador local; a correção garante a ausência dos catálogos reais em todas as plataformas suportadas.
 
-1. Revisar a prévia local com Cristian: Games/Tasks, favoritas, anotações, CRUD, teclado, celular, calendário e avisos.
-2. Fechar versão conforme o fluxo do projeto, executar a validação exigida e autorizar commit/push/publicação separadamente.
-3. Autorizar e ativar o workflow preparado conforme a seção acima. O `404.html` da raiz despacha rotas `/demo/...` para a demo, conservando query e rota; rotas normais seguem para a aplicação normal. Nenhum artefato foi publicado nesta etapa.
-4. URL planejada: `https://cristianworth.github.io/GachaManagement-cloud/demo/`. **Ainda não verificada; não adicionar o botão público antes de conferir essa URL**, suas rotas diretas e o isolamento na versão hospedada.
-5. Só após essa conferência, atualizar a pendência do roadmap e enviar ao chat do portfólio o texto preparado em `docs/portfolio-demo-prompt.md`. O repositório do portfólio não é alterado por esta entrega.
+- Código funcional verificado: `6e4ee50700b476149bfb05e2cfca2a9665e8891e`, versão 1.20.0. [CI Windows/Linux aprovado](https://github.com/cristianworth/GachaManagement-cloud/actions/runs/41691936541).
+- [Primeiro deploy da demo aprovado](https://github.com/cristianworth/GachaManagement-cloud/actions/runs/41692412477). Pages alterado de branch/raiz para GitHub Actions, com atualização diária autorizada e ativa.
+- HTML da aplicação normal e da demo retornou 200 com versão 1.20.0. A demo não carrega o SDK remoto; configuração é o stub local e cliente apenas reexporta o adaptador PGlite. O caminho de banners reais retornou 404, conforme esperado.
+- URL final aberta no navegador: https://cristianworth.github.io/GachaManagement-cloud/demo/. Games abriu cinco jogos; entrada direta em `/demo/tasks?game=2` preservou o filtro e mostrou três eventos de HSR com suas capas carregadas. O `404.html` da raiz despacha as rotas da demo conservando query/rota; o 404 inicial de uma rota virtual é esperado antes do redirecionamento.
+- A atualização do portfólio fica no outro chat, com transporte manual do [prompt de retorno](portfolio-demo-prompt.md). O repositório `D:/Repo/portfolio` não foi alterado.

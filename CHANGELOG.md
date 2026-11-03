@@ -12,12 +12,14 @@ O projeto segue o versionamento semântico (SemVer), no formato `MAJOR.MINOR.PAT
 
 ### Adicionado
 
-- Demo estática isolada para o portfólio, com PGlite/IndexedDB no navegador, interface e SQL reais, exemplos fictícios, persistência e restauração. Implementação revisada e validada; ativação da hospedagem e verificação da URL final pendentes. A aplicação normal mantém o banco compartilhado; seu perfil Demo não é a demonstração descartável.
+- [Demo estática isolada](https://cristianworth.github.io/GachaManagement-cloud/demo/) publicada e verificada em 03/11/2026, com PGlite/IndexedDB no navegador, interface e SQL reais, exemplos fictícios, persistência e restauração. A aplicação normal mantém o banco compartilhado; seu perfil Demo não é a demonstração descartável.
 - Tasks da demo recebe eventos reais e capas empacotadas da API, reutilizando descoberta/identidade e funções SQL de produção. Atualização local preserva conclusão, favoritas, exclusões, notas e prazo manual; edições novas não herdam estado e eventos automáticos encerrados são removidos. Metadados mostram a data real de coleta e falhas conservam o último catálogo válido. Banners permanecem demonstrativos.
-- Captura pública independente do Supabase e workflow diário de build/Pages preparado com cache e ativação explícita. A demo exibe somente tarefas com capa própria carregada e prazo ainda válido (ou sem prazo), incluindo favoritas e revisão; não substitui fotos por ícones nem apaga tarefas pessoais ocultadas. Nenhuma automação ou publicação foi ativada nesta etapa.
+- Captura pública independente do Supabase e workflow de build/Pages ativado com cache e atualização diária às 07:45 de Brasília, após autorização de Cristian. A demo exibe somente tarefas com capa própria carregada e prazo ainda válido (ou sem prazo), incluindo favoritas e revisão; não substitui fotos por ícones nem apaga tarefas pessoais ocultadas.
 - Build normaliza os caminhos de origem no Node 20/Windows para manter os catálogos reais de banners fora da demo, incluindo caminhos com prefixo de namespace.
 
 **Validação:** `npm test` aprovou **702 testes** (69 Jest + 633 Node), sem falhas, no fechamento MINOR. Testes focados anteriores cobrem captura pública, falha parcial/cache, identidade/expiração, preservação do progresso, restauração/rollback, rotas e isolamento do artefato. Prévia conferida em desktop e 360px: 20 tarefas ilustradas com prazo futuro, um candidato em revisão e favoritas correspondentes; recarga com filtro por jogo e teclado conferidos. Sem alteração no schema ou banco real. Detalhes e limites em [demo pública](docs/public-demo.md).
+
+Após reproduzir e corrigir a diferença de caminhos no Windows, a suíte completa passou novamente no Node 20/Windows e o [CI Windows/Linux](https://github.com/cristianworth/GachaManagement-cloud/actions/runs/41691936541) aprovou o código corrigido. [Deploy da demo](https://github.com/cristianworth/GachaManagement-cloud/actions/runs/41692412477) concluído; HTML normal/demo 1.20.0, rota direta de Tasks com filtro, capas locais e ausência de configuração/cliente reais no subartefato conferidos na hospedagem.
 
 ## [1.19.0] - 2026-10-31
 

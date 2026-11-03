@@ -207,11 +207,11 @@ Planejamento pedido em 08/10/2026. Inventário completo, contadores fornecidos, 
 - **Complexidade: média.** Concluído, fora das prioridades ativas. Sem framework ou biblioteca adicional de ícones.
 - **Concluído quando:** navegar/trocar perfil continua claro no desktop/celular, com espaço útil para o conteúdo e sem duplicar botões.
 
-## 15. Demo pública isolada para o portfólio — publicação pendente
+## 15. Demo pública isolada para o portfólio — entregue em 1.20.0
 
 - [x] Preparar e validar localmente a prévia estática com banco por visitante, exemplos fictícios, persistência/restauração e artefato sem cliente/credenciais reais; conferir desktop, celular, teclado e rotas diretas.
 - [x] Integrar eventos e capas da API no banco local, preservar escolhas por edição e retirar encerrados automáticos; preparar atualização diária e build completo do Pages com ativação explícita.
 - [x] Priorizar consistência visual na demo: ocultar tarefas vencidas ou sem capa própria carregada, sem substituição por ícones; aplicar a mesma seleção às favoritas e à revisão, preservando dados locais.
 - [x] Obter revisão de Cristian e fechar versão 1.20.0, com 702 testes completos aprovados em 03/11/2026.
-- [ ] Publicar e verificar a URL final antes de oferecer “Experimentar demo” no portfólio.
-- **Estado em 03/11/2026:** implementação validada para a versão 1.20.0; ativação da publicação e conferência da URL pendentes. Sem alteração no Supabase real. [Plano e limites](docs/public-demo.md); [prompt para o portfólio](docs/portfolio-demo-prompt.md).
+- [x] Publicar e verificar a URL final antes de oferecer “Experimentar demo” no portfólio.
+- **Estado em 03/11/2026:** demo publicada em https://cristianworth.github.io/GachaManagement-cloud/demo/, com captura diária ativada após autorização e CI Windows/Linux aprovado. Sem alteração no Supabase real. O botão no portfólio será tratado no outro chat com transporte manual do [prompt de retorno](docs/portfolio-demo-prompt.md). [Entrega e limites](docs/public-demo.md).
