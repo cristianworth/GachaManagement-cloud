@@ -3,19 +3,28 @@ import assert from 'node:assert/strict';
 import {createDomHarness,waitFor} from './helpers/domHarness.mjs';
 import {mockBannerFiles} from './helpers/bannerFiles.mjs';
 
-test('read-only agenda uses published JSON, combines filters and preserves data after failed refresh',async t=>{
+test('read-only agenda shows selected profile games by ending date and keeps valid data on refresh failure',async t=>{
     const {dom,state,close}=createDomHarness();t.after(close);
     const files=mockBannerFiles(t);
     t.mock.method(console,'error',()=>{});
     t.mock.timers.enable({apis:['Date'],now:Date.parse('2026-10-27T12:00:00Z')});
     const {displayGameAgenda}=await import('../js/ui/gameAgenda.js');
+    const {selectProfile}=await import('../js/services/profileSession.js');
     const el=id=>document.getElementById(id);
     const change=(id,value)=>{el(id).value=value;el(id).dispatchEvent(new dom.window.Event('change'));};
+    const ids=()=>[...el('agendaList').children].map(row=>row.dataset.id);
+    const options=()=>[...el('agendaGameFilter').options].map(option=>option.value);
+    const gi=files.files['gi.json'].find(phase=>phase.id==='gi-7.1-phase-2');
+    const hsr=files.files['hsr.json'].filter(phase=>phase.version==='4.6');
+    files.files['gi.json']=[gi];
+    files.files['hsr.json']=hsr;
+    state.games=[{id:1,abbreviation:'GI'},{id:2,abbreviation:'HSR'},{id:6,abbreviation:'CUSTOM'}];
+    // HSR started first, but GI ends first. Other games have published phases too.
     await displayGameAgenda();
-    assert.equal(el('agendaList').children.length,5);
+    assert.deepEqual(options(),['','GI','HSR']);
+    assert.deepEqual(ids(),[gi.id,hsr[1].id]);
     assert.equal(el('agendaForm'),null);assert.equal(el('agendaAdd'),null);
     assert.equal(el('agendaList').querySelector('button'),null,'Agenda has no editing or deletion controls');
-    assert.deepEqual(state.rpcCalls,[],'The calendar is not read from the database');
     change('agendaGameFilter','GI');
     assert.equal(el('agendaList').children.length,1);
     assert.equal(el('agendaList').querySelector('h2').textContent,'Segunda fase');
@@ -35,6 +44,17 @@ test('read-only agenda uses published JSON, combines filters and preserves data 
     assert.equal(el('agendaStatus').hidden,true);
     assert.match(el('agendaList').textContent,/<b>Corrected Pearl<\/b>/);
     assert.equal(el('agendaList').querySelector('b'),null);
+    assert.deepEqual(ids(),hsr.map(phase=>phase.id),'History is also ordered by ending date');
+    selectProfile('demo');
+    state.games=[{id:1,abbreviation:'GI'}];
+    await displayGameAgenda();
+    assert.deepEqual(options(),['','GI']);
+    assert.deepEqual(ids(),[gi.id]);
+    state.games=[];
+    el('agendaRefresh').click();await waitFor(()=>!el('agendaRefresh').disabled);
+    assert.deepEqual(options(),['']);
+    assert.deepEqual(ids(),[]);
+    assert.equal(el('agendaEmpty').hidden,false);
     assert.ok(files.requests.every(request=>request.options.cache==='no-store'));
     assert.deepEqual(state.writes,[]);
 });

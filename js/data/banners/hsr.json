@@ -38,5 +38,58 @@
         "image_url": "https://upload-os-bbs.hoyolab.com/upload/community/2026/10/16/c4ad4cf76730b8e15324610efd9c22c3_8253529473331117229.png"
       }
     ]
+  },
+  {
+    "id": "hsr-4.7-phase-1",
+    "version": "4.7",
+    "phase": 1,
+    "starts_at": "2026-11-11T03:00:00.000Z",
+    "ends_at": "2026-12-02T16:59:00.000Z",
+    "sources": [
+      "https://www.hoyolab.com/article/47351625",
+      "https://www.hoyolab.com/article/47375930"
+    ],
+    "timing_note": "Início estimado pelo retorno da manutenção global. Término dos retornos no horário do servidor América (UTC−5). Aeon ★ Aha continua na segunda fase.",
+    "characters": [
+      {
+        "name": "Aeon ★ Aha",
+        "whole_version": true
+      },
+      {
+        "name": "Silver Wolf LV.999"
+      },
+      {
+        "name": "Sparxie"
+      },
+      {
+        "name": "Yao Guang"
+      }
+    ]
+  },
+  {
+    "id": "hsr-4.7-phase-2",
+    "version": "4.7",
+    "phase": 2,
+    "starts_at": "2026-12-02T17:00:00.000Z",
+    "ends_at": "2026-12-22T20:00:00.000Z",
+    "sources": [
+      "https://www.hoyolab.com/article/47351625"
+    ],
+    "timing_note": "Horário do servidor América: UTC−5.",
+    "characters": [
+      {
+        "name": "Aeon ★ Aha",
+        "whole_version": true
+      },
+      {
+        "name": "Acheron"
+      },
+      {
+        "name": "Dan Heng • Imbibitor Lunae"
+      },
+      {
+        "name": "Jing Yuan"
+      }
+    ]
   }
 ]

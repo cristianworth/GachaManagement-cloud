@@ -19,6 +19,8 @@ Um objeto reúne todos os personagens da fase. Personagens que duram a versão i
 
 ## Atualizar e publicar
 
+Na Agenda, o filtro e a lista incluem somente jogos selecionados no perfil ativo. As fases são ordenadas pela data de término, da mais antiga à mais recente, inclusive quando o histórico está visível.
+
 Use `$update-banners GI` (ou nome/sigla do jogo). A [skill](../.agents/skills/update-banners/SKILL.md) contém o fluxo comum e referências por jogo. Atualize a mesma fase no mesmo ID; mantenha fases encerradas para consulta e acrescente as novas fases confirmadas.
 
 Execute `npm run validate:banners` para todos ou `npm run validate:banners -- GI` para um jogo. O mesmo validador roda no CI. Ele confere IDs, duplicação, personagens, links e períodos com fuso, incluindo datas impossíveis e sobreposição das duas fases. Não consulta fontes externas nem comprova a informação editorial.

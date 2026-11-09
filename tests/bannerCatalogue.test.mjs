@@ -11,12 +11,11 @@ const phase=()=>({id:'gi-7.1-phase-2',version:'7.1',phase:2,starts_at:'2026-10-0
 
 test('the five published files retain confirmed periods, grouped characters and Pearl in two phases',async()=>{
     const files=await Promise.all(BANNER_GAMES.map(async game=>bannerPhasesFromData(JSON.parse(await readFile(new URL(`../js/data/banners/${game.file}`,import.meta.url),'utf8')),game)));
-    assert.equal(files.flat().length,6);
-    assert.equal(files.flat().filter(item=>Date.parse(item.ends_at)>Date.parse('2026-10-27T12:00:00Z')).length,5);
-    assert.deepEqual(files[0][0].characters.map(character=>character.name),['Skirk','Escoffier']);
-    assert.equal(files[0][0].ends_at,'2026-11-03T19:59:00.000Z');
+    const skirkPhase = files[0].find(item=>item.id==='gi-7.1-phase-2');
+    assert.deepEqual(skirkPhase.characters.map(character=>character.name),['Skirk','Escoffier']);
+    assert.equal(skirkPhase.ends_at,'2026-11-03T19:59:00.000Z');
     assert.equal(files[1].filter(item=>item.characters.some(character=>character.name==='Pearl'&&character.whole_version)).length,2);
-    assert.equal(files[3][0].characters.length,3);
+    assert.equal(files[3].find(item=>item.id==='wuwa-3.7-phase-2').characters.length,3);
 });
 
 test('validation rejects ambiguous timezones, impossible dates, duplicate phases and invalid content',()=>{
@@ -70,7 +69,7 @@ test('loader shares requests, caches briefly, forces published updates and rejec
     files.files['gi.json']=good;files.error='Offline';
     t.mock.timers.setTime(Date.parse('2026-10-27T12:07:00Z'));
     await assert.rejects(fetchBannerAgenda(),/Offline/);
-    files.error=null;assert.equal((await fetchBannerAgenda()).length,6);
+    files.error=null;assert.equal((await fetchBannerAgenda()).length,first.length);
     assert.ok(files.requests.every(request=>request.options.cache==='no-store'&&request.url.startsWith('https://example.github.io/GachaManagement-cloud/js/data/banners/')));
     assert.equal(getAppBasePath(new URL('http://127.0.0.1:5510/agenda')),'');
     assert.equal(getAppBasePath(new URL('https://custom.example/agenda')),'');

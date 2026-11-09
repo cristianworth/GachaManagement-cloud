@@ -8,6 +8,18 @@ O projeto segue o versionamento semântico (SemVer), no formato `MAJOR.MINOR.PAT
 - `MINOR`: nova funcionalidade compatível com a versão anterior.
 - `PATCH`: correção de bug ou melhoria pequena, sem nova funcionalidade relevante.
 
+## [1.20.1] - 2026-11-09
+
+### Corrigido
+
+- O Calendário de banners restringe o seletor e a lista aos jogos do perfil ativo. As fases são ordenadas pelo término, inclusive no histórico. A atualização mantém o último catálogo válido quando a leitura falha e exibe apenas jogos confirmados para o perfil.
+
+### Atualizado
+
+- O catálogo acrescenta seis fases confirmadas de Genshin 7.2, Star Rail 4.7, Zenless 3.3 e Wuthering Waves 3.8, com o histórico preservado. NTE 1.5 aguarda confirmação do horário de retorno da manutenção global.
+
+**Validação:** 29 testes focados aprovados durante a implementação, com cobertura de filtro e ordenação da Agenda, falhas de leitura, notificações, perfis e isolamento da demo. O validador aprovou os cinco arquivos e 12 fases.
+
 ## [1.20.0] - 2026-11-03
 
 ### Adicionado

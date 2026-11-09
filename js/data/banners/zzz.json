@@ -19,5 +19,24 @@
         "image_url": "https://upload-os-bbs.hoyolab.com/upload/2026/10/18/0/ab52894afd4dadd30202f7732cdc6614_342236792291687595.png"
       }
     ]
+  },
+  {
+    "id": "zzz-3.3-phase-2",
+    "version": "3.3",
+    "phase": 2,
+    "starts_at": "2026-11-11T17:00:00.000Z",
+    "ends_at": "2026-12-01T19:59:00.000Z",
+    "sources": [
+      "https://zenless.hoyoverse.com/m/en-us/news/167269"
+    ],
+    "timing_note": "Horário do servidor América: UTC−5.",
+    "characters": [
+      {
+        "name": "Severian"
+      },
+      {
+        "name": "Norma"
+      }
+    ]
   }
 ]

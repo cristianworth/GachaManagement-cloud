@@ -19,5 +19,27 @@
         "image_url": "https://sdk.hoyoverse.com/upload/ann/2026/09/23/e77eb5aab52127e55989bb8162d671d8_5676769242945454268_transformed.jpg"
       }
     ]
+  },
+  {
+    "id": "gi-7.2-phase-1",
+    "version": "7.2",
+    "phase": 1,
+    "starts_at": "2026-11-04T03:00:00.000Z",
+    "ends_at": "2026-11-24T22:59:00.000Z",
+    "sources": [
+      "https://genshin.hoyoverse.com/en/news/detail/167139",
+      "https://genshin.hoyoverse.com/en/news/detail/167131"
+    ],
+    "timing_note": "Início estimado pelo retorno da manutenção global. Término no horário do servidor América (UTC−5).",
+    "characters": [
+      {
+        "name": "Mitya",
+        "image_url": "https://sdk.hoyoverse.com/upload/ann/2026/10/29/3cd76fed0001990a4f53fc06ad510ccd_794691239659394631_transformed.png"
+      },
+      {
+        "name": "Furina",
+        "image_url": "https://sdk.hoyoverse.com/upload/ann/2026/10/22/2c8c069aa5b229366b959448bffd3246_2432052726259589754_transformed.png"
+      }
+    ]
   }
 ]

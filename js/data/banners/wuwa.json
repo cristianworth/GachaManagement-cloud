@@ -23,5 +23,96 @@
         "image_url": "https://wuwawiki.com/assets/characters/lynae/banner-1600.webp"
       }
     ]
+  },
+  {
+    "id": "wuwa-3.8-phase-1",
+    "version": "3.8",
+    "phase": 1,
+    "starts_at": "2026-11-12T03:00:00.000Z",
+    "ends_at": "2026-12-03T14:59:00.000Z",
+    "sources": [
+      "https://wutheringwaves.kurogames.com/en/main/news/detail/5736",
+      "https://wutheringwaves.kurogames.com/en/main/news/detail/5705"
+    ],
+    "timing_note": "Início estimado pelo retorno da manutenção global. Término no horário do servidor América (UTC−5). Os personagens de Starpath Reverbs II continuam na segunda fase.",
+    "characters": [
+      {
+        "name": "Lily",
+        "image_url": "https://hw-media-cdn-mingchao.kurogame.com/object/1793894400000/84eoue1x4qq27k4hfr-1793948487422.jpg"
+      },
+      {
+        "name": "Sigrika",
+        "image_url": "https://wuwawiki.com/assets/characters/sigrika/banner-1600.webp"
+      },
+      {
+        "name": "Qiuyuan",
+        "image_url": "https://wuwawiki.com/assets/characters/qiuyuan/banner-1600.webp"
+      },
+      {
+        "name": "Camellya",
+        "image_url": "https://wuwawiki.com/assets/characters/camellya/banner-1600.webp",
+        "whole_version": true
+      },
+      {
+        "name": "Roccia",
+        "image_url": "https://wuwawiki.com/assets/characters/roccia/banner-1600.webp",
+        "whole_version": true
+      },
+      {
+        "name": "Phoebe",
+        "image_url": "https://wuwawiki.com/assets/characters/phoebe/banner-1600.webp",
+        "whole_version": true
+      },
+      {
+        "name": "Brant",
+        "image_url": "https://wuwawiki.com/assets/characters/brant/banner-1600.webp",
+        "whole_version": true
+      }
+    ]
+  },
+  {
+    "id": "wuwa-3.8-phase-2",
+    "version": "3.8",
+    "phase": 2,
+    "starts_at": "2026-12-03T15:00:00.000Z",
+    "ends_at": "2026-12-21T16:59:00.000Z",
+    "sources": [
+      "https://wutheringwaves.kurogames.com/en/main/news/detail/5736"
+    ],
+    "timing_note": "Horário do servidor América: UTC−5.",
+    "characters": [
+      {
+        "name": "Yangyang: Xuanling",
+        "image_url": "https://wuwawiki.com/assets/characters/yangyang-xuanling/banner-1600.webp"
+      },
+      {
+        "name": "Suisui",
+        "image_url": "https://wuwawiki.com/assets/characters/suisui/banner-1600.webp"
+      },
+      {
+        "name": "Hiyuki",
+        "image_url": "https://wuwawiki.com/assets/characters/hiyuki/banner-1600.webp"
+      },
+      {
+        "name": "Camellya",
+        "image_url": "https://wuwawiki.com/assets/characters/camellya/banner-1600.webp",
+        "whole_version": true
+      },
+      {
+        "name": "Roccia",
+        "image_url": "https://wuwawiki.com/assets/characters/roccia/banner-1600.webp",
+        "whole_version": true
+      },
+      {
+        "name": "Phoebe",
+        "image_url": "https://wuwawiki.com/assets/characters/phoebe/banner-1600.webp",
+        "whole_version": true
+      },
+      {
+        "name": "Brant",
+        "image_url": "https://wuwawiki.com/assets/characters/brant/banner-1600.webp",
+        "whole_version": true
+      }
+    ]
   }
 ]

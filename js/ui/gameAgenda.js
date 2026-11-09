@@ -1,4 +1,6 @@
 import { fetchBannerAgenda } from '../services/bannerAgenda.js';
+import { fetchAllGames } from '../database/gameDB.js';
+import { getSelectedProfileId } from '../services/profileSession.js';
 import { BANNER_GAMES } from '../utils/bannerCatalogue.js';
 import { agendaState, formatAgendaDate } from '../utils/gameAgenda.js';
 import { setFeedback } from './feedback.js';
@@ -8,10 +10,11 @@ const el = id => document.getElementById(id);
 
 function render(context) {
     const now = new Date();
-    const entries = context.entries.filter(entry=>(!el('agendaGameFilter').value || entry.abbreviation === el('agendaGameFilter').value)
+    const profileEntries = context.profile === getSelectedProfileId() ? context.entries : [];
+    const entries = profileEntries.filter(entry=>context.games.has(entry.abbreviation)
+        && (!el('agendaGameFilter').value || entry.abbreviation === el('agendaGameFilter').value)
         && (el('agendaShowEnded').checked || Date.parse(entry.ends_at) > +now))
-        .sort((a,b)=>Number(Date.parse(a.ends_at)<=+now)-Number(Date.parse(b.ends_at)<=+now)
-            || Date.parse(a.starts_at)-Date.parse(b.starts_at) || a.id.localeCompare(b.id));
+        .sort((a,b)=>Date.parse(a.ends_at)-Date.parse(b.ends_at) || a.id.localeCompare(b.id));
     const list = el('agendaList'); list.replaceChildren();
     el('agendaEmpty').hidden = !!entries.length;
     for (const entry of entries) {
@@ -50,8 +53,7 @@ function render(context) {
 export async function displayGameAgenda() {
     let context = contexts.get(document);
     if (!context) {
-        context = {entries:[],revision:0}; contexts.set(document,context);
-        el('agendaGameFilter').replaceChildren(new Option('Todos os jogos',''),...BANNER_GAMES.map(game=>new Option(game.name,game.abbreviation)));
+        context = {entries:[],games:new Set(),profile:null,revision:0}; contexts.set(document,context);
         el('agendaGameFilter').onchange = ()=>render(context);
         el('agendaShowEnded').onchange = ()=>render(context);
         el('agendaRefresh').onclick = ()=>load(context,true);
@@ -60,14 +62,31 @@ export async function displayGameAgenda() {
 }
 
 async function load(context, force = false) {
+    const profile = getSelectedProfileId();
     const revision = ++context.revision;
+    const filter = el('agendaGameFilter');
+    if (context.profile !== profile) {
+        context.profile = profile;
+        context.games.clear();
+        filter.replaceChildren(new Option('Todos os jogos',''));
+        render(context);
+        setFeedback('agendaStatus');
+    }
     el('agendaRefresh').disabled = true;
     try {
-        const entries = await fetchBannerAgenda({force});
-        if (revision !== context.revision) return;
-        context.entries = entries; render(context); setFeedback('agendaStatus');
-    } catch (error) {
-        console.error('Failed to read published banners:',error);
-        if (revision === context.revision) setFeedback('agendaStatus','Não foi possível ler os banners publicados. Os dados anteriores foram mantidos. Use Atualizar calendário para tentar novamente.','error');
+        const [games, catalogue] = await Promise.allSettled([fetchAllGames(), fetchBannerAgenda({force})]);
+        if (revision !== context.revision || profile !== getSelectedProfileId()) return;
+        const selected = filter.value;
+        context.games = new Set(games.status === 'fulfilled' ? games.value.map(game=>game.abbreviation) : []);
+        filter.replaceChildren(new Option('Todos os jogos',''), ...BANNER_GAMES
+            .filter(game=>context.games.has(game.abbreviation)).map(game=>new Option(game.name,game.abbreviation)));
+        if ([...filter.options].some(option=>option.value === selected)) filter.value = selected;
+        if (catalogue.status === 'fulfilled') context.entries = catalogue.value;
+        render(context);
+        if (games.status === 'rejected') {
+            setFeedback('agendaStatus','Não foi possível confirmar os jogos do perfil. Use Atualizar calendário para tentar novamente.','error');
+        } else if (catalogue.status === 'rejected') {
+            setFeedback('agendaStatus','Não foi possível ler os banners publicados. Os dados anteriores foram mantidos. Use Atualizar calendário para tentar novamente.','error');
+        } else setFeedback('agendaStatus');
     } finally { if (revision === context.revision) el('agendaRefresh').disabled = false; }
 }

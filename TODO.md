@@ -83,6 +83,7 @@ Complexidade estimada para este projeto (HTML, CSS, JavaScript e Supabase): **ba
 **Base entregue em 1.17.0, em 25/10/2026; refinamento concluído em 1.18.0, em 27/10.** A primeira entrega usava cadastro compartilhado de manutenção/banners no banco. Por decisão de Cristian, a manutenção foi retirada e o calendário passou aos JSONs publicados com o GitHub Pages.
 
 - [x] Agenda somente consulta, com filtro por jogo e fases encerradas; horários de Brasília, personagens e imagens agrupados por versão/fase.
+- [x] Filtro e lista restritos aos jogos do perfil ativo, com ordem crescente de término das fases. [Entrega 1.20.1](CHANGELOG.md#1201---2026-11-09).
 - [x] Cinco arquivos JSON como fonte única do calendário; preferências e leitura continuam por perfil no banco.
 - [x] Skill local `update-banners` com parâmetro de jogo, referências específicas e validação de estrutura, IDs e períodos no CI.
 - **Origem dos dados:** atualização assistida pela skill e publicação dos arquivos. Coleta automática em fontes externas permanece fora desta entrega.
