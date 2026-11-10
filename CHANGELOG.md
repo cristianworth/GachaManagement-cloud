@@ -15,7 +15,11 @@ O projeto segue o versionamento semântico (SemVer), no formato `MAJOR.MINOR.PAT
 - O Calendário de banners abre na visão Mês, com início e fim das fases no dia de Brasília e detalhes com personagens e artes disponíveis. O alternador Mês | Lista compartilha os filtros de jogo e fases encerradas do perfil ativo.
 - A grade exibe etiquetas no desktop e contagens em telas estreitas. No teclado, as setas movem o foco e Enter ou Espaço seleciona o dia.
 
-**Validação:** `npm test` passou com 703 testes (69 Jest e 634 Node), incluindo o isolamento da demo. A prévia no Edge confirmou Mês como padrão, os marcos de Zenless às 13h59 e 14h00 no mesmo dia, teclado e largura de 360 px sem rolagem horizontal.
+### Melhorado
+
+- Ao selecionar um dia com marcos, a Agenda rola para revelar os detalhes quando eles estão parcialmente fora da tela. A rolagem mantém o foco na grade e respeita a preferência por movimento reduzido.
+
+**Validação:** `npm test` passou com 703 testes (69 Jest e 634 Node), incluindo o isolamento da demo. A prévia no Edge confirmou Mês como padrão, os marcos de Zenless às 13h59 e 14h00 no mesmo dia e largura de 360 px sem rolagem horizontal. A rolagem para os detalhes foi conferida em 1920 × 1080 e em 360 × 800, incluindo seleção por teclado e movimento reduzido.
 
 ## [1.20.1] - 2026-11-09
 

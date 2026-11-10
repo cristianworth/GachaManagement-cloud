@@ -103,6 +103,23 @@ function renderDay(date, milestones) {
     }));
 }
 
+function revealDayDetails() {
+    const firstEntry = el('agendaDayEntries').firstElementChild;
+    if (!firstEntry) return;
+
+    const viewportHeight = window.innerHeight;
+    const headingTop = el('agendaDayTitle').getBoundingClientRect().top;
+    // A tall entry only needs to reveal its heading and the start of its details.
+    const detailsBottom = Math.min(firstEntry.getBoundingClientRect().bottom, headingTop + viewportHeight / 2);
+    if (detailsBottom <= viewportHeight) return;
+
+    const toolbarTop = el('agendaGameFilter').closest('.agenda-toolbar').getBoundingClientRect().top;
+    window.scrollBy({
+        top: Math.max(toolbarTop, detailsBottom - viewportHeight),
+        behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth',
+    });
+}
+
 function renderMonth(context, entries, today) {
     const selected = context.selectedDay;
     const year = selected.getUTCFullYear();
@@ -177,6 +194,7 @@ function renderMonth(context, entries, today) {
             button.setAttribute('aria-pressed', 'true');
             context.selectedDay = date;
             renderDay(date, milestones);
+            revealDayDetails();
         };
         buttons.push(button);
         fragment.append(button);
