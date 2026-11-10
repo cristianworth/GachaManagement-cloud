@@ -57,7 +57,7 @@ Abra **http://127.0.0.1:5502**. A prévia reutiliza o frontend e SQL reais, com 
 
 ## Estado e limites
 
-Versão **1.20.1**. Aplicação pessoal em evolução, com perfis públicos e integração de eventos dos cinco jogos ativos. A demonstração isolada está publicada e sua URL foi verificada em 03/11/2026.
+Versão **1.21.0**. Aplicação pessoal em evolução, com perfis públicos e integração de eventos dos cinco jogos ativos. A demonstração isolada está publicada e sua URL foi verificada em 03/11/2026.
 
 O produto é guiado por Cristian, com desenvolvimento assistido por IA. As decisões de calendário, região e comportamento são registradas nos guias e no histórico de entregas. [Changelog](CHANGELOG.md) e [próximas prioridades](docs/roadmap-priorities.md).
 

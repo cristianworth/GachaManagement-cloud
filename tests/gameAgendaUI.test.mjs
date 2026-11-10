@@ -21,6 +21,7 @@ test('read-only agenda shows selected profile games by ending date and keeps val
     state.games=[{id:1,abbreviation:'GI'},{id:2,abbreviation:'HSR'},{id:6,abbreviation:'CUSTOM'}];
     // HSR started first, but GI ends first. Other games have published phases too.
     await displayGameAgenda();
+    el('agendaListView').click();
     assert.deepEqual(options(),['','GI','HSR']);
     assert.deepEqual(ids(),[gi.id,hsr[1].id]);
     assert.equal(el('agendaForm'),null);assert.equal(el('agendaAdd'),null);

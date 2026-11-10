@@ -84,6 +84,7 @@ Complexidade estimada para este projeto (HTML, CSS, JavaScript e Supabase): **ba
 
 - [x] Agenda somente consulta, com filtro por jogo e fases encerradas; horários de Brasília, personagens e imagens agrupados por versão/fase.
 - [x] Filtro e lista restritos aos jogos do perfil ativo, com ordem crescente de término das fases. [Entrega 1.20.1](CHANGELOG.md#1201---2026-11-09).
+- [x] Agenda abre em Mês, com início e fim das fases no dia de Brasília e imagens disponíveis nos detalhes. [Entrega 1.21.0](CHANGELOG.md#1210---2026-11-09).
 - [x] Cinco arquivos JSON como fonte única do calendário; preferências e leitura continuam por perfil no banco.
 - [x] Skill local `update-banners` com parâmetro de jogo, referências específicas e validação de estrutura, IDs e períodos no CI.
 - **Origem dos dados:** atualização assistida pela skill e publicação dos arquivos. Coleta automática em fontes externas permanece fora desta entrega.

@@ -75,7 +75,7 @@
         <section>
             <h1 class="main-title">
                 <a href="https://github.com/cristianworth/GachaManagement-cloud/tree/main" target="_blank">
-                    Gacha Management <span class="version-badge">v1.20.1</span>
+                    Gacha Management <span class="version-badge">v1.21.0</span>
                 </a>
             </h1>
 
@@ -113,10 +113,31 @@
                 <label for="agendaGameFilter">Jogo<select id="agendaGameFilter"><option value="">Todos os jogos</option></select></label>
                 <label class="notice-toggle"><input id="agendaShowEnded" type="checkbox"> Mostrar encerrados</label>
                 <button id="agendaRefresh" class="button-neutral" type="button">Atualizar calendário</button>
+                <div class="agenda-view-switch" role="group" aria-label="Visualização do calendário">
+                    <button id="agendaMonthView" type="button" aria-pressed="true">Mês</button>
+                    <button id="agendaListView" type="button" aria-pressed="false">Lista</button>
+                </div>
             </div>
             <p id="agendaStatus" class="operation-feedback" role="status" hidden></p>
             <p id="agendaEmpty" hidden>Nenhuma fase de banner neste filtro.</p>
-            <ul id="agendaList" class="agenda-list"></ul>
+            <ul id="agendaList" class="agenda-list" hidden></ul>
+            <section id="agendaMonth" aria-labelledby="agendaMonthTitle">
+                <div class="agenda-month-nav">
+                    <button id="agendaPreviousMonth" class="button-neutral" type="button" aria-label="Mês anterior">‹</button>
+                    <h2 id="agendaMonthTitle" aria-live="polite"></h2>
+                    <button id="agendaNextMonth" class="button-neutral" type="button" aria-label="Próximo mês">›</button>
+                    <button id="agendaToday" class="button-neutral" type="button">Hoje</button>
+                </div>
+                <div class="agenda-month-week" aria-hidden="true">
+                    <span>Dom</span><span>Seg</span><span>Ter</span><span>Qua</span><span>Qui</span><span>Sex</span><span>Sáb</span>
+                </div>
+                <div id="agendaMonthDays" class="agenda-month-days" role="group" aria-label="Dias do mês"></div>
+                <section class="agenda-day-panel" aria-labelledby="agendaDayTitle">
+                    <h3 id="agendaDayTitle" aria-live="polite"></h3>
+                    <p id="agendaDayEmpty" hidden>Nenhum início ou fim de fase neste dia.</p>
+                    <ul id="agendaDayEntries" class="agenda-list"></ul>
+                </section>
+            </section>
         </section>
     </div>
 

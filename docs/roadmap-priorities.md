@@ -64,6 +64,8 @@ A área compartilhada pelas abas tem altura fixa, teclado acessível e preserva 
 
 Em 1.20.1, a Agenda passou a mostrar os jogos selecionados no perfil ativo e a ordenar as fases pelo término. [Entrega 1.20.1](../CHANGELOG.md#1201---2026-11-09).
 
+Em 1.21.0, a Agenda passou a abrir em Mês, com início e fim das fases em Brasília e artes disponíveis nos detalhes do dia. [Entrega 1.21.0](../CHANGELOG.md#1210---2026-11-09).
+
 Paginação visual e estimativa local foram entregues em 1.14.0, com testes e conferência visual concluídos. Menu lateral já possui sua base entregue; a leitura periódica silenciosa foi entregue em 1.15.0 em 18/10/2026, com testes aprovados. **Ajustes pontuais no celular foram concluídos em 1.15.1 em 19/10/2026**: alvos de toque maiores, filtros/anotações mais legíveis e conferência de tabelas, formulários e lote, preservando o desktop. O item saiu das prioridades; novos refinamentos dependem de uma necessidade concreta observada no uso. Conferir a necessidade real antes de acrescentar busca, consultas paginadas ou automação de fontes. Não adicionar dependência para paginação, timers ou navegação simples.
 
 Paginação SQL, se necessária depois, deve usar contrato público por perfil, com todos os filtros antes do limite, ordenação estável e total correspondente. Não limitar uma página para só então filtrar suas tarefas no navegador.
