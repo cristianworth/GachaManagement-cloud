@@ -40,6 +40,7 @@ test('Lists report loading and failures without losing saved state or drafts', a
         element('taskRefreshTypeFilter').value = '';
         element('taskHideCompleted').checked = false;
         await tasks.displayAllTasks();
+        element('taskListView').click();
         await games.displayAllGames();
     };
     await seed();

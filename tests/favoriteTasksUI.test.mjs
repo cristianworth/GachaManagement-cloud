@@ -47,6 +47,7 @@ test('favorite stars use real profile SQL, retain filters and recover from failu
 
     await t.test('persisting a star moves its row ahead of earlier deadlines and retains keyboard focus', async () => {
         await tasks.displayAllTasks();
+        el('taskListView').click();
         assert.deepEqual(order(), [early.id, shared, later.id]);
         star(later.id).focus(); star(later.id).click();
         await settled(later.id);

@@ -174,6 +174,7 @@ Planejamento pedido em 08/10/2026. Inventário completo, contadores fornecidos, 
 - **Concluído quando:** a lista pode ser percorrida e filtrada sem perder ordenação, tarefas ou estado das ações.
 - [ ] Segundo recorte condicionado: paginar a consulta no Supabase somente se volume/lentidão reais justificarem, com filtros, ordenação e contagem na RPC pública antes do limite.
 - [ ] Busca por nome é complemento opcional, separado da primeira entrega.
+- [x] Tasks abre em Mês, com detalhes por dia de prazo e seção Sem prazo. A Lista mantém as ações, os filtros e a paginação. [Entrega 1.22.0](CHANGELOG.md#1220---2026-11-16).
 - **Validação e Para testar:** [paginação/resina](docs/task-pagination-stamina.md). Entregue em 1.14.0.
 
 ## 13. Favorite tasks — favoritas no topo

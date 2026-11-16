@@ -71,6 +71,7 @@ test('Real forms and task lists preserve user data and integration controls', as
         assert.equal(row.game_id, 4);
         assert.equal(element('taskDescription').value, '');
         await tasks.displayAllTasks();
+        element('taskListView').click();
         assert.equal(element('gameScheduleBody').rows.length, 1);
     });
 

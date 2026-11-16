@@ -8,6 +8,15 @@ O projeto segue o versionamento semântico (SemVer), no formato `MAJOR.MINOR.PAT
 - `MINOR`: nova funcionalidade compatível com a versão anterior.
 - `PATCH`: correção de bug ou melhoria pequena, sem nova funcionalidade relevante.
 
+## [1.22.0] - 2026-11-16
+
+### Adicionado
+
+- Tasks abre em Mês, com tarefas agrupadas pelo dia do prazo e a seção Sem prazo recolhida por padrão. As duas visões mostram apenas tarefas dos jogos selecionados no perfil. Os filtros e as ações funcionam nas duas visões, e a Lista mantém a paginação.
+- O calendário de Tasks reaproveita a grade do Calendário de banners, com navegação por mês, seleção por teclado e contagens em telas estreitas.
+
+**Validação:** `npm test` passou com 704 testes (69 Jest e 635 Node). A prévia descartável foi conferida em desktop e a 360 px, incluindo seleção por teclado e alternância entre Mês e Lista.
+
 ## [1.21.0] - 2026-11-09
 
 ### Adicionado

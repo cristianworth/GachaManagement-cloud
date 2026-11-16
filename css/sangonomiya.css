@@ -134,11 +134,25 @@ button.agenda-month-day { display:flex; flex-direction:column; align-items:flex-
 .agenda-day-panel .agenda-list { margin:0; gap:0; }
 .agenda-day-panel .agenda-entry:last-child { border-bottom:0; }
 .agenda-day-entry h4 { margin:0; font-size:16px; }
+.task-view-switch { width:max-content; margin:12px 0 16px; }
+#taskMonthDays .agenda-day-tag { max-width:100%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+#taskDay .table-container { margin:12px 0; }
+#taskUndated > summary { margin:0 -14px; padding:10px 14px; border-radius:9px; background:var(--lagoon-wash); cursor:pointer; font-size:18px; font-weight:700; }
+#taskUndated > summary:focus-visible { outline:2px solid var(--lagoon-deep); outline-offset:2px; }
+#taskUndated .table-container { margin:12px 0; }
 @media (max-width:700px) {
     .agenda-view-switch { margin-right:auto; }
     button.agenda-month-day { min-height:48px; align-items:center; padding:3px 0; }
     .agenda-day-tag, .agenda-day-extra { display:none; }
     .agenda-day-count { display:inline-block; padding:0 5px; border-radius:8px; background:#f3e5ef; color:#713e5b; }
+    #taskMonth .task-schedule { display:block; min-width:0; }
+    #taskMonth .task-schedule thead { position:absolute; width:1px; height:1px; overflow:hidden; clip-path:inset(50%); }
+    #taskMonth .task-schedule tbody { display:block; }
+    #taskMonth .task-schedule tbody tr { display:grid; grid-template-columns:auto 1fr; padding:8px 0; border-bottom:1px solid var(--line); }
+    #taskMonth .task-schedule tbody td { border:0; padding:4px 6px; }
+    #taskMonth .task-schedule tbody td:nth-child(n+3) { grid-column:1 / -1; }
+    #taskMonth .task-schedule tbody .task-summary { align-items:center; }
+    #taskMonth .task-schedule tbody .list-actions { display:flex; flex-wrap:wrap; }
 }
 .agenda-entry { display:flex; gap:18px; padding:18px 0; border-bottom:1px solid var(--line); min-width:0; }
 .agenda-entry-content { flex:1; min-width:0; overflow-wrap:anywhere; }
@@ -234,19 +248,19 @@ td { text-align:left; }
 .list-actions { grid-template-columns:repeat(2, auto); gap:8px; margin:0; justify-content:start; }
 .list-actions > button { width:auto; height:auto; min-height:36px; padding:7px 10px; font-size:12px; }
 .list-actions > .button-neutral { grid-column:1 / -1; justify-self:start; }
-#gameSchedule { min-width:760px; table-layout:fixed; width:100%; }
-#gameSchedule th, #gameSchedule td { padding:12px 8px; font-size:12px; vertical-align:middle; overflow-wrap:anywhere; }
-#gameSchedule th { background:#e9f0f7; text-align:left; padding-top:10px; padding-bottom:10px; }
-#gameSchedule th:nth-child(2) { width:52px; white-space:nowrap; }
-#gameSchedule th:nth-child(3) { width:112px; }
-#gameSchedule th:nth-child(5) { width:96px; }
-#gameSchedule th:nth-child(6) { width:124px; }
-#gameSchedule th:nth-child(7) { width:148px; }
-#gameSchedule .list-actions { grid-template-columns:repeat(2,auto); gap:5px; }
-#gameSchedule .list-actions > button { min-height:30px; padding:5px 8px; font-size:11px; }
-#gameScheduleBody tr { background:transparent !important; }
-#gameScheduleBody tr:hover { background:#eaf2f9 !important; }
-#gameScheduleBody tr:has(input[type='checkbox']:checked) .task-summary > span { text-decoration:line-through; color:var(--muted-ink); }
+.task-schedule { min-width:760px; table-layout:fixed; width:100%; }
+.task-schedule th, .task-schedule td { padding:12px 8px; font-size:12px; vertical-align:middle; overflow-wrap:anywhere; }
+.task-schedule th { background:#e9f0f7; text-align:left; padding-top:10px; padding-bottom:10px; }
+.task-schedule th:nth-child(2) { width:52px; white-space:nowrap; }
+.task-schedule th:nth-child(3) { width:112px; }
+.task-schedule th:nth-child(5) { width:96px; }
+.task-schedule th:nth-child(6) { width:124px; }
+.task-schedule th:nth-child(7) { width:148px; }
+.task-schedule .list-actions { grid-template-columns:repeat(2,auto); gap:5px; }
+.task-schedule .list-actions > button { min-height:30px; padding:5px 8px; font-size:11px; }
+.task-schedule tbody tr { background:transparent !important; }
+.task-schedule tbody tr:hover { background:#eaf2f9 !important; }
+.task-schedule tbody tr:has(input[type='checkbox']:checked) .task-summary > span { text-decoration:line-through; color:var(--muted-ink); }
 .task-favorite > td:first-child { box-shadow:inset 3px 0 #c985ab; }
 .task-favorite-toggle { background:transparent; color:#9f798e; font-size:22px; min-width:30px; min-height:36px; }
 .task-favorite-toggle[aria-pressed='true'] { background:#f6e9ef; }
@@ -357,7 +371,7 @@ td { text-align:left; }
     .game-stamina-controls > input, .game-stamina-controls > button, #gameListBody .list-actions > button { height:42px; min-height:42px; }
     .list-actions { width:100%; grid-template-columns:repeat(2,minmax(0,1fr)); }
     .list-actions > button { min-height:42px; }
-    #gameSchedule .list-actions > button { min-height:42px; }
+    .task-schedule .list-actions > button { min-height:42px; }
     .task-favorite-toggle { min-width:42px; min-height:42px; }
     .pending-task-editor { font-size:16px; }
     .task-filters { align-items:flex-start; }

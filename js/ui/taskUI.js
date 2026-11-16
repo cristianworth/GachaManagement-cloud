@@ -15,6 +15,7 @@ import { filterTasks, sortTasks } from '../utils/taskFilters.js';
 import { withLoading } from './loadingState.js';
 import { setFeedback } from './feedback.js';
 import { startSilentRefresh } from './silentRefresh.js';
+import { formatMonthDay, renderMonthGrid } from './monthGrid.js';
 
 let loadedTasks = [];
 let filterInitialized = false;
@@ -23,7 +24,18 @@ let loadingTaskBatch = false;
 let batchDataLoaded = false;
 let taskPage = 1;
 let loadedTaskProfile = null;
+let taskMonthView = true;
+let selectedTaskDay;
 const pendingFavoriteTasks = new Set();
+
+// Use the same local date as the deadline shown in the Tasks list.
+function taskCalendarDay(date) {
+    return new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+}
+
+function taskListFocusTarget() {
+    return document.getElementById(taskMonthView ? 'taskMonthView' : 'taskPageSize');
+}
 
 export async function displayAllTasks({ successMessage = '', silent = false, canApply = () => true, gameId } = {}) {
     const load = async () => {
@@ -41,7 +53,7 @@ export async function displayAllTasks({ successMessage = '', silent = false, can
             if (!canApply()) return null;
             const focused = silent ? document.activeElement : null;
             updateTaskList(tasks, games, gameId);
-            if (focused?.id) (document.getElementById(focused.id) ?? document.getElementById('taskPageSize')).focus();
+            if (focused?.id) (document.getElementById(focused.id) ?? taskListFocusTarget()).focus();
             startSilentRefresh('taskList', canApply => displayAllTasks({ silent: true, canApply }),
                 () => loadingTaskBatch || pendingFavoriteTasks.size > 0 || isTaskBatchPickerBusy());
             if (!silent) setFeedback('taskListMessage', successMessage);
@@ -63,7 +75,10 @@ export async function displayAllTasks({ successMessage = '', silent = false, can
 
 function updateTaskList(tasks, games, gameId) {
     const profile = getSelectedProfileId();
-    if (profile !== loadedTaskProfile) taskPage = 1;
+    if (profile !== loadedTaskProfile) {
+        taskPage = 1;
+        document.getElementById('taskUndated').open = false;
+    }
     loadedTaskProfile = profile;
     loadedTasks = tasks;
     loadedGames = games;
@@ -91,6 +106,30 @@ function updateTaskList(tasks, games, gameId) {
         document.getElementById('taskNextPage').addEventListener('click', () => {
             taskPage++; renderTaskList();
         });
+        document.getElementById('taskMonthView').addEventListener('click', () => {
+            taskMonthView = true;
+            renderTaskList();
+        });
+        document.getElementById('taskListView').addEventListener('click', () => {
+            taskMonthView = false;
+            renderTaskList();
+        });
+        const moveMonth = offset => {
+            selectedTaskDay = new Date(Date.UTC(selectedTaskDay.getUTCFullYear(), selectedTaskDay.getUTCMonth() + offset, 1));
+            renderTaskList();
+        };
+        document.getElementById('taskPreviousMonth').onclick = () => moveMonth(-1);
+        document.getElementById('taskNextMonth').onclick = () => moveMonth(1);
+        document.getElementById('taskToday').onclick = () => {
+            selectedTaskDay = taskCalendarDay(new Date());
+            renderTaskList();
+        };
+        const table = document.getElementById('gameSchedule');
+        const undated = table.cloneNode(false);
+        undated.removeAttribute('id');
+        undated.append(table.tHead.cloneNode(true));
+        undated.createTBody().id = 'taskUndatedBody';
+        document.getElementById('taskUndatedTable').append(undated);
         document.getElementById('loadTaskBatchBtn').addEventListener('click', () => handleLoadTaskBatch());
         initializeTaskBatchPicker(handleLoadTaskBatch, updateBatchControls);
         filterInitialized = true;
@@ -104,25 +143,87 @@ function renderTaskList() {
     const refreshType = document.getElementById('taskRefreshTypeFilter').value;
     const hideCompleted = document.getElementById('taskHideCompleted').checked;
     const taskPageSize = Number(document.getElementById('taskPageSize').value) === 10 ? 10 : 20;
-    const tasks = sortTasks(filterTasks(loadedTasks, { gameId, interval: refreshType, hideCompleted }));
+    const selectedGames = new Set(loadedGames.map(game => String(game.id)));
+    const profileTasks = loadedTaskProfile === getSelectedProfileId()
+        ? loadedTasks.filter(task => selectedGames.has(String(task.gameId))) : [];
+    const tasks = sortTasks(filterTasks(profileTasks, { gameId, interval: refreshType, hideCompleted }));
+    const table = document.getElementById('taskTableContainer');
+    const pagination = document.getElementById('taskPagination');
+    document.getElementById('taskMonthView').setAttribute('aria-pressed', String(taskMonthView));
+    document.getElementById('taskListView').setAttribute('aria-pressed', String(!taskMonthView));
+    document.getElementById('taskMonth').hidden = !taskMonthView;
+    pagination.hidden = taskMonthView;
+    document.getElementById('taskListStatus').textContent = tasks.length
+        ? `${tasks.length} activities` : 'No activities match the selected filters.';
+    if (taskMonthView) {
+        document.getElementById('taskDay').append(table);
+        renderTaskMonth(tasks);
+        return;
+    }
+
+    document.getElementById('taskUndatedBody').replaceChildren();
+    pagination.before(table);
+    table.hidden = false;
     const pageCount = Math.max(1, Math.ceil(tasks.length / taskPageSize));
     taskPage = Math.max(1, Math.min(taskPage, pageCount));
     const offset = (taskPage - 1) * taskPageSize;
-    const gameScheduleBody = document.getElementById("gameScheduleBody");
-    gameScheduleBody.innerHTML = ''; // clear data
-
-    tasks.slice(offset, offset + taskPageSize).forEach(task => {
-        const row = createTaskRow(task);
-        gameScheduleBody.appendChild(row);
-        addTaskEventListeners(task);
-    });
-    document.getElementById('taskListStatus').textContent = tasks.length
-        ? `${tasks.length} activities` : 'No activities match the selected filters.';
+    renderTaskRows('gameScheduleBody', tasks.slice(offset, offset + taskPageSize));
     document.getElementById('taskPageStatus').textContent = tasks.length
         ? `${offset + 1}–${Math.min(offset + taskPageSize, tasks.length)} de ${tasks.length} atividades · Página ${taskPage} de ${pageCount}`
         : '0 atividades';
     document.getElementById('taskPreviousPage').disabled = taskPage === 1;
     document.getElementById('taskNextPage').disabled = taskPage === pageCount;
+}
+
+function renderTaskMonth(tasks) {
+    const today = taskCalendarDay(new Date());
+    selectedTaskDay ??= today;
+    const byDay = new Map();
+    const undated = [];
+    for (const task of tasks) {
+        if (!task.expirationDate) {
+            undated.push(task);
+            continue;
+        }
+        const deadline = taskCalendarDay(new Date(task.expirationDate));
+        if (deadline.getUTCFullYear() !== selectedTaskDay.getUTCFullYear()
+            || deadline.getUTCMonth() !== selectedTaskDay.getUTCMonth()) continue;
+        const day = deadline.getUTCDate();
+        if (!byDay.has(day)) byDay.set(day, []);
+        byDay.get(day).push(task);
+    }
+    renderMonthGrid({
+        grid: document.getElementById('taskMonthDays'),
+        title: document.getElementById('taskMonthTitle'),
+        selected: selectedTaskDay, today, byDay,
+        labelFor: task => task.description,
+        singular: 'tarefa', plural: 'tarefas',
+        selectDay: (date, dayTasks) => {
+            selectedTaskDay = date;
+            renderTaskDay(dayTasks);
+        },
+    });
+    renderTaskDay(byDay.get(selectedTaskDay.getUTCDate()) ?? []);
+    document.getElementById('taskUndated').hidden = undated.length === 0;
+    renderTaskRows('taskUndatedBody', undated);
+}
+
+function renderTaskDay(tasks) {
+    const title = document.getElementById('taskDayTitle');
+    const heading = formatMonthDay(selectedTaskDay);
+    if (title.textContent !== heading) title.textContent = heading;
+    document.getElementById('taskDayEmpty').hidden = tasks.length > 0;
+    document.getElementById('taskTableContainer').hidden = tasks.length === 0;
+    renderTaskRows('gameScheduleBody', tasks);
+}
+
+function renderTaskRows(bodyId, tasks) {
+    const body = document.getElementById(bodyId);
+    body.replaceChildren();
+    for (const task of tasks) {
+        body.append(createTaskRow(task));
+        addTaskEventListeners(task);
+    }
 }
 
 function createTaskRow(task) {
@@ -231,7 +332,7 @@ async function handleTaskFavorite(task, button) {
         if (currentButton) {
             currentButton.disabled = false;
             if (hadFocus) currentButton.focus();
-        } else if (hadFocus) document.getElementById('taskPageSize').focus();
+        } else if (hadFocus) taskListFocusTarget().focus();
     }
 }
 

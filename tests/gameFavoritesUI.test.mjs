@@ -136,6 +136,7 @@ test('Games reads profile favorites without changing notes or the daily workflow
         await seed([favorite(1, 'First game'), favorite(2, 'Second game', { game_id: 2 })]);
         state.tasks.push(...Array.from({length:24}, (_, index) => favorite(index + 3, `Extra ${index}`, {is_favorite:false})));
         await Router.navigateTo('/tasks');
+        el('taskListView').click();
         el('taskGameFilter').value = '1'; el('taskGameFilter').dispatchEvent(new dom.window.Event('change'));
         el('taskPageSize').value = '10'; el('taskPageSize').dispatchEvent(new dom.window.Event('change'));
         el('taskNextPage').click(); assert.match(el('taskPageStatus').textContent, /Página 2/);
