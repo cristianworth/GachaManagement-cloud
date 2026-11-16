@@ -75,7 +75,7 @@
         <section>
             <h1 class="main-title">
                 <a href="https://github.com/cristianworth/GachaManagement-cloud/tree/main" target="_blank">
-                    Gacha Management <span class="version-badge">v1.21.0</span>
+                    Gacha Management <span class="version-badge">v1.22.0</span>
                 </a>
             </h1>
 
@@ -203,8 +203,32 @@
             <p id="taskBatchHint">Adiciona as atividades padrão dos jogos selecionados neste perfil, preservando tarefas existentes e exclusões. O filtro da lista não limita o lote.</p>
             <p id="taskListMessage" class="operation-feedback" role="status" hidden></p>
             <button id="taskListRetry" class="button-neutral" type="button" hidden>Tentar novamente</button>
-            <div class="table-container">
-                <table id="gameSchedule">
+            <div class="agenda-view-switch task-view-switch" role="group" aria-label="Visualização de Tasks">
+                <button id="taskMonthView" type="button" aria-pressed="true">Mês</button>
+                <button id="taskListView" type="button" aria-pressed="false">Lista</button>
+            </div>
+            <section id="taskMonth" aria-labelledby="taskMonthTitle">
+                <div class="agenda-month-nav">
+                    <button id="taskPreviousMonth" class="button-neutral" type="button" aria-label="Mês anterior">‹</button>
+                    <h2 id="taskMonthTitle" aria-live="polite"></h2>
+                    <button id="taskNextMonth" class="button-neutral" type="button" aria-label="Próximo mês">›</button>
+                    <button id="taskToday" class="button-neutral" type="button">Hoje</button>
+                </div>
+                <div class="agenda-month-week" aria-hidden="true">
+                    <span>Dom</span><span>Seg</span><span>Ter</span><span>Qua</span><span>Qui</span><span>Sex</span><span>Sáb</span>
+                </div>
+                <div id="taskMonthDays" class="agenda-month-days" role="group" aria-label="Dias do mês"></div>
+                <section id="taskDay" class="agenda-day-panel" aria-labelledby="taskDayTitle">
+                    <h3 id="taskDayTitle" aria-live="polite"></h3>
+                    <p id="taskDayEmpty" hidden>Nenhuma tarefa com prazo neste dia.</p>
+                </section>
+                <details id="taskUndated" class="agenda-day-panel" hidden>
+                    <summary id="taskUndatedTitle">Sem prazo</summary>
+                    <div id="taskUndatedTable" class="table-container"></div>
+                </details>
+            </section>
+            <div id="taskTableContainer" class="table-container">
+                <table id="gameSchedule" class="task-schedule">
                 <thead>
                     <tr>
                         <th hidden>ID</th>
@@ -221,7 +245,7 @@
                 </tbody>
                 </table>
             </div>
-            <nav class="task-pagination" aria-label="Paginação de tarefas">
+            <nav id="taskPagination" class="task-pagination" aria-label="Paginação de tarefas" hidden>
                 <label for="taskPageSize">Itens por página
                     <select id="taskPageSize"><option value="20">20</option><option value="10">10</option></select>
                 </label>

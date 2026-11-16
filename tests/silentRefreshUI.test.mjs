@@ -51,6 +51,7 @@ test('six-minute saved-data refresh is silent, read-only and bound to the visibl
         if (view === 'games') await games.displayAllGames();
         else {
             await tasks.displayAllTasks();
+            el('taskListView').click();
             el('taskGameFilter').value = ''; change('taskGameFilter');
             el('taskRefreshTypeFilter').value = ''; change('taskRefreshTypeFilter');
             el('taskHideCompleted').checked = false; change('taskHideCompleted');

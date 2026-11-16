@@ -19,6 +19,7 @@ test('Calendar edits and renewal preserve profile choices', async t => {
         game_id: 42, game_description: 'Genshin', is_done: true, is_favorite: true, expiration_date: '2099-01-01T09:00:00Z',
         shared_key: 'endgame:GI:imaginarium-theater', cover_url: 'https://example.com/custom.jpg' }];
     await ui.displayAllTasks();
+    el('taskListView').click();
     await dropdowns.populateGameDropDown();
     dropdowns.populateRefreshTypeDropDown();
     forms.initializeTaskForm();

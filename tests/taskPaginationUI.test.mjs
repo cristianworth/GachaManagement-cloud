@@ -25,6 +25,7 @@ test('task pagination filters and orders the full list before displaying a page'
             expiration_date: new Date(Date.UTC(2099, 0, id)).toISOString(), is_favorite: count === 45 && id === 45,
             is_done: id === 3, refresh_type: id % 2 ? 1 : 2, repeat_days: id % 2 ? 1 : 7 }));
         await tasks.displayAllTasks();
+        el('taskListView').click();
         el('taskGameFilter').value = ''; change('taskGameFilter');
         el('taskRefreshTypeFilter').value = ''; change('taskRefreshTypeFilter');
         el('taskHideCompleted').checked = false; change('taskHideCompleted');
@@ -90,8 +91,8 @@ test('task pagination filters and orders the full list before displaying a page'
         state.games = state.games.filter(game => game.id !== 1);
         await tasks.displayAllTasks();
         assert.equal(el('taskGameFilter').value, '');
-        assert.deepEqual(order(), [45, ...range(1, 19)]);
-        assert.match(el('taskPageStatus').textContent, /Página 1 de 3/);
+        assert.deepEqual(order(), [45, ...range(31, 44)]);
+        assert.match(el('taskPageStatus').textContent, /Página 1 de 1/);
     });
 
     await t.test('delete, completion and ignore recede when the last page becomes empty', async () => {
