@@ -6,17 +6,19 @@ Saíram da tierlist de implementação: perfis/seleção de jogos, sincronizaç�
 
 S = próximas melhorias de uso; A = alto retorno depois da base imediata; B = necessidade específica ou trabalho maior; C = acabamento ou mudança condicionada a evidência. Ordem dentro de cada tier indica preferência; complexidade é relativa, sem previsão de prazo.
 
+As [issues abertas](https://github.com/cristianworth/GachaManagement-cloud/issues) são o backlog. Esta tabela registra a ordem e o motivo das prioridades.
+
 | Tier | Ordem | Melhoria | Por que esta posição | Complexidade / referência |
 | --- | --- | --- | --- | --- |
-| **A** | 1 | Alerta de resina alvo com contagem regressiva | Benefício pessoal claro, depois de deixar a estimativa acompanhando o tempo. Alerta dentro do site; notificações com site fechado ficam separadas. | Média. TODO 6; [levantamento](resin-alerts-plan.md). |
-| **B** | 1 | Calendário das próximas fases de Endstate Matrix | Necessário quando a próxima fase estiver disponível; requer fonte verificada e referência absoluta, sem inventar recorrência nem pedir datas na importação. | Média/alta. TODO 9.1; [limites](expanded-task-batch.md). |
-| **B** | 2 | Ampliar catálogo da API/variantes regionais | Adicionar primeiro jogos que Cristian passar a acompanhar, com horários e metadados verificados; catálogo inteiro não é necessidade de escala. | Alta. TODO 10. |
-| **B** | 3 | Fallback inglês/chinês | Avaliar diante de lacunas reais; associação entre edições precisa ser confiável. | Alta. Parte restante do TODO 8. |
-| **B** | 4 | Poucos testes de navegador no CI e conferência do Pages | Complementa os testes existentes quando houver falha visual recorrente ou recorte de layout; não priorizar infraestrutura sobre os ajustes cotidianos. | Média. Aproveitar CI existente. |
-| **C** | 1 | Favicon e consistência dos ícones restantes | Os ícones principais acompanham o menu; acabamento geral fica depois do uso. | Baixa/média. TODO 4. |
-| **C** | 2 | Indicador de evento recém-adicionado | Facilita identificar novidades sem alterar o fluxo principal. | Baixa/média. TODO 11. |
-| **C** | 3 | Busca por nome de tarefa — opcional | Complemento se filtros e paginação ainda dificultarem encontrar uma atividade; não incluir automaticamente no primeiro recorte. | Baixa. Complemento futuro do TODO 12. |
-| **C** | 4 | Paginação real da consulta no Supabase | Só promover com lentidão/crescimento medido. Exige filtros, ordenação e contagem na RPC, além da navegação. | Média. Segunda etapa do TODO 12. |
+| **A** | 1 | [Alerta de resina alvo com contagem regressiva](https://github.com/cristianworth/GachaManagement-cloud/issues/4) | Benefício pessoal claro, depois de deixar a estimativa acompanhando o tempo. Alerta dentro do site; notificações com site fechado ficam separadas. | Média. TODO 6; [levantamento](resin-alerts-plan.md). |
+| **B** | 1 | [Calendário das próximas fases de Endstate Matrix](https://github.com/cristianworth/GachaManagement-cloud/issues/5) | Necessário quando a próxima fase estiver disponível; requer fonte verificada e referência absoluta, sem inventar recorrência nem pedir datas na importação. | Média/alta. TODO 9.1; [limites](expanded-task-batch.md). |
+| **B** | 2 | [Ampliar catálogo da API/variantes regionais](https://github.com/cristianworth/GachaManagement-cloud/issues/6) | Adicionar primeiro jogos que Cristian passar a acompanhar, com horários e metadados verificados; catálogo inteiro não é necessidade de escala. | Alta. TODO 10. |
+| **B** | 3 | [Fallback inglês/chinês](https://github.com/cristianworth/GachaManagement-cloud/issues/7) | Avaliar diante de lacunas reais; associação entre edições precisa ser confiável. | Alta. Parte restante do TODO 8. |
+| **B** | 4 | [Poucos testes de navegador no CI e conferência do Pages](https://github.com/cristianworth/GachaManagement-cloud/issues/8) | Complementa os testes existentes quando houver falha visual recorrente ou recorte de layout; não priorizar infraestrutura sobre os ajustes cotidianos. | Média. Aproveitar CI existente. |
+| **C** | 1 | [Favicon e consistência dos ícones restantes](https://github.com/cristianworth/GachaManagement-cloud/issues/9) | Os ícones principais acompanham o menu; acabamento geral fica depois do uso. | Baixa/média. TODO 4. |
+| **C** | 2 | [Indicador de evento recém-adicionado](https://github.com/cristianworth/GachaManagement-cloud/issues/10) | Facilita identificar novidades sem alterar o fluxo principal. | Baixa/média. TODO 11. |
+| **C** | 3 | [Busca por nome de tarefa — opcional](https://github.com/cristianworth/GachaManagement-cloud/issues/11) | Complemento se filtros e paginação ainda dificultarem encontrar uma atividade; não incluir automaticamente no primeiro recorte. | Baixa. Complemento futuro do TODO 12. |
+| **C** | 4 | [Paginação real da consulta no Supabase](https://github.com/cristianworth/GachaManagement-cloud/issues/12) | Só promover com lentidão/crescimento medido. Exige filtros, ordenação e contagem na RPC, além da navegação. | Média. Segunda etapa do TODO 12. |
 
 ## Recortes e continuidade
 
@@ -31,10 +33,9 @@ Prioridade explicitamente solicitada por Cristian em 02/11/2026. Reutilizar a in
 - [x] Obter revisão de Cristian na prévia local e fechar versão 1.20.0 com 702 testes completos aprovados.
 - [x] Ativar e publicar o workflow do Pages após autorização específica da configuração.
 - [x] Verificar a URL final e seu isolamento antes de marcar a demo como publicada.
-- [x] Preparar o [prompt para transporte manual ao chat do portfólio](portfolio-demo-prompt.md).
-- [ ] Após publicação verificada, usar o prompt para adicionar “Experimentar demo”. Não alterar `D:/Repo/portfolio` nesta entrega.
+- [x] Vincular a demonstração no portfólio.
 
-O perfil público chamado Demo pertence ao banco compartilhado e não substitui esta demonstração. A [URL pública da demo](https://cristianworth.github.io/GachaManagement-cloud/demo/) foi verificada em 03/11/2026; resta usar o prompt no chat do portfólio para adicionar o botão, sem alterar aquele repositório nesta entrega. [Changelog](../CHANGELOG.md#1200---2026-11-03).
+O perfil público chamado Demo pertence ao banco compartilhado e não substitui esta demonstração. A demo isolada tem URL própria, verificada em 03/11/2026 e usada pelo portfólio. [Abrir demonstração](https://cristianworth.github.io/GachaManagement-cloud/demo/) · [Changelog](../CHANGELOG.md#1200---2026-11-03).
 
 **1. Paginação visual — entregue em 1.14.0.** Aplicar filtros por jogo/intervalo/conclusão e ordenar favoritas → prazo → ID antes de separar as páginas. Padrão de 20 com opção de 10; rodapé com intervalo/total e Anterior/Próxima. Mudança de filtro volta à primeira página. Concluir, favoritar ou excluir conserva a página válida; recuar quando a página ficar vazia. Contagens e ordenação consideram a lista filtrada inteira. Continuar carregando todas as tarefas deve ficar explícito: isso melhora a leitura, não reduz os registros consultados. Busca por nome é opcional e separada.
 

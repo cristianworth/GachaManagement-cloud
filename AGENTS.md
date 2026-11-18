@@ -13,6 +13,7 @@ Leia [docs/project-conventions.md](docs/project-conventions.md) antes de alterar
 
 ## Colaboração e convenções
 
+- Registre decisões e próximos passos nas issues, no PR ou no guia existente. Crie handoff em `docs/handoffs/` apenas quando solicitado e remova a passagem local depois que a entrega estiver concluída.
 - Perguntas sobre um problema, alternativas ou “qual seria a melhor forma?” pedem primeiro uma resposta e um diálogo. Não trate uma consulta como autorização para implementar a solução sugerida.
 - Quando houver dúvidas pendentes que afetem o comportamento, a interface ou o escopo, responda às perguntas, explique os trade-offs e alinhe a decisão com Cristian antes de alterar o código. Leituras necessárias para fundamentar a resposta são permitidas; não implemente enquanto o fluxo ainda estiver em discussão. Depois do alinhamento e do pedido de implementação, prossiga sem pedir confirmação para cada detalhe rotineiro.
 - Em pedidos mistos, respeite o escopo de cada autorização: autorizar o commit de uma entrega validada não autoriza implementar uma alternativa ainda em discussão para outro problema.
@@ -25,9 +26,15 @@ Leia [docs/project-conventions.md](docs/project-conventions.md) antes de alterar
 - Antes de sincronizar uma integração nova, valide horários/identidade, teste schema e migrações e aplique a migração no destino. WuWa/NTE estão ativos; novas edições sem base de horário conferida ficam em revisão.
 - Antes de commit/merge, leia o changelog e consulte Cristian sobre a versão, salvo autorização já dada para a mesma entrega. Mantenha manifests, README e versão exibida consistentes.
 
+## Fluxo de contribuição
+
+- Para trabalhos solicitados ou aprovados, você pode criar issues quando houver algo a acompanhar, criar branches de trabalho, fazer commits locais, enviar essas branches e abrir ou atualizar PRs, inclusive em rascunho.
+- Antes de integrar uma branch, aguarde a aprovação de Cristian para a versão revisada e confirme que o CI passou. Se o conteúdo mudar após a aprovação, mostre o novo diff e aguarde nova aprovação.
+- Push direto em `main` exige autorização explícita. Depois do merge autorizado, acompanhe o deploy e confirme o resultado publicado.
+
 ## Fechamento com a skill commit
 
 - Quando Cristian invocar `$commit`, selecionar a skill `commit` no menu `/`, enviar `/commit` como pedido textual ou pedir o fechamento equivalente, leia [.agents/skills/commit/SKILL.md](.agents/skills/commit/SKILL.md) e aplique seu fluxo.
-- Essa invocação autoriza escolher a numeração conforme o impacto, atualizar changelog/versões, retirar tarefas concluídas do roadmap ativo, ajustar pendências, validar, commitar e fazer push da entrega atual, sem nova confirmação dessas ações. Respeite restrições específicas do pedido.
-- Perguntas sobre o comando e pedidos para criar/editar a skill não executam o fechamento. A descoberta automática da skill também não substitui o pedido humano de commit/push.
+- Essa invocação autoriza escolher a versão conforme o impacto, atualizar changelog e roadmap, validar e preparar a entrega no PR. As regras de aprovação do fluxo de contribuição se aplicam à integração e ao push direto em `main`.
+- Perguntas sobre o comando e pedidos para criar ou editar a skill tratam da configuração do fluxo.
 - `/commit` também é uma convenção textual quando a mensagem chega ao agente. A disponibilidade da skill no menu depende do aplicativo; `$commit` é a menção direta à skill.

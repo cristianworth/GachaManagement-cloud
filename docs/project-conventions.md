@@ -72,7 +72,7 @@ Exemplo aprovado por Cristian: “Para testar, recarregue a prévia, selecione N
 4. Conferir projeto de destino e uma única sigla do jogo; aplicar/verificar migração antes de sincronizar. Respeitar a ordem: WuWa antes de NTE. Uma migração anterior reaplicada pode substituir funções; reaplicar também as posteriores nessa ordem.
 5. Sincronizar, repetir e conferir ausência de duplicatas, revisão e preservação dos outros jogos. Registrar números reais e qualquer pendência.
 
-Antes de commit/merge, ler `CHANGELOG.md`, sugerir versão e consultar Cristian quando ainda não houver autorização no mesmo escopo. Não incrementar a cada commit da mesma entrega. Commit, push e nova versão dependem do pedido vigente.
+Antes de commit/merge, ler `CHANGELOG.md`, sugerir versão e consultar Cristian quando ainda não houver autorização no mesmo escopo. Manter a mesma versão nos commits de uma entrega. Para branches de trabalho, PRs e aprovações de integração, seguir o [fluxo de contribuição](../AGENTS.md#fluxo-de-contribuição).
 
 ## Perfis (versão 1.6.0)
 

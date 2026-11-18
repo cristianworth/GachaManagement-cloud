@@ -1,6 +1,8 @@
 # Próximas melhorias
 
-Prioridades reordenadas em [docs/roadmap-priorities.md](docs/roadmap-priorities.md). Sincronização diária, weeklies, perfis, seleção de jogos e política de eventos ficam fora dessa tier list porque já foram implementados; contexto de continuação em [docs/handoff-daily-sync-weeklies.md](docs/handoff-daily-sync-weeklies.md).
+As [prioridades do roadmap](docs/roadmap-priorities.md) refletem as próximas entregas. A sincronização diária, as weeklies, os perfis, a seleção de jogos e a política de eventos já foram implementados. [Integrações](docs/event-integrations.md) · [Weeklies](docs/weekly-batches.md).
+
+Use as [issues do GitHub](https://github.com/cristianworth/GachaManagement-cloud/issues) para acompanhar tarefas abertas. Os itens abaixo registram o contexto e o histórico das entregas.
 
 Eventos atualizados em [docs/event-integrations.md](docs/event-integrations.md): GI/HSR/ZZZ/WuWa/NTE ativos na versão 1.4.0; fixtures, testes SQL/DOM e CI prontos. WuWa/NTE distinguem horários e edições; Moonlit Path usa a estimativa aceita por Cristian. Convenções para próximas sessões em [docs/project-conventions.md](docs/project-conventions.md).
 
@@ -135,7 +137,7 @@ Complexidade estimada para este projeto (HTML, CSS, JavaScript e Supabase): **ba
 
 ## 9.1. Evolução: Lote único de weeklies e desafios
 
-Planejamento pedido em 08/10/2026. Inventário completo, contadores fornecidos, referências e sequência em [docs/task-batch-plan.md](docs/task-batch-plan.md). Itens 1 e 2 fechados em 1.10.0; seleção/imagens e recriação fechadas até 1.12.0. SQL incremental aplicado por Cristian em 09/10/2026. Conferência visual documentada em: [recorte](docs/task-batch-personalization.md). Contexto anterior: [handoff](docs/handoff-task-batch-personalization.md).
+Planejamento pedido em 08/10/2026. Inventário completo, contadores fornecidos, referências e sequência no [plano do lote](docs/task-batch-plan.md). Os itens 1 e 2 foram entregues em 1.10.0. Seleção, imagens e recriação foram concluídas até 1.12.0, com SQL incremental aplicado por Cristian em 09/10/2026. [Validação visual](docs/task-batch-personalization.md) · [Contrato de recriação](docs/task-batch-maintenance.md).
 
 - [x] Unificar os nove itens já implementados em uma entrada **Carregar Lote**, usando os jogos habilitados no perfil e operação SQL transacional. Manter categorias e recorrências internas, tarefas existentes e exclusões.
 - [x] Acrescentar Deadly Assault e Shiyu Defense do ZZZ; fase 3.7 do Endstate Matrix, Whimpering Wastes e Hazard Zone de Tower of Adversity do WuWa. Calendário América, referência global Endstate aceita por Cristian e registro por definição preservando lotes antigos.
@@ -217,4 +219,4 @@ Planejamento pedido em 08/10/2026. Inventário completo, contadores fornecidos, 
 - [x] Priorizar consistência visual na demo: ocultar tarefas vencidas ou sem capa própria carregada, sem substituição por ícones; aplicar a mesma seleção às favoritas e à revisão, preservando dados locais.
 - [x] Obter revisão de Cristian e fechar versão 1.20.0, com 702 testes completos aprovados em 03/11/2026.
 - [x] Publicar e verificar a URL final antes de oferecer “Experimentar demo” no portfólio.
-- **Estado em 03/11/2026:** demo publicada em https://cristianworth.github.io/GachaManagement-cloud/demo/, com captura diária ativada após autorização e CI Windows/Linux aprovado. Sem alteração no Supabase real. O botão no portfólio será tratado no outro chat com transporte manual do [prompt de retorno](docs/portfolio-demo-prompt.md). [Entrega e limites](docs/public-demo.md).
+- Demo publicada em 03/11/2026, com captura diária e CI Windows/Linux aprovado. O portfólio aponta para a [demonstração isolada](https://cristianworth.github.io/GachaManagement-cloud/demo/). [Entrega e limites](docs/public-demo.md).

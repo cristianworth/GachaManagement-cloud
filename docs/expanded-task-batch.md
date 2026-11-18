@@ -1,6 +1,6 @@
 # Expansão do Lote — ZZZ e WuWa
 
-Entrega **1.10.0**, de 08/10/2026, com commit/push autorizados por Cristian. Inventário completo e roteiro em [task-batch-plan.md](task-batch-plan.md); banco live intocado. Continuidade em [handoff-task-batch-personalization.md](handoff-task-batch-personalization.md).
+Entrega **1.10.0**, de 08/10/2026, com commit/push autorizados por Cristian. Inventário completo e roteiro em [task-batch-plan.md](task-batch-plan.md); banco live intocado. [Personalização do lote](task-batch-personalization.md).
 
 ## Calendários e procedência
 
