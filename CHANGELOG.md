@@ -291,7 +291,7 @@ Cristian validou a prévia e autorizou commit e versão 1.11.0 em 09/10/2026. Pu
 
 - Preferência de importações automáticas sem solicitar datas na interface; datas observadas por Cristian no jogo são evidência válida identificada.
 - Inventário, calendário, fontes e limitações em [docs/task-batch-plan.md](docs/task-batch-plan.md) e [docs/expanded-task-batch.md](docs/expanded-task-batch.md).
-- [Handoff para a próxima IA](docs/handoff-task-batch-personalization.md) e [prompt de continuidade](docs/prompt-next-ai-task-batch.md). Próxima entrega: **Escolher itens…**, modal com checkboxes por jogo, e imagens para os oito endgames. Automação das futuras fases Endstate permanece separada no roadmap.
+- Próxima entrega registrada na época: **Escolher itens…**, modal com checkboxes por jogo e imagens para os oito endgames. A automação das futuras fases de Endstate permanece separada no roadmap. [Personalização do lote](docs/task-batch-personalization.md).
 
 Cristian autorizou commit, push e numeração a critério da IA em 08/10/2026. A versão MINOR consolida o commit intermediário anterior e a unificação/expansão do lote.
 

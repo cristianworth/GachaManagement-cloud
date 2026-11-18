@@ -1,6 +1,6 @@
 # Etapa 3 — Personalização do Lote e capas
 
-Implementação local em 09/10/2026 sobre `223ca98` (1.10.0). Fechamento em 1.11.0 autorizado por Cristian após validar a prévia em 09/10/2026. Manifests, README, badge e changelog atualizados. Sem push, aplicação no Supabase ou reset do live. Pedido e decisões anteriores: [handoff](handoff-task-batch-personalization.md), [inventário](task-batch-plan.md), TODO 9.1.
+Implementação local em 09/10/2026 sobre `223ca98` (1.10.0). Fechamento em 1.11.0 autorizado por Cristian após validar a prévia em 09/10/2026. Manifests, README, badge e changelog atualizados. Sem push, aplicação no Supabase ou reset do live. [Inventário e decisões do lote](task-batch-plan.md) · [TODO §9.1](../TODO.md#91-evolução-lote-único-de-weeklies-e-desafios).
 
 ## Recortes e decisões para revisão
 

@@ -1,6 +1,6 @@
 # Lote único — inventário e entregas
 
-Atualizado em 09/10/2026. **Entrega 1.12.0:** 16 definições/capas, Weekly Boss GI/NTE e recriação explícita por seleção; detalhes em [manutenção](task-batch-maintenance.md). O histórico abaixo registra as etapas anteriores. **Itens 1 e 2 implementados localmente:** Carregar Lote reúne 14 definições, incluindo os cinco desafios novos. Cristian validou a unificação anterior e autorizou esta expansão. O item 3 e as imagens foram validados por Cristian em 09/10/2026, com commit/1.11.0 autorizados; sem push ou SQL live. Fechamento em **1.10.0**, com commit/push autorizados por Cristian em 08/10/2026; sem aplicação no Supabase live. Continuidade em [handoff-task-batch-personalization.md](handoff-task-batch-personalization.md).
+Atualizado em 09/10/2026. **Entrega 1.12.0:** 16 definições/capas, Weekly Boss GI/NTE e recriação explícita por seleção; detalhes em [manutenção](task-batch-maintenance.md). O histórico abaixo registra as etapas anteriores. **Itens 1 e 2 implementados localmente:** Carregar Lote reúne 14 definições, incluindo os cinco desafios novos. Cristian validou a unificação anterior e autorizou esta expansão. O item 3 e as imagens foram validados por Cristian em 09/10/2026, com commit/1.11.0 autorizados; sem push ou SQL live. Fechamento em **1.10.0**, com commit/push autorizados por Cristian em 08/10/2026; sem aplicação no Supabase live. [Personalização do lote](task-batch-personalization.md).
 
 ## Etapa 3 em revisão local — 09/10/2026
 
