@@ -4,7 +4,7 @@
 
 Cristian selected Sangonomiya from the visual comparison on 2026-10-10 and authorized changes to layout and colors using `frontend-design`. He subsequently approved applying the design to the real application, in `codex/anime-design`, with staged delivery. Preserve all existing functions and separate pages. Desktop is the priority; mobile must remain usable. No framework, live database changes, commit, merge, deployment or version bump is included.
 
-Cristian confirmed a new Sangonomiya-inspired background matching the generated comparison. The new illustration is `design-preview/sangonomiya.png`; it is not Yagaminoue's fanart.
+Cristian confirmed a new Sangonomiya-inspired background matching the generated comparison. The illustration used by the app is [`img/sangonomiya.png`](../img/sangonomiya.png).
 
 ## Design plan
 
@@ -50,7 +50,7 @@ Keep a single editor for `css/sangonomiya.css` and `js/ui/appShell.js` at any mo
 
 Promoted the approved CSS to `css/sangonomiya.css`, the illustration to `img/sangonomiya.png`, and the shell to `js/ui/appShell.js`. `index.html` loads the theme and `js/index.js` initializes the shell before profiles and routing. Local fonts replace the unused Google Fonts request. Existing nodes and IDs are retained; the original version badge and repository link remain available.
 
-The test build copies these real files and only replaces the database client/config with disposable equivalents. It no longer injects a preview-only shell or stylesheet. Earlier files in `design-preview/` are historical source material, not the active implementation.
+The test build copies these files and replaces the database client and config with disposable equivalents. Run `npm run preview:profiles -- --design --port=5502` and open `http://127.0.0.1:5502` to try it with sample data. The original design prototype is available in the Git history.
 
 Independent agent review caught the old `dataset.designRoute` name after promotion to `data-app-route`. Corrected to `dataset.appRoute` and added active-link assertions for Games, Tasks, Events and profile selection plus GitHub Pages link assertions.
 

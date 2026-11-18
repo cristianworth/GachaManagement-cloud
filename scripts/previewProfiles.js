@@ -93,7 +93,7 @@ const server = createServer(async (request, response) => {
                 export const SUPABASE_ANON_KEY = 'preview'; export const isSupabaseConfigured = () => true;`);
             return;
         }
-        const asset = /^\/(js|css|img|design-preview)\//.test(pathname);
+        const asset = /^\/(js|css|img)\//.test(pathname);
         const path = resolve(root, asset ? pathname.slice(1) : 'index.html');
         if (!path.startsWith(resolve(root) + sep) || (asset && !contentTypes[extname(path)])) {
             send(response, 404, 'text/plain', 'Not found'); return;
