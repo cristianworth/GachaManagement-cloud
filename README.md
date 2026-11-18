@@ -73,5 +73,6 @@ Os testes usam dados congelados e banco descartável, sem consultar o banco pess
 - [Estado diário](docs/game-daily-state.md), [atualização silenciosa](docs/silent-refresh.md) e [paginação](docs/task-pagination-stamina.md).
 - [Banners publicados](docs/banner-catalogue.md) e [integrações de eventos](docs/event-integrations.md).
 - [Issues](https://github.com/cristianworth/GachaManagement-cloud/issues) para problemas e propostas com exemplos reproduzíveis.
+- Contribuições seguem por pull request. Descreva a mudança, como verificou e a issue relacionada. O merge em `main` acontece após revisão e CI.
 
-O manifesto declara ISC, mas o texto de licença ainda precisa ser incluído na raiz. Dependências e recursos de terceiros mantêm suas próprias licenças e créditos; essa pendência não altera os avisos existentes.
+O código é distribuído sob a [licença ISC](LICENSE). Dependências e recursos de terceiros mantêm suas próprias licenças e créditos.

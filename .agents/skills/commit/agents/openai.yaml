@@ -1,4 +1,4 @@
 interface:
   display_name: "commit"
-  short_description: "Fecha versão, roadmap, testes, commit e push"
-  default_prompt: "Use $commit para fechar a entrega atual deste projeto, escolhendo a versão, atualizando changelog e roadmap, validando, commitando e fazendo push."
+  short_description: "Prepara versão, testes, commits e PR"
+  default_prompt: "Use $commit para preparar a entrega atual para revisão, com versão, changelog, roadmap, testes, commits e PR."

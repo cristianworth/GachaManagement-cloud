@@ -1,6 +1,6 @@
 ---
 name: commit
-description: Fechar uma entrega do Gacha Management com versão, changelog, roadmap, testes, commit e push quando Cristian solicitar esse fechamento.
+description: Preparar uma entrega do Gacha Management para revisão no PR, com versão, changelog, roadmap, testes e commits.
 ---
 
 # Fechamento do Gacha Management
@@ -9,7 +9,8 @@ Use esta skill somente neste repositório. Leia `AGENTS.md`, `docs/project-conve
 
 ## Invocação e autorização
 
-- Quando Cristian enviar `$commit`, selecionar esta skill no menu `/`, enviar `/commit` como pedido textual ou pedir explicitamente o mesmo fechamento, considere autorizados: escolher a versão, atualizar changelog e roadmap, validar, commitar e fazer push da entrega atual. Não peça novamente confirmação para essas ações no mesmo escopo.
+- Quando Cristian enviar `$commit`, selecionar esta skill no menu `/`, enviar `/commit` como pedido textual ou pedir explicitamente o mesmo fechamento, escolha a versão, atualize o changelog e o roadmap, valide e prepare os commits e o PR da entrega atual conforme o fluxo de contribuição do AGENTS.md.
+- Antes de mesclar, confirme a aprovação de Cristian para o conteúdo revisado e o CI verde. Uma alteração de conteúdo após a aprovação exige nova revisão. Push direto em `main` depende de autorização explícita.
 - Perguntar sobre a skill, criá-la, editá-la ou citar esses comandos como exemplo não é invocá-la. Seleção automática da skill também não substitui um pedido humano de fechamento; sem esse pedido, limite-se à preparação e revisão.
 - Respeite qualificadores do pedido, como somente commit local ou sem nova versão. O fechamento não autoriza implementar novas funcionalidades do roadmap nem alterar serviços ou banco reais.
 
@@ -17,7 +18,7 @@ Use esta skill somente neste repositório. Leia `AGENTS.md`, `docs/project-conve
 
 Confira branch, remoto/upstream, alterações staged e unstaged, arquivos não rastreados e commits locais ainda não enviados. Relacione o diff com a implementação discutida; inclua somente seus arquivos. Preserve mudanças alheias e handoffs não relacionados, sem adicionar tudo indiscriminadamente.
 
-Use a branch de destino já estabelecida por Cristian; na ausência de outra indicação, este projeto entrega em `main`. Não crie outra branch sem pedido. Se o checkout estiver destacado ou o destino continuar ambíguo depois de conferir as referências, esclareça o destino antes de publicar. Se não houver alterações nem commits da entrega para enviar, informe isso e não crie commit vazio ou versão artificial.
+Use a branch de trabalho da entrega ou crie uma a partir de `origin/main`. O destino padrão do PR é `main`, salvo orientação de Cristian. Se não houver alterações nem commits da entrega para enviar, informe isso e evite commit vazio ou versão artificial.
 
 ## Versão e documentação
 
@@ -39,8 +40,8 @@ Em `docs/roadmap-priorities.md`, remova das prioridades ativas somente o que foi
 2. Execute `npm test` no fechamento de MAJOR/MINOR ou quando Cristian pedir a suíte completa. PATCH usa testes focados. Não repita verificações aprovadas quando apenas documentação/numeração mudou; diferencie evidência anterior de execução nova.
 3. Corrija falhas relacionadas à entrega antes de publicar. Se um bloqueio exigir escopo novo ou informação ausente, informe a evidência e o que falta; não declare a validação aprovada nem faça push ignorando um requisito que falhou.
 4. Revise o diff final e `git diff --check`. Adicione os arquivos explicitamente, confira o staged e faça commit coeso com mensagem em inglês seguindo o histórico do projeto. Reutilize commits já feitos da mesma entrega quando só faltar o push.
-5. Faça push para o destino verificado, sem force push ou reescrita de histórico. Se houver divergência, confira os commits antes de integrar; não descarte trabalho. Se o push falhar, preserve o commit local e reporte o erro sem declarar publicação concluída.
-6. Se houver CI/deploy disparado, confira o resultado pelo commit enviado quando houver acesso. Separe push concluído, testes no CI e publicação do site; se não puder verificar algum deles, diga isso. Não crie tag ou GitHub Release sem pedido.
+5. Envie a branch de trabalho e abra ou atualize o PR, com a issue relacionada quando aplicável, o resumo do diff e a validação. Preserve commits existentes e resolva divergências sem reescrever o histórico. Se o envio falhar, preserve o commit local e informe o bloqueio.
+6. Depois da aprovação do conteúdo e do CI verde, faça o merge autorizado e confirme o fechamento da issue vinculada, quando aplicável. Acompanhe o deploy pelo commit integrado e confira o resultado publicado. Tags e GitHub Releases dependem de pedido.
 
 ## Entrega
 
